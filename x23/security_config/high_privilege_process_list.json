@@ -1,0 +1,69 @@
+{
+    "high_privilege_process_list": [
+        {
+            "name": "accessibility",
+            "gid": "root"
+        },
+        {
+            "name": "appspawn",
+            "uid": "root",
+            "gid": "root"
+        },
+        {
+            "name": "bootanimation",
+            "gid": "root"
+        },
+        {
+            "name": "console",
+            "uid": "root"
+        },
+        {
+            "name": "dhardware",
+            "gid": "root"
+        },
+        {
+            "name": "media_service",
+            "gid": ["root", "system"]
+        },
+        {
+            "name": "misc",
+            "uid": "root",
+            "gid": "root"
+        },
+        {
+            "name": "netsysnative",
+            "uid": "root",
+            "gid": "root"
+        },
+        {
+            "name": "nwebspawn",
+            "uid": "root",
+            "gid": "root"
+        },
+        {
+            "name": "render_service",
+            "uid": "system",
+            "gid": ["root", "system"]
+        },
+        {
+            "name": "resource_schedule_service",
+            "uid": "root",
+            "gid": "root"
+        },
+        {
+            "name": "storage_daemon",
+            "uid": "root",
+            "gid": "root"
+        },
+        {
+            "name": "udevd_service",
+            "uid": "root",
+            "gid": "system"
+        },
+        {
+            "name": "ueventd",
+            "uid": "system",
+            "gid": "system"
+        }
+    ]
+}
