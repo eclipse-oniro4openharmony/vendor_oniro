@@ -1,0 +1,117 @@
+{
+  "product_name": "x23",
+  "device_company": "oniro",
+  "device_build_path": "device/board/oniro/x23",
+  "target_cpu": "arm64",
+  "type": "standard",
+  "version": "3.0",
+  "board": "x23",
+  "api_version": 8,
+  "enable_ramdisk": false,
+  "build_selinux": false,
+  "build_seccomp": false,
+  "inherit": [ "productdefine/common/inherit/rich.json", "productdefine/common/inherit/chipset_common.json" ],
+  "subsystems": [
+    {
+      "subsystem": "security",
+      "components": [
+        {
+          "component": "selinux",
+          "features": []
+        }
+      ]
+    },
+    {
+      "subsystem": "communication",
+      "components": [
+        {
+          "component": "netmanager_ext",
+          "features": []
+        },
+        {
+          "component": "wifi",
+          "features": [
+            "wifi_feature_with_p2p = false"
+          ]
+        }
+      ]
+    },
+    {
+      "subsystem": "graphic",
+      "components": [
+        {
+          "component": "graphic_standard",
+          "features": [
+            "graphic_standard_feature_ace_enable_gpu = true",
+            "graphic_standard_feature_rs_enable_eglimage = true"
+          ]
+        }
+      ]
+    },
+    {
+      "subsystem": "oniro_products",
+      "components": [
+        {
+          "component": "oniro_products"
+        }
+      ]
+    },
+    {
+      "subsystem": "arkui",
+      "components": [
+        {
+          "component": "ace_engine",
+          "features": [
+            "ace_engine_feature_enable_accessibility = true",
+            "ace_engine_feature_enable_web = true"
+          ]
+        }
+      ]
+    },
+    {
+      "subsystem": "wpa_supplicant-2.9",
+      "components": [
+        {
+          "component": "wpa_supplicant-2.9",
+          "features": [
+            "wpa_supplicant_driver_nl80211 = true"
+          ]
+        }
+      ]
+    },
+    {
+      "subsystem": "hdf",
+      "components": [
+        {
+          "component": "drivers_interface_audio",
+          "features": []
+        },
+        {
+          "component": "drivers_peripheral_audio",
+          "features": [
+            "drivers_peripheral_audio_full_test_suite = true",
+            "drivers_peripheral_audio_alsa_lib = false"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "drivers_peripheral_codec",
+      "features": [
+        "drivers_peripheral_codec_support_omx = false"
+      ]
+    },
+    {
+      "subsystem": "startup",
+      "components": [
+        {
+          "component": "init",
+          "features": [
+            "enable_ohos_startup_init_feature_ab_partition = false",
+            "enable_ohos_startup_init_feature_loader = false"
+          ]
+        }
+      ]
+    }
+  ]
+}

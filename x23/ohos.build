@@ -1,0 +1,15 @@
+{
+  "parts": {
+    "product_x23": {
+      "module_list": [
+        "//vendor/${product_company}/${device_name}/default_app_config:default_app_config",
+        "//vendor/${product_company}/${device_name}/image_conf:custom_image_conf",
+        "//vendor/${product_company}/${device_name}/preinstall-config:preinstall-config",
+        "//vendor/${product_company}/${device_name}/resourceschedule:resourceschedule",
+        "//vendor/${product_company}/${device_name}/etc:product_etc_conf",
+        "//vendor/${product_company}/${device_name}/custom_conf:custom_config"
+      ]
+    }
+  },
+  "subsystem": "product_oniro"
+}
