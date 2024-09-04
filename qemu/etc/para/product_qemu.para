@@ -18,3 +18,4 @@ persist.hdc.port=5555
 const.product.name="qemu"
 const.product.model="qemu"
 const.product.manufacturer=Oniro
+const.security.developermode.state=1

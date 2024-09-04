@@ -7,9 +7,11 @@ root {
                     lightId = [1];    /* Lightid can contain multiple logical light ID, for example:
                                         1 indicates the power indicator. These logic lights work on
                                         the same physical light light01. */
-                    busRNum = 31;    // Red corresponding GPIO.
-                    busGNum = 30;    // Green corresponding GPIO.
-                    busBNum = 29;    // Blue corresponding GPIO.
+                    lightName = "power";
+                    lightNumber = 1;
+                    busRNum = 403;    // Red corresponding GPIO.
+                    busGNum = 407;    // Green corresponding GPIO.
+                    busBNum = 409;    // Blue corresponding GPIO.
                     defaultBrightness = 0X00FFFFFF;    /* System default brightness value.
                                                         B: 0-7bit, R: 8-15bit, G: 16-23, extended bit: 24-31bit. */
                     onTime = 50;    /* The minimum duration (in milliseconds) that the system supports

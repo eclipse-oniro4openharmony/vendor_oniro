@@ -5,8 +5,8 @@ root {
             match_attr = "SDIO_TEST";
             busNum = 2;
             funcNum = 1;
-            vendorId = 0x296;
-            deviceId = 0x5347;
+            vendorId = 0x024c;
+            deviceId = 0xc822;
         }
     }
 }
