@@ -15,11 +15,12 @@
  -->
 <Configs>
     <!--decor enable is true means app main window show decoration-->
-    <decor enable="false"></decor>
+    <decor enable="false">
+        <!--supportedMode could be configed as fullscreen, floating, split or the combination of them-->
+        <supportedMode>floating fullscreen</supportedMode>
+    </decor>
     <!--max number of main window that could be shown on display-->
     <maxAppWindowNumber>100</maxAppWindowNumber>
-    <!--maximum number of windows supported by unified rendering -->
-    <maxUniRenderAppWindowNumber>100</maxUniRenderAppWindowNumber>
     <!--minimizeByOther enable is true means fullscreen window will be minmized by other fullscreen window-->
     <minimizeByOther enable="true"></minimizeByOther>
     <!--window mdoe change hot zones config, fullscreen primary secondary-->
@@ -55,13 +56,28 @@
     <keyboardAnimation>
         <timing>
             <!--duration of animation when add keyboard, unit is ms-->
-            <durationIn>500</durationIn>
+            <durationIn>150</durationIn>
             <!--duration of animation when remove keyboard, unit is ms-->
-            <durationOut>300</durationOut>
+            <durationOut>150</durationOut>
             <!--friction curve-->
             <curve name="cubic">0.2 0.0 0.2 1.0</curve>
         </timing>
     </keyboardAnimation>
+    <!--startWindowTransitionAnimation enable is true means startWindow replace with alpha animation-->
+    <startWindowTransitionAnimation enable="false">
+        <timing>
+            <!--duration of animation when add/remove window, unit is ms-->
+            <duration>200</duration>
+            <!--timing curve of animation, config it as below:
+            name=ease, easeIn, easeOut, easeInOut, default, linear,
+            spring, interactiveSpring, cubic(float float float float)-->
+            <curve name="linear"></curve>
+        </timing>
+        <!--opacity of animation start state-->
+        <opacityStart>1</opacityStart>
+        <!--opacity of animation end state-->
+        <opacityEnd>0</opacityEnd>
+    </startWindowTransitionAnimation>
     <!--enable/disable remote animation-->
     <remoteAnimation enable="true"></remoteAnimation>
     <!--window effect config-->

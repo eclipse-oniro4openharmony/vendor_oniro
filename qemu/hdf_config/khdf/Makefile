@@ -20,7 +20,7 @@ SOURCE_ROOT := $(abspath $(CURRENT_DIR)/../../../../../)
 
 HC_GEN_DIR := $(abspath $(SOURCE_ROOT)/drivers/hdf_core/framework/tools/hc-gen)
 ifneq ($(OUT_DIR),)
-HC_GEN := $(OUT_DIR)/kernel/OBJ/${KERNEL_VERSION}/drivers/hdf/khdf/hc_gen_build/hc-gen
+HC_GEN := $(OUT_DIR)kernel/OBJ/${KERNEL_VERSION}/drivers/hdf/khdf/hc_gen_build/hc-gen
 else
 HC_GEN := $(HC_GEN_DIR)/build/hc-gen
 endif
@@ -38,7 +38,7 @@ else
     HCS_DIR := $(LOCAL_HCS_ROOT)
   endif
 endif
-$(info HCS_DIR = $(HCS_DIR))
+$(warning HCS_DIR = $(HCS_DIR))
 HCB_FLAGS := -b -i -a
 
 HCS_OBJ := hdf_hcs_hex.o
