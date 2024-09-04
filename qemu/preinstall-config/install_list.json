@@ -89,6 +89,10 @@
             "removable" : false
         },
         {
+            "app_dir" : "/system/app/com.ohos.useriam.authwidget",
+            "removable" : false
+        },
+        {
             "app_dir" : "/system/app/com.ohos.adminprovisioning",
             "removable" : false
         },
@@ -154,7 +158,7 @@
         },
         {
             "app_dir": "/system/app/com.ohos.amsdialog",
-            "removable": true
+            "removable": false
         },
         {
             "app_dir": "/system/app/com.usb.right",
@@ -174,6 +178,14 @@
         },
         {
             "app_dir": "/system/app/com.ohos.formrenderservice",
+            "removable": false
+        },
+        {
+            "app_dir": "/system/app/com.ohos.updateapp",
+            "removable": false
+        },
+        {
+            "app_dir": "/system/app/com.ohos.spooler",
             "removable": false
         }
     ]

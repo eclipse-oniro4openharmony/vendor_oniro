@@ -1,9 +1,25 @@
 root {
-    module = "master";
-    master_config {
-        match_attr = "usbfn_master_driver";
+    module = "usbfn";
+    acm_device_config {
+        match_attr = "usbfn_cdcacm_driver";
+        udc_name = "fcc00000.dwc3";
+    }
+    ecm_device_config {
+        match_attr = "usbfn_cdcecm_driver";
+        udc_name = "fcc00000.dwc3";
+    }
+    mtp_device_config {
+        match_attr = "usbfn_mtp_interface_driver";
+        udc_name = "fcc00000.dwc3";
+    }
+    usb_device_config {
+        match_attr = "usb_device_interface_driver";
+        port_file_path = "/data/service/el1/public/usb/mode";
+    }
+    usbfn_config {
+        match_attr = "usbfn_driver";
         use_hcs = 1;
-        udc_name = "100e0000.hidwc3_0";
+        udc_name = "fcc00000.dwc3";
         usb_dev_desc = "UsbDeviceDescriptor";
         usb_dev_string = "UsbDeviceStrings";
         usb_configuration = "UsbConfigs";
@@ -15,8 +31,8 @@ root {
             bDeviceSubClass = 0;
             bDeviceProtocol = 0;
             bMaxPacketSize0 = 0x40;
-            idVendor = 0x12D1;
-            idProduct = 0x5000;
+            idVendor = 0x2207;
+            idProduct = 0x0018;
             bcdDevice = 0x0223;
             manufacturer = 0;
             product = 1;
@@ -53,7 +69,7 @@ root {
                 iConfiguration = 3;
                 attributes = 0xC0;
                 maxPower = 500;
-                functionList = ["func_ecm", "func_acm"];
+                functionList = ["func_ecm", "func_acm", "func_mtp", "func_ptp"];
                 func_ecm {
                     funcName = "f_generic.e";
                     stringTabList = ["fnString_1"];
@@ -362,6 +378,268 @@ root {
                         "cdc_call_mgmt", "cdc_acm", "cdc_union", "HsNotify_endpoint",
                         "ss_ep_comp", "DataInterface", "SsIn_endpoint",
                         "ss_ep_comp","SsOut_endpoint","ss_ep_comp"];
+                    ss_ep_comp {
+                        bLength = 0x06;
+                        bDescriptorType = 0x30;
+                        bMaxBurst = 0x00;
+                        bmAttributes = 0x00;
+                        wBytesPerInterval = 0x00;
+                    }
+                    SsIn_endpoint {
+                        bLength = 0x07;
+                        bDescriptorType = 0x05;
+                        bEndpointAddress = 0x82;
+                        bmAttributes = 0x02;
+                        wMaxPacketSize = 1024;
+                        bInterval = 0;
+                    }
+                    SsOut_endpoint {
+                        bLength = 0x07;
+                        bDescriptorType = 0x05;
+                        bEndpointAddress = 0x3;
+                        bmAttributes = 0x02;
+                        wMaxPacketSize = 1024;
+                        bInterval = 0;
+                    }
+                }
+                func_mtp {
+                    funcName = "f_generic.mtp";
+                    stringTabList = ["fnString_1"];
+                    fnString_1 {
+                        language  = 0x0409;
+                        stringList = ["str_1", "str_2", "str_3"];
+                        str_1 {
+                            id = 0;
+                            str =  "Media Transfer Protocol(MTP)";
+                        }
+                        str_2 {
+                            id = 1;
+                            str = "USB MTP Device";
+                        }
+                        str_3 {
+                            id = 2;
+                            str = "MTP";
+                        }
+                    }
+                    fsDescList = ["DataInterface", 
+                        "FsNotify_endpoint",
+                        "FsIn_endpoint",
+                        "FsOut_endpoint"];
+                    DataInterface {
+                        bLength = 0x09;
+                        bDescriptorType = 0x04;
+                        bInterfaceNumber = 0x00;
+                        bAlternateSetting = 0x00;
+                        bNumEndpoints = 0x03;
+                        bInterfaceClass = 0xFF;
+                        bInterfaceSubClass = 0xFF;
+                        bInterfaceProtocol = 0x00;
+                        iInterface = 0x03;
+                    }
+                    FsNotify_endpoint {
+                        bLength = 0x07;
+                        bDescriptorType = 0x05;
+                        bEndpointAddress = 0x81;
+                        bmAttributes = 0x03;
+                        wMaxPacketSize = 0x1C;
+                        bInterval = 6;
+                    }
+                    FsIn_endpoint {
+                        bLength = 0x07;
+                        bDescriptorType = 0x05;
+                        bEndpointAddress = 0x82;
+                        bmAttributes = 0x02;
+                        wMaxPacketSize = 0;
+                        bInterval = 0;
+                    }
+                    FsOut_endpoint {
+                        bLength = 0x07;
+                        bDescriptorType = 0x05;
+                        bEndpointAddress = 0x03;
+                        bmAttributes = 0x02;
+                        wMaxPacketSize = 0;
+                        bInterval = 0;
+                    }
+                    hsDescList = ["DataInterface", 
+                        "HsNotify_endpoint",
+                        "HsIn_endpoint",
+                        "HsOut_endpoint"];
+                    HsNotify_endpoint {
+                        bLength = 0x07;
+                        bDescriptorType = 0x05;
+                        bEndpointAddress = 0x81;
+                        bmAttributes = 0x03;
+                        wMaxPacketSize = 0x1C;
+                        bInterval = 6;
+                    }
+                    HsIn_endpoint {
+                        bLength = 0x07;
+                        bDescriptorType = 0x05;
+                        bEndpointAddress = 0x82;
+                        bmAttributes = 0x02;
+                        wMaxPacketSize = 512;
+                        bInterval = 0;
+                    }
+                    HsOut_endpoint {
+                        bLength = 0x07;
+                        bDescriptorType = 0x05;
+                        bEndpointAddress = 0x03;
+                        bmAttributes = 0x02;
+                        wMaxPacketSize = 512;
+                        bInterval = 0;
+                    }
+                    ssDescList = ["DataInterface",
+                        "SsNotify_endpoint", "ss_ep_comp_notify",
+                        "SsIn_endpoint", "ss_ep_comp",
+                        "SsOut_endpoint", "ss_ep_comp"];
+                    SsNotify_endpoint {
+                        bLength = 0x07;
+                        bDescriptorType = 0x05;
+                        bEndpointAddress = 0x81;
+                        bmAttributes = 0x03;
+                        wMaxPacketSize = 0x1C;
+                        bInterval = 0;
+                    }
+                    ss_ep_comp_notify {
+                        bLength = 0x06;
+                        bDescriptorType = 0x30;
+                        bMaxBurst = 0x00;
+                        bmAttributes = 0x00;
+                        wBytesPerInterval = 0;
+                    }
+                    ss_ep_comp {
+                        bLength = 0x06;
+                        bDescriptorType = 0x30;
+                        bMaxBurst = 0x00;
+                        bmAttributes = 0x00;
+                        wBytesPerInterval = 0x00;
+                    }
+                    SsIn_endpoint {
+                        bLength = 0x07;
+                        bDescriptorType = 0x05;
+                        bEndpointAddress = 0x82;
+                        bmAttributes = 0x02;
+                        wMaxPacketSize = 1024;
+                        bInterval = 0;
+                    }
+                    SsOut_endpoint {
+                        bLength = 0x07;
+                        bDescriptorType = 0x05;
+                        bEndpointAddress = 0x3;
+                        bmAttributes = 0x02;
+                        wMaxPacketSize = 1024;
+                        bInterval = 0;
+                    }
+                }
+                func_ptp {
+                    funcName = "f_generic.ptp";
+                    stringTabList = ["fnString_1"];
+                    fnString_1 {
+                        language  = 0x0409;
+                        stringList = ["str_1", "str_2", "str_3", "str_4"];
+                        str_1 {
+                            id = 0;
+                            str =  "Picture Transfer Protocol(PTP)";
+                        }
+                        str_2 {
+                            id = 1;
+                            str = "USB PTP Device";
+                        }
+                        str_3 {
+                            id = 2;
+                            str = "PTP";
+                        }
+                        str_4 {
+                            id = 2;
+                            str = "";
+                        }
+                    }
+                    fsDescList = ["DataInterface", 
+                        "FsNotify_endpoint",
+                        "FsIn_endpoint",
+                        "FsOut_endpoint"];
+                    DataInterface {
+                        bLength = 0x09;
+                        bDescriptorType = 0x04;
+                        bInterfaceNumber = 0x00;
+                        bAlternateSetting = 0x00;
+                        bNumEndpoints = 0x03;
+                        bInterfaceClass = 0x06;
+                        bInterfaceSubClass = 0x01;
+                        bInterfaceProtocol = 0x01;
+                        iInterface = 0x04;
+                    }
+                    FsNotify_endpoint {
+                        bLength = 0x07;
+                        bDescriptorType = 0x05;
+                        bEndpointAddress = 0x81;
+                        bmAttributes = 0x03;
+                        wMaxPacketSize = 0x1C;
+                        bInterval = 6;
+                    }
+                    FsIn_endpoint {
+                        bLength = 0x07;
+                        bDescriptorType = 0x05;
+                        bEndpointAddress = 0x82;
+                        bmAttributes = 0x02;
+                        wMaxPacketSize = 0;
+                        bInterval = 0;
+                    }
+                    FsOut_endpoint {
+                        bLength = 0x07;
+                        bDescriptorType = 0x05;
+                        bEndpointAddress = 0x03;
+                        bmAttributes = 0x02;
+                        wMaxPacketSize = 0;
+                        bInterval = 0;
+                    }
+                    hsDescList = ["DataInterface", 
+                        "HsNotify_endpoint",
+                        "HsIn_endpoint",
+                        "HsOut_endpoint"];
+                    HsNotify_endpoint {
+                        bLength = 0x07;
+                        bDescriptorType = 0x05;
+                        bEndpointAddress = 0x81;
+                        bmAttributes = 0x03;
+                        wMaxPacketSize = 0x1C;
+                        bInterval = 6;
+                    }
+                    HsIn_endpoint {
+                        bLength = 0x07;
+                        bDescriptorType = 0x05;
+                        bEndpointAddress = 0x82;
+                        bmAttributes = 0x02;
+                        wMaxPacketSize = 512;
+                        bInterval = 0;
+                    }
+                    HsOut_endpoint {
+                        bLength = 0x07;
+                        bDescriptorType = 0x05;
+                        bEndpointAddress = 0x03;
+                        bmAttributes = 0x02;
+                        wMaxPacketSize = 512;
+                        bInterval = 0;
+                    }
+                    ssDescList = ["DataInterface",
+                        "SsNotify_endpoint", "ss_ep_comp_notify",
+                        "SsIn_endpoint", "ss_ep_comp",
+                        "SsOut_endpoint", "ss_ep_comp"];
+                    SsNotify_endpoint {
+                        bLength = 0x07;
+                        bDescriptorType = 0x05;
+                        bEndpointAddress = 0x81;
+                        bmAttributes = 0x03;
+                        wMaxPacketSize = 0x1C;
+                        bInterval = 0;
+                    }
+                    ss_ep_comp_notify {
+                        bLength = 0x06;
+                        bDescriptorType = 0x30;
+                        bMaxBurst = 0x00;
+                        bmAttributes = 0x00;
+                        wBytesPerInterval = 0;
+                    }
                     ss_ep_comp {
                         bLength = 0x06;
                         bDescriptorType = 0x30;

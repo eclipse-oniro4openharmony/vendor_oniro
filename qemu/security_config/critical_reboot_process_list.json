@@ -1,0 +1,12 @@
+{
+    "critical_reboot_process_list": [
+        {
+            "name": "samgr",
+            "critical": [1, 1, 60]
+        },
+        {
+            "name": "foundation",
+            "critical": [1, 4, 240]
+        }
+    ]
+}

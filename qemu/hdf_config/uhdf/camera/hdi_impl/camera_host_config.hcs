@@ -1,12 +1,14 @@
 root {
     module="sample";
+    vdiLibList = [
+        "libcamera_host_vdi_impl_1.0.z.so"
+    ];
     camera_host_config {
         match_attr = "camera_host_interface";
         template ability {
             logicCameraId = "lcam001";
             physicsCameraIds = [
-                "CAMERA_FIRST",
-                "CAMERA_SECOND"
+                "CAMERA_FIRST"
             ];
             metadata {
                 aeAvailableAntiBandingModes = [
@@ -16,7 +18,7 @@ root {
                     "OHOS_CONTROL_AE_ANTIBANDING_MODE_AUTO"
                 ];
                 aeAvailableModes = ["OHOS_CONTROL_AE_MODE_ON"];
-                availableAeFpsTargets = [15, 30];
+                availableFpsRange = [15, 30];
                 aeCompensationRange = [0, 0];
                 aeCompensationSteps = [0, 1];
                 availableAwbModes = [
@@ -40,7 +42,7 @@ root {
                     "OHOS_COLOR_CORRECTION_AVAILABLE_ABERRATION_MODES",
                     "OHOS_CONTROL_AE_AVAILABLE_ANTIBANDING_MODES",
                     "OHOS_CONTROL_AE_AVAILABLE_MODES",
-                    "OHOS_CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES",
+                    "OHOS_ABILITY_FPS_RANGES",
                     "OHOS_CONTROL_AE_COMPENSATION_RANGE",
                     "OHOS_CONTROL_AE_COMPENSATION_STEP",
                     "OHOS_CONTROL_AVAILABLE_EFFECTS",
@@ -125,15 +127,19 @@ root {
         ability_01 :: ability {
             logicCameraId = "lcam001";
             physicsCameraIds = [
-                "CAMERA_FIRST",
-                "CAMERA_SECOND"
+                "CAMERA_FIRST"
             ];
             metadata {
                 aeAvailableAntiBandingModes = [
                     "OHOS_CAMERA_AE_ANTIBANDING_MODE_OFF"
                 ];
                 aeAvailableModes = ["OHOS_CAMERA_AE_MODE_OFF"];
-                availableAeFpsTargets = [30, 30];
+                availableFpsRange = [5, 10];
+                cameraPosition = "OHOS_CAMERA_POSITION_FRONT";
+                cameraType = "OHOS_CAMERA_TYPE_WIDE_ANGLE";
+                cameraConnectionType ="OHOS_CAMERA_CONNECTION_TYPE_BUILTIN";
+                cameraMemoryType ="OHOS_CAMERA_MEMORY_USERPTR";
+                faceDetectMaxNum = "10";
                 aeCompensationRange = [0, 0];
                 aeCompensationSteps = [0, 0];
                 availableAwbModes = [
@@ -144,7 +150,7 @@ root {
                 availableCharacteristicsKeys = [
                     "OHOS_CONTROL_AE_AVAILABLE_ANTIBANDING_MODES",
                     "OHOS_CONTROL_AE_AVAILABLE_MODES",
-                    "OHOS_CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES",
+                    "OHOS_ABILITY_FPS_RANGES",
                     "OHOS_CONTROL_AE_COMPENSATION_RANGE",
                     "OHOS_CONTROL_AE_COMPENSATION_STEP",
                     "OHOS_CONTROL_AWB_AVAILABLE_MODES",
@@ -172,6 +178,47 @@ root {
                     "OHOS_JPEG_QUALITY",
                     "OHOS_JPEG_ORIENTATION"
                 ];
+                focalLength = "24.0";
+                focusAvailableModes = [
+                    "OHOS_CAMERA_FOCUS_MODE_MANUAL",
+                    "OHOS_CAMERA_FOCUS_MODE_CONTINUOUS_AUTO",
+                    "OHOS_CAMERA_FOCUS_MODE_AUTO",
+                    "OHOS_CAMERA_FOCUS_MODE_LOCKED"
+                ];
+                exposureAvailableModes = [
+                    "OHOS_CAMERA_EXPOSURE_MODE_MANUAL",
+                    "OHOS_CAMERA_EXPOSURE_MODE_CONTINUOUS_AUTO",
+                    "OHOS_CAMERA_EXPOSURE_MODE_LOCKED",
+                    "OHOS_CAMERA_EXPOSURE_MODE_AUTO"
+                ];
+                meterAvailableModes = [
+                    "OHOS_CAMERA_SPOT_METERING",
+                    "OHOS_CAMERA_REGION_METERING",
+                    "OHOS_CAMERA_OVERALL_METERING"
+                ];
+                flashAvailableModes = [
+                    "OHOS_CAMERA_FLASH_MODE_CLOSE",
+                    "OHOS_CAMERA_FLASH_MODE_OPEN",
+                    "OHOS_CAMERA_FLASH_MODE_AUTO",
+                    "OHOS_CAMERA_FLASH_MODE_ALWAYS_OPEN"
+                ];
+                mirrorSupported = "OHOS_CAMERA_MIRROR_OFF";
+                basicAvailableConfigurations = [1, 640, 480, 4, 1280, 960];
+                extendAvailableConfigurations = [0, 0, 1, 640, 480, 0, -1, 1, 1, 640, 480, 30, -1, 2, 4, 1280, 960, 0, -1, -1];
+                sensorOrientationSupported = "270";
+                videoStabilizationAvailableModes = [
+                    "OHOS_CAMERA_VIDEO_STABILIZATION_OFF"
+                ];
+                flashAvailable = "OHOS_CAMERA_FLASH_FALSE";
+                afAvailable = [
+                    "OHOS_CAMERA_AF_MODE_OFF"
+                ];
+                zoomRatioRange = [
+                    "1.0",
+                    "1.0"
+                ];
+                jpegOrientation= "270";
+                jpegQuality= "2";
             }
         }
     }
