@@ -74,6 +74,14 @@
             {
                 "name" : "ohos.permission.DISTRIBUTED_DATASYNC",
                 "userCancellable" : false
+            },
+            {
+                "name" : "ohos.permission.GET_INSTALLED_BUNDLE_LIST",
+                "userCancellable" : false
+            },
+            {
+                "name" : "ohos.permission.ACCESS_BLUETOOTH",
+                "userCancellable" : false
             }
         ]
     },
@@ -105,8 +113,16 @@
     },
 	{
         "bundleName": "com.ohos.photos",
-        "app_signature" : ["8E93863FC32EE238060BF69A9B37E2608FFFB21F93C862DD511CBAC9F30024B5"],
+        "app_signature" : ["9AED2A79925ECA050CD2BB9D2A7F694E49E5E135D28EBDCE53836DE76B5080ED"],
         "permissions" : [
+            {
+                "name" : "ohos.permission.READ_IMAGEVIDEO",
+                "userCancellable" : false
+            },
+            {
+                "name" : "ohos.permission.WRITE_IMAGEVIDEO",
+                "userCancellable" : false
+            },
             {
                 "name" : "ohos.permission.READ_MEDIA",
                 "userCancellable" : false
@@ -148,11 +164,11 @@
         "app_signature" : ["62C298EE70BEEB3D58082FFEFFEAD4F26BE83350B46B75C393281BA6AAED2A91"],
         "permissions" : [
             {
-                "name" : "ohos.permission.READ_MEDIA",
+                "name" : "ohos.permission.READ_IMAGEVIDEO",
                 "userCancellable" : false
             },
             {
-                "name" : "ohos.permission.WRITE_MEDIA",
+                "name" : "ohos.permission.WRITE_IMAGEVIDEO",
                 "userCancellable" : false
             },
             {
@@ -221,6 +237,44 @@
             },
             {
                 "name" : "ohos.permission.READ_DFX_SYSEVENT",
+                "userCancellable" : false
+            }
+        ]
+    },
+    {
+        "bundleName": "com.ohos.permissionmanager",
+        "app_signature" : ["68079CC9CB1BD69283D70790305645FFF61CD1E46CAFD7AA53B9FA8540432B81"],
+        "permissions" : [
+            {
+                "name" : "ohos.permission.GET_INSTALLED_BUNDLE_LIST",
+                "userCancellable" : false
+            }
+        ]
+    },
+    {
+        "bundleName": "com.ohos.useriam.authwidget",
+        "app_signature" : ["8E93863FC32EE238060BF69A9B37E2608FFFB21F93C862DD511CBAC9F30024B5"],
+        "permissions" : [
+            {
+                "name" : "ohos.permission.ACCESS_PIN_AUTH",
+                "userCancellable" : false
+            },
+            {
+                "name" : "ohos.permission.ACCESS_BIOMETRIC",
+                "userCancellable" : false
+            },
+            {
+                "name" : "ohos.permission.SUPPORT_USER_AUTH",
+                "userCancellable" : false
+            }
+        ]
+    },
+    {
+        "bundleName": "com.ohos.settings",
+        "app_signature" : ["8E93863FC32EE238060BF69A9B37E2608FFFB21F93C862DD511CBAC9F30024B5"],
+        "permissions" : [
+            {
+                "name" : "ohos.permission.GET_INSTALLED_BUNDLE_LIST",
                 "userCancellable" : false
             }
         ]

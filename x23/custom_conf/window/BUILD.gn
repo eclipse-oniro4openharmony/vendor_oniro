@@ -16,6 +16,7 @@ import("//build/ohos.gni")
 ohos_prebuilt_etc("window_manager_config") {
     source = "window_manager_config.xml"
     install_enable = true
+    install_images = [ vendor_base_dir ]
     part_name = "product_x23"
     relative_install_dir = "window/resources"
 }
@@ -23,6 +24,7 @@ ohos_prebuilt_etc("window_manager_config") {
 ohos_prebuilt_etc("display_manager_config") {
     source = "display_manager_config.xml"
     install_enable = true
+    install_images = [ vendor_base_dir ]
     part_name = "product_x23"
     relative_install_dir = "window/resources"
 }

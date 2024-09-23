@@ -11,4 +11,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//device/board/${product_company}/${device_name}/device.gni")
+import("//device/board/oniro/${device_name}/device.gni")

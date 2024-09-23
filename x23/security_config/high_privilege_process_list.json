@@ -1,16 +1,8 @@
 {
     "high_privilege_process_list": [
         {
-            "name": "accessibility",
-            "gid": "root"
-        },
-        {
             "name": "appspawn",
             "uid": "root",
-            "gid": "root"
-        },
-        {
-            "name": "bootanimation",
             "gid": "root"
         },
         {
@@ -32,11 +24,6 @@
         },
         {
             "name": "netsysnative",
-            "uid": "root",
-            "gid": "root"
-        },
-        {
-            "name": "nwebspawn",
             "uid": "root",
             "gid": "root"
         },
@@ -64,6 +51,20 @@
             "name": "ueventd",
             "uid": "system",
             "gid": "system"
+        },
+        {
+            "name": "concurrent_task_service",
+            "uid": "system",
+            "gid": "system"
+        },
+        {
+            "name": "hdcd",
+            "uid": "root"
+        },
+        {
+            "name": "key_enable",
+            "uid": "root",
+            "gid": "root"
         }
     ]
 }

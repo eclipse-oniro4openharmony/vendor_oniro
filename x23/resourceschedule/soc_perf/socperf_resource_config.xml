@@ -18,12 +18,12 @@
         <res id="1000" name="lit_cpu_min_freq" pair="1001">
             <default>408000</default>
             <path>/sys/devices/system/cpu/cpufreq/policy0/scaling_min_freq</path>
-            <node>408000 600000 816000 1104000 1416000 1608000 1800000 1992000</node>
+            <node>600000 700000 800000 900000 1000000 1100000 1200000 1300000 1400000 1500000</node>
         </res>
         <res id="1001" name="lit_cpu_max_freq" pair="1000" mode="1">
             <default>1992000</default>
             <path>/sys/devices/system/cpu/cpufreq/policy0/scaling_max_freq</path>
-            <node>408000 600000 816000 1104000 1416000 1608000 1800000 1992000</node>
+            <node>600000 700000 800000 900000 1000000 1100000 1200000 1300000 1400000 1500000</node>
         </res>
         <res id="2000" name="gpu_min_freq" pair="2001">
             <default>200000000</default>
