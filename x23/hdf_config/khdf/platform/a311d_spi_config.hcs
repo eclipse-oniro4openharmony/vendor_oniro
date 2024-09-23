@@ -11,15 +11,14 @@ root {
             controller_0x120c0000 :: spi_controller {
                 busNum = 0;
                 numCs = 1;
-                match_attr = "broadcom_bcm2711_spi_0";
+                match_attr = "amlogic_a311d_spi_0";
             }
 
             controller_0x120c1000 :: spi_controller {
-                match_attr = "broadcom_bcm2711_spi_1";
+                match_attr = "amlogic_a311d_spi_1";
                 busNum = 1;
                 numCs = 2;
             }
-
         }
     }
 }

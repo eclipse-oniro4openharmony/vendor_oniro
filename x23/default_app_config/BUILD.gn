@@ -16,7 +16,6 @@ import("//build/ohos.gni")
 ohos_prebuilt_etc("default_app_detail_config") {
   source = "./default_app.json"
   relative_install_dir = "app"
-  part_name = "product_x23"
 }
 
 group("default_app_config") {

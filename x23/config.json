@@ -8,6 +8,7 @@
   "board": "x23",
   "api_version": 8,
   "enable_ramdisk": false,
+  "enable_absystem": false,
   "build_selinux": false,
   "build_seccomp": false,
   "inherit": [ "productdefine/common/inherit/rich.json", "productdefine/common/inherit/chipset_common.json" ],
@@ -16,7 +17,7 @@
       "subsystem": "security",
       "components": [
         {
-          "component": "selinux",
+          "component": "selinux_adapter",
           "features": []
         }
       ]
@@ -31,28 +32,27 @@
         {
           "component": "wifi",
           "features": [
-            "wifi_feature_with_p2p = false"
-          ]
+            "wifi_feature_non_seperate_p2p = true",
+            "wifi_feature_non_hdf_driver = true"
+         ]
         }
       ]
     },
     {
-      "subsystem": "graphic",
+      "subsystem": "product_x23",
       "components": [
         {
-          "component": "graphic_standard",
-          "features": [
-            "graphic_standard_feature_ace_enable_gpu = true",
-            "graphic_standard_feature_rs_enable_eglimage = true"
-          ]
+          "component": "product_x23",
+          "features": []
         }
       ]
     },
     {
-      "subsystem": "oniro_products",
+      "subsystem": "device_x23",
       "components": [
         {
-          "component": "oniro_products"
+          "component": "device_x23",
+          "features": []
         }
       ]
     },
@@ -63,16 +63,16 @@
           "component": "ace_engine",
           "features": [
             "ace_engine_feature_enable_accessibility = true",
-            "ace_engine_feature_enable_web = true"
+            "ace_engine_feature_enable_web = false"
           ]
         }
       ]
     },
     {
-      "subsystem": "wpa_supplicant-2.9",
+      "subsystem": "wpa_supplicant",
       "components": [
         {
-          "component": "wpa_supplicant-2.9",
+          "component": "wpa_supplicant",
           "features": [
             "wpa_supplicant_driver_nl80211 = true"
           ]
@@ -87,18 +87,18 @@
           "features": []
         },
         {
+          "component": "drivers_peripheral_display",
+          "features": [
+            "drivers_peripheral_display_community = true",
+            "drivers_peripheral_display_vdi_default = true"
+          ]
+        },
+        {
           "component": "drivers_peripheral_audio",
           "features": [
-            "drivers_peripheral_audio_full_test_suite = true",
-            "drivers_peripheral_audio_alsa_lib = false"
+            "drivers_peripheral_audio_feature_alsa_lib = false"
           ]
         }
-      ]
-    },
-    {
-      "component": "drivers_peripheral_codec",
-      "features": [
-        "drivers_peripheral_codec_support_omx = false"
       ]
     },
     {
@@ -107,9 +107,36 @@
         {
           "component": "init",
           "features": [
-            "enable_ohos_startup_init_feature_ab_partition = false",
-            "enable_ohos_startup_init_feature_loader = false"
+            "enable_ohos_startup_init_feature_ab_partition = true",
+            "enable_ohos_startup_init_feature_loader = true"
           ]
+        }
+      ]
+    },
+    {
+      "subsystem": "msdp",
+      "components": [
+        {
+          "component": "device_status",
+          "features": [
+            "fusion_interaction_coordination = false"
+          ]
+        }
+      ]
+    },
+    {
+      "subsystem": "graphic",
+      "components": [
+        {
+          "component": "graphic_2d",
+          "features": [
+            "graphic_2d_feature_rs_enable_eglimage = true",
+            "graphic_2d_feature_use_texgine = true"
+          ]
+        },
+        {
+          "component": "graphic_surface",
+          "features": []
         }
       ]
     }

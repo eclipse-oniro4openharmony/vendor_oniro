@@ -1,24 +1,24 @@
 #include "../sensor_common.hcs"
 root {
-    accel_bmi160_chip_config : sensorConfig {
-        match_attr = "hdf_sensor_accel_bmi160_driver";
+    accel_mxc6655xa_chip_config : sensorConfig {
+        match_attr = "hdf_sensor_accel_mxc6655xa_driver";
         sensorInfo :: sensorDeviceInfo {
             sensorName = "accelerometer";
-            vendorName = "borsh_bmi160"; // max string length is 16 bytes
+            vendorName = "memsi_mxc6655xa"; // max string length is 16 bytes
             sensorTypeId = 1; // enum SensorTypeTag
             sensorId = 1; // user define sensor id
-            power = 850;
+            power = 230;
         }
         sensorBusConfig :: sensorBusInfo {
             busType = 0; // 0:i2c 1:spi
-            busNum = 6;
-            busAddr = 0x68;
-            regWidth = 1; // 1byte
+            busNum = 5;
+            busAddr = 0x15;
+            regWidth = 1; // 1 byte
         }
         sensorIdAttr :: sensorIdInfo {
-            chipName = "bmi160";
-            chipIdRegister = 0x00;
-            chipIdValue = 0xd1;
+            chipName = "mxc6655xa";
+            chipIdRegister = 0x0f;
+            chipIdValue = 0x05;
         }
         sensorDirection {
             direction = 5; // chip direction range of value:0-7
