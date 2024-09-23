@@ -8,7 +8,7 @@ root {
             }
 
             controller_0x00 :: emmc_controller {
-                match_attr = "hisilicon_hi35xx_emmc_0";
+                match_attr = "amlogic_a311d_emmc_0";
             }
         }
     }
