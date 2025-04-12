@@ -1,0 +1,74 @@
+From 551df794c38e43c9a9ec10982e96f131fd166cff Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E8=B4=BA=E5=B0=8F=E5=B8=85?= <hxsjs@qq.com>
+Date: Mon, 28 Oct 2024 17:32:44 +0800
+Subject: [PATCH] OHPC X86.
+
+Change-Id: I58a450afcba36cf3d596df0acf3e2e3421589424
+---
+ static_core/BUILD.gn          | 6 ++++--
+ static_core/compiler/BUILD.gn | 7 ++++++-
+ static_core/runtime/BUILD.gn  | 5 -----
+ 3 files changed, 10 insertions(+), 8 deletions(-)
+
+diff --git a/static_core/BUILD.gn b/static_core/BUILD.gn
+index 3923a318d..a0056f7d8 100644
+--- a/static_core/BUILD.gn
++++ b/static_core/BUILD.gn
+@@ -23,7 +23,6 @@ group("ark_packages") {
+       deps += [
+         "$ark_root/compiler:libarktscompiler",
+         "$ark_root/compiler/aot:libarkaotmanager",
+-        "$ark_root/compiler/tools/paoc:ark_aot",
+         "$ark_root/libpandabase:libarktsbase",
+         "$ark_root/libpandafile:libarktsfile",
+         "$ark_root/libpandafile/external:libarkfileExt",
+@@ -36,7 +35,10 @@ group("ark_packages") {
+         "$ark_root/verification/verifier:verifier_bin",
+       ]
+       if (enable_codegen) {
+-        deps += [ "$ark_root/compiler/optimizer/code_generator:libarkencoder" ]
++        deps += [
++          "$ark_root/compiler/optimizer/code_generator:libarkencoder",
++          "$ark_root/compiler/tools/paoc:ark_aot",
++        ]
+       }
+     }
+   }
+diff --git a/static_core/compiler/BUILD.gn b/static_core/compiler/BUILD.gn
+index e7065a500..7553dd656 100644
+--- a/static_core/compiler/BUILD.gn
++++ b/static_core/compiler/BUILD.gn
+@@ -166,8 +166,13 @@ if (!is_win && !is_mac && !is_mingw) {
+     "optimizer/code_generator/method_properties.cpp",
+     "optimizer/code_generator/slow_path.cpp",
+     "optimizer/code_generator/spill_fill_encoder.cpp",
+-    "optimizer/pipeline.cpp",
+   ]
++
++  if (enable_irtoc) {
++    libarkcompiler_sources += [
++      "optimizer/pipeline.cpp",
++    ]
++  }
+ }
+ 
+ libarkcompiler_sources += [ "$target_gen_dir/generated/inst_builder_gen.cpp" ]
+diff --git a/static_core/runtime/BUILD.gn b/static_core/runtime/BUILD.gn
+index cc9dfd62f..34ed5ea9b 100644
+--- a/static_core/runtime/BUILD.gn
++++ b/static_core/runtime/BUILD.gn
+@@ -428,11 +428,6 @@ ohos_static_library("libarkruntime_static") {
+ ohos_shared_library("libarkruntime") {
+   deps = [ ":libarkruntime_set_static" ]
+ 
+-  if (current_cpu == "amd64" || current_cpu == "x64" ||
+-      current_cpu == "x86_64") {
+-    ldflags = [ "-latomic" ]
+-  }
+-
+   output_extension = "so"
+   part_name = ark_part_name
+   subsystem_name = "$ark_subsystem_name"
+-- 
+2.34.1
+

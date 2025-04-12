@@ -1,0 +1,355 @@
+From 43cc7f40ce346be6c6ce2d53c35f5bc9a59de63e Mon Sep 17 00:00:00 2001
+From: Francesco Pham <francesco.pham1@h-partners.com>
+Date: Wed, 9 Apr 2025 16:22:30 +0200
+Subject: [PATCH] =?UTF-8?q?Revert=20"vdi=E8=A7=A3=E8=80=A6=E4=BB=A3?=
+ =?UTF-8?q?=E7=A0=81=E5=90=88=E5=85=A55.0.2"?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This reverts commit 28138f649cd81394d58f71344237b5f48cdff1d7.
+---
+ .../include/display_vdi_adapter_interface.h   | 159 ------------------
+ .../display_command/display_cmd_responser.h   |   3 +-
+ .../display_command/display_cmd_responser.h   |   2 +-
+ display/composer/v1_2/IDisplayComposer.idl    |  14 --
+ .../display_command/display_cmd_responser.h   |  32 +++-
+ .../v1_2/hdi_impl/display_composer_hdi_impl.h |   7 -
+ .../include/idisplay_composer_interface.h     |   2 -
+ 7 files changed, 26 insertions(+), 193 deletions(-)
+ delete mode 100644 display/composer/common/include/display_vdi_adapter_interface.h
+
+diff --git a/display/composer/common/include/display_vdi_adapter_interface.h b/display/composer/common/include/display_vdi_adapter_interface.h
+deleted file mode 100644
+index c63850a..0000000
+--- a/display/composer/common/include/display_vdi_adapter_interface.h
++++ /dev/null
+@@ -1,159 +0,0 @@
+-/*
+- * Copyright (c) 2024 Huawei Device Co., Ltd.
+- * Licensed under the Apache License, Version 2.0 )(the "License");
+- * you may not use this file except in compliance with the License.
+- * You may obtain a copy of the License at
+- *
+- *     http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software
+- * distributed under the License is distributed on an "AS IS" BASIS,
+- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- * See the License for the specific language governing permissions and
+- * limitations under the License.
+- */
+-
+-#ifndef OHOS_HDI_VDI_ADAPTER_INTERFACE_H
+-#define OHOS_HDI_VDI_ADAPTER_INTERFACE_H
+-
+-#include <vector>
+-#include <string>
+-#include "base/buffer_handle.h"
+-#include "v1_0/include/idisplay_composer_interface.h"
+-#include "v1_0/display_composer_type.h"
+-#include "v1_2/display_composer_type.h"
+-#include "v1_1/imode_callback.h"
+-#include "v1_1/iseamless_change_callback.h"
+-
+-namespace OHOS {
+-namespace HDI {
+-namespace Display {
+-namespace Composer {
+-using namespace OHOS::HDI::Display::Composer::V1_0;
+-using namespace OHOS::HDI::Display::Composer::V1_1;
+-using namespace OHOS::HDI::Display::Composer::V1_2;
+-struct DisplayComposerVdiAdapter {
+-    int32_t (*LoadVdiImpl)();
+-    int32_t (*DestroyVdiImpl)();
+-    int32_t (*RegHotPlugCallback)(HotPlugCallback cb, void* data);
+-    int32_t (*GetDisplayCapability)(uint32_t devId, DisplayCapability& info);
+-    int32_t (*GetDisplaySupportedModes)(uint32_t devId, std::vector<DisplayModeInfo>& modes);
+-    int32_t (*GetDisplayMode)(uint32_t devId, uint32_t& modeId);
+-    int32_t (*SetDisplayMode)(uint32_t devId, uint32_t modeId);
+-    int32_t (*GetDisplayPowerStatus)(uint32_t devId, V1_0::DispPowerStatus& status);
+-    int32_t (*SetDisplayPowerStatus)(uint32_t devId, V1_0::DispPowerStatus status);
+-    int32_t (*GetDisplayBacklight)(uint32_t devId, uint32_t& level);
+-    int32_t (*SetDisplayBacklight)(uint32_t devId, uint32_t level);
+-    int32_t (*GetDisplayProperty)(uint32_t devId, uint32_t id, uint64_t& value);
+-    int32_t (*GetDisplayCompChange)(uint32_t devId, std::vector<uint32_t>& layers, std::vector<int32_t>& types);
+-    int32_t (*SetDisplayClientCrop)(uint32_t devId, const IRect& rect);
+-    int32_t (*SetDisplayClientBuffer)(uint32_t devId, const BufferHandle& buffer, int32_t fence);
+-    int32_t (*SetDisplayClientDamage)(uint32_t devId, std::vector<IRect>& rects);
+-    int32_t (*SetDisplayVsyncEnabled)(uint32_t devId, bool enabled);
+-    int32_t (*RegDisplayVBlankCallback)(uint32_t devId, VBlankCallback cb, void* data);
+-    int32_t (*GetDisplayReleaseFence)(uint32_t devId, std::vector<uint32_t>& layers, std::vector<int32_t>& fences);
+-    int32_t (*CreateVirtualDisplay)(uint32_t width, uint32_t height, int32_t& format, uint32_t& devId);
+-    int32_t (*DestroyVirtualDisplay)(uint32_t devId);
+-    int32_t (*SetVirtualDisplayBuffer)(uint32_t devId, const BufferHandle& buffer, const int32_t fence);
+-    int32_t (*SetDisplayProperty)(uint32_t devId, uint32_t id, uint64_t value);
+-    int32_t (*Commit)(uint32_t devId, int32_t& fence);
+-    int32_t (*CreateLayer)(uint32_t devId, const LayerInfo& layerInfo, uint32_t& layerId);
+-    int32_t (*DestroyLayer)(uint32_t devId, uint32_t layerId);
+-    int32_t (*PrepareDisplayLayers)(uint32_t devId, bool& needFlushFb);
+-    int32_t (*SetLayerAlpha)(uint32_t devId, uint32_t layerId, const LayerAlpha& alpha);
+-    int32_t (*SetLayerRegion)(uint32_t devId, uint32_t layerId, const IRect& rect);
+-    int32_t (*SetLayerCrop)(uint32_t devId, uint32_t layerId, const IRect& rect);
+-    int32_t (*SetLayerZorder)(uint32_t devId, uint32_t layerId, uint32_t zorder);
+-    int32_t (*SetLayerPreMulti)(uint32_t devId, uint32_t layerId, bool preMul);
+-    int32_t (*SetLayerTransformMode)(uint32_t devId, uint32_t layerId, TransformType type);
+-    int32_t (*SetLayerDirtyRegion)(uint32_t devId, uint32_t layerId, const std::vector<IRect>& rects);
+-    int32_t (*SetLayerVisibleRegion)(uint32_t devId, uint32_t layerId, std::vector<IRect>& rects);
+-    int32_t (*SetLayerBuffer)(uint32_t devId, uint32_t layerId, const BufferHandle& buffer, int32_t fence);
+-    int32_t (*SetLayerCompositionType)(uint32_t devId, uint32_t layerId, V1_0::CompositionType type);
+-    int32_t (*SetLayerBlendType)(uint32_t devId, uint32_t layerId, BlendType type);
+-    int32_t (*SetLayerMaskInfo)(uint32_t devId, uint32_t layerId, const MaskInfo maskInfo);
+-    int32_t (*SetLayerColor)(uint32_t devId, uint32_t layerId, const LayerColor& layerColor);
+-    int32_t (*RegSeamlessChangeCallback)(SeamlessChangeCallback cb, void* data);
+-    int32_t (*GetDisplaySupportedModesExt)(uint32_t devId, std::vector<DisplayModeInfoExt>& modes);
+-    int32_t (*SetDisplayModeAsync)(uint32_t devId, uint32_t modeId, ModeCallback cb, void *data);
+-    int32_t (*GetDisplayVBlankPeriod)(uint32_t devId, uint64_t& period);
+-    int32_t (*SetLayerPerFrameParameter)(
+-        uint32_t devId, uint32_t layerId, const std::string& key, const std::vector<int8_t>& value);
+-    int32_t (*GetSupportedLayerPerFrameParameterKey)(std::vector<std::string>& keys);
+-    int32_t (*SetDisplayOverlayResolution)(uint32_t devId, uint32_t width, uint32_t height);
+-    int32_t (*RegRefreshCallback)(RefreshCallback cb, void* data);
+-    int32_t (*GetDisplaySupportedColorGamuts)(uint32_t devId, std::vector<ColorGamut>& gamuts);
+-    int32_t (*GetHDRCapabilityInfos)(uint32_t devId, HDRCapability& info);
+-    int32_t (*RegDisplayVBlankIdleCallback)(VBlankIdleCallback cb, void* data);
+-    int32_t (*SetDisplayConstraint)(uint32_t devId, uint64_t frameID, uint64_t ns, uint32_t type);
+-    int32_t (*SetHardwareCursorPosition)(uint32_t devId, int32_t x, int32_t y);
+-    int32_t (*EnableHardwareCursorStats)(uint32_t devId, bool enable);
+-    int32_t (*GetHardwareCursorStats)(uint32_t devId, uint32_t& frameCount, uint32_t& vsyncCount);
+-    int32_t (*SetDisplayActiveRegion)(uint32_t devId, const IRect& rect);
+-};
+-
+-using LoadVdiImplFunc = int32_t (*)();
+-using DestroyVdiImplFunc = int32_t (*)();
+-using RegHotPlugCallbackFunc = int32_t (*)(HotPlugCallback cb, void* data);
+-using GetDisplayCapabilityFunc = int32_t (*)(uint32_t devId, DisplayCapability& info);
+-using GetDisplaySupportedModesFunc = int32_t (*)(uint32_t devId, std::vector<DisplayModeInfo>& modes);
+-using GetDisplayModeFunc = int32_t (*)(uint32_t devId, uint32_t& modeId);
+-using SetDisplayModeFunc = int32_t (*)(uint32_t devId, uint32_t modeId);
+-using GetDisplayPowerStatusFunc = int32_t (*)(uint32_t devId, V1_0::DispPowerStatus& status);
+-using SetDisplayPowerStatusFunc = int32_t (*)(uint32_t devId, V1_0::DispPowerStatus status);
+-using GetDisplayBacklightFunc = int32_t (*)(uint32_t devId, uint32_t& level);
+-using SetDisplayBacklightFunc = int32_t (*)(uint32_t devId, uint32_t level);
+-using GetDisplayPropertyFunc = int32_t (*)(uint32_t devId, uint32_t id, uint64_t& value);
+-using GetDisplayCompChangeFunc = int32_t (*)(
+-    uint32_t devId, std::vector<uint32_t>& layers, std::vector<int32_t>& types);
+-using SetDisplayClientCropFunc = int32_t (*)(uint32_t devId, const IRect& rect);
+-using SetDisplayClientBufferFunc = int32_t (*)(uint32_t devId, const BufferHandle& buffer, int32_t fence);
+-using SetDisplayClientDamageFunc = int32_t (*)(uint32_t devId, std::vector<IRect>& rects);
+-using SetDisplayVsyncEnabledFunc = int32_t (*)(uint32_t devId, bool enabled);
+-using RegDisplayVBlankCallbackFunc = int32_t (*)(uint32_t devId, VBlankCallback cb, void* data);
+-using GetDisplayReleaseFenceFunc = int32_t (*)(
+-    uint32_t devId, std::vector<uint32_t>& layers, std::vector<int32_t>& fences);
+-using CreateVirtualDisplayFunc = int32_t (*)(uint32_t width, uint32_t height, int32_t& format, uint32_t& devId);
+-using DestroyVirtualDisplayFunc = int32_t (*)(uint32_t devId);
+-using SetVirtualDisplayBufferFunc = int32_t (*)(uint32_t devId, const BufferHandle& buffer, const int32_t fence);
+-using SetDisplayPropertyFunc = int32_t (*)(uint32_t devId, uint32_t id, uint64_t value);
+-using CommitFunc = int32_t (*)(uint32_t devId, int32_t& fence);
+-using CreateLayerFunc = int32_t (*)(uint32_t devId, const LayerInfo& layerInfo, uint32_t& layerId);
+-using DestroyLayerFunc = int32_t (*)(uint32_t devId, uint32_t layerId);
+-using PrepareDisplayLayersFunc = int32_t (*)(uint32_t devId, bool& needFlushFb);
+-using SetLayerAlphaFunc = int32_t (*)(uint32_t devId, uint32_t layerId, const LayerAlpha& alpha);
+-using SetLayerRegionFunc = int32_t (*)(uint32_t devId, uint32_t layerId, const IRect& rect);
+-using SetLayerCropFunc = int32_t (*)(uint32_t devId, uint32_t layerId, const IRect& rect);
+-using SetLayerZorderFunc = int32_t (*)(uint32_t devId, uint32_t layerId, uint32_t zorder);
+-using SetLayerPreMultiFunc = int32_t (*)(uint32_t devId, uint32_t layerId, bool preMul);
+-using SetLayerTransformModeFunc = int32_t (*)(uint32_t devId, uint32_t layerId, TransformType type);
+-using SetLayerDirtyRegionFunc = int32_t (*)(uint32_t devId, uint32_t layerId, const std::vector<IRect>& rects);
+-using SetLayerVisibleRegionFunc = int32_t (*)(uint32_t devId, uint32_t layerId, std::vector<IRect>& rects);
+-using SetLayerBufferFunc = int32_t (*)(uint32_t devId, uint32_t layerId, const BufferHandle& buffer, int32_t fence);
+-using SetLayerCompositionTypeFunc = int32_t (*)(uint32_t devId, uint32_t layerId, V1_0::CompositionType type);
+-using SetLayerBlendTypeFunc = int32_t (*)(uint32_t devId, uint32_t layerId, BlendType type);
+-using SetLayerMaskInfoFunc = int32_t (*)(uint32_t devId, uint32_t layerId, const MaskInfo maskInfo);
+-using SetLayerColorFunc = int32_t (*)(uint32_t devId, uint32_t layerId, const LayerColor& layerColor);
+-using RegSeamlessChangeCallbackFunc = int32_t (*)(SeamlessChangeCallback cb, void* data);
+-using GetDisplaySupportedModesExtFunc = int32_t (*)(uint32_t devId, std::vector<DisplayModeInfoExt>& modes);
+-using SetDisplayModeAsyncFunc = int32_t (*)(uint32_t devId, uint32_t modeId, ModeCallback cb, void *data);
+-using GetDisplayVBlankPeriodFunc = int32_t (*)(uint32_t devId, uint64_t& period);
+-using SetLayerPerFrameParameterFunc = int32_t (*)(
+-    uint32_t devId, uint32_t layerId, const std::string& key, const std::vector<int8_t>& value);
+-using GetSupportedLayerPerFrameParameterKeyFunc = int32_t (*)(std::vector<std::string>& keys);
+-using SetDisplayOverlayResolutionFunc = int32_t (*)(uint32_t devId, uint32_t width, uint32_t height);
+-using RegRefreshCallbackFunc = int32_t (*)(RefreshCallback cb, void* data);
+-using GetDisplaySupportedColorGamutsFunc = int32_t (*)(uint32_t devId, std::vector<ColorGamut>& gamuts);
+-using GetHDRCapabilityInfosFunc = int32_t (*)(uint32_t devId, HDRCapability& info);
+-using RegDisplayVBlankIdleCallbackFunc = int32_t (*)(VBlankIdleCallback cb, void* data);
+-using SetDisplayConstraintFunc = int32_t (*)(uint32_t devId, uint64_t frameID, uint64_t ns, uint32_t type);
+-using SetHardwareCursorPositionFunc = int32_t (*)(uint32_t devId, int32_t x, int32_t y);
+-using EnableHardwareCursorStatsFunc = int32_t (*)(uint32_t devId, bool enable);
+-using GetHardwareCursorStatsFunc = int32_t (*)(uint32_t devId, uint32_t& frameCount, uint32_t& vsyncCount);
+-using SetDisplayActiveRegionFunc = int32_t (*)(uint32_t devId, const IRect& rect);
+-
+-} // namespace Composer
+-} // namespace Display
+-} // namespace HDI
+-} // namespace OHOS
+-#endif // OHOS_HDI_VDI_ADAPTER_INTERFACE_H
+diff --git a/display/composer/v1_0/display_command/display_cmd_responser.h b/display/composer/v1_0/display_command/display_cmd_responser.h
+index f07f3c4..efa0cf3 100755
+--- a/display/composer/v1_0/display_command/display_cmd_responser.h
++++ b/display/composer/v1_0/display_command/display_cmd_responser.h
+@@ -39,7 +39,6 @@
+ #include "parameter.h"
+ #include "v1_0/display_composer_type.h"
+ #include "v1_0/mapper_stub.h"
+-#include "common/include/display_vdi_adapter_interface.h"
+ 
+ #define DISPLAY_TRACE HdfTrace trace(__func__, "HDI:DISP:")
+ 
+@@ -1139,7 +1138,7 @@ protected:
+     std::mutex requestMutex_;
+     std::mutex replyMutex_;
+ };
+-using HdiDisplayCmdResponser = DisplayCmdResponser<SharedMemQueue<int32_t>, DisplayComposerVdiAdapter>;
++using HdiDisplayCmdResponser = DisplayCmdResponser<SharedMemQueue<int32_t>, IDisplayComposerVdi>;
+ } // namespace V1_0
+ } // namespace Composer
+ } // namespace Display
+diff --git a/display/composer/v1_1/display_command/display_cmd_responser.h b/display/composer/v1_1/display_command/display_cmd_responser.h
+index e8dc17d..63bc8c5 100644
+--- a/display/composer/v1_1/display_command/display_cmd_responser.h
++++ b/display/composer/v1_1/display_command/display_cmd_responser.h
+@@ -47,7 +47,7 @@ public:
+ private:
+     using BaseType1_0 = V1_0::DisplayCmdResponser<Transfer, VdiImpl>;
+ };
+-using HdiDisplayCmdResponser = DisplayCmdResponser<SharedMemQueue<int32_t>, DisplayComposerVdiAdapter>;
++using HdiDisplayCmdResponser = DisplayCmdResponser<SharedMemQueue<int32_t>, IDisplayComposerVdi>;
+ } // namespace V1_1
+ } // namespace Composer
+ } // namespace Display
+diff --git a/display/composer/v1_2/IDisplayComposer.idl b/display/composer/v1_2/IDisplayComposer.idl
+index 974c8ea..6c69079 100644
+--- a/display/composer/v1_2/IDisplayComposer.idl
++++ b/display/composer/v1_2/IDisplayComposer.idl
+@@ -16,7 +16,6 @@
+ package ohos.hdi.display.composer.v1_2;
+ 
+ import ohos.hdi.display.composer.v1_1.IDisplayComposer;
+-import ohos.hdi.display.composer.v1_0.DisplayComposerType;
+ import ohos.hdi.display.composer.v1_2.DisplayComposerType;
+ import ohos.hdi.display.composer.v1_2.IVBlankIdleCallback;
+ 
+@@ -95,17 +94,4 @@ interface IDisplayComposer extends ohos.hdi.display.composer.v1_1.IDisplayCompos
+      * @version 1.0
+      */
+     GetHardwareCursorStats([in] unsigned int devId, [out] unsigned int frameCount, [out] unsigned int vsyncCount);
+-
+-     /**
+-     * @brief Set Display Active Region.
+-     *
+-     * @param devId Indicates the ID of the display device.
+-     * @param rect Indicates the pointer to the cropped region of the client buffer.
+-     *
+-     * @return Returns <b>0</b> if the operation is successful; returns an error code defined
+-     * in {@link DispErrCode} otherwise.
+-     * @since 5.0
+-     * @version 1.2
+-     */
+-     SetDisplayActiveRegion([in] unsigned int devId, [in] struct IRect rect);
+ }
+diff --git a/display/composer/v1_2/display_command/display_cmd_responser.h b/display/composer/v1_2/display_command/display_cmd_responser.h
+index eec0cfb..4be0dc8 100644
+--- a/display/composer/v1_2/display_command/display_cmd_responser.h
++++ b/display/composer/v1_2/display_command/display_cmd_responser.h
+@@ -40,7 +40,7 @@ typedef struct CommitInfo {
+     std::vector<int32_t> fences;
+ } CommitInfo;
+ 
+-template <typename Transfer, typename VdiImpl>
++template <typename Transfer, typename VdiImpl, typename VdiImpl1_1>
+ class DisplayCmdResponser : public V1_1::DisplayCmdResponser<Transfer, VdiImpl> {
+ public:
+     static std::unique_ptr<DisplayCmdResponser> Create(VdiImpl* impl, std::shared_ptr<DeviceCacheManager> cacheMgr)
+@@ -52,8 +52,23 @@ public:
+         return std::make_unique<DisplayCmdResponser>(impl, cacheMgr);
+     }
+ 
++    static std::unique_ptr<DisplayCmdResponser> CreateV1_1(
++        VdiImpl1_1* impl, std::shared_ptr<DeviceCacheManager> cacheMgr)
++    {
++        DISPLAY_CHK_RETURN(impl == nullptr, nullptr,
++            HDF_LOGE("%{public}s: error, VdiImpl is nullptr", __func__));
++        DISPLAY_CHK_RETURN(cacheMgr == nullptr, nullptr,
++            HDF_LOGE("%{public}s: error, VdiImpl is nullptr", __func__));
++        return std::make_unique<DisplayCmdResponser>(cacheMgr, impl);
++    }
++
+     DisplayCmdResponser(VdiImpl* impl, std::shared_ptr<DeviceCacheManager> cacheMgr) : BaseType1_1(impl, cacheMgr) {}
+ 
++    DisplayCmdResponser(std::shared_ptr<DeviceCacheManager> cacheMgr, VdiImpl1_1* impl)
++        : BaseType1_1(impl, cacheMgr),
++          vdiImpl1_1_(impl)
++        {}
++
+     virtual ~DisplayCmdResponser() {}
+ 
+     int32_t ProcessRequestCmd(CommandDataUnpacker& unpacker, int32_t cmd,
+@@ -299,13 +314,10 @@ REPLY:
+         ret = unpacker.ReadUint32(type) ? HDF_SUCCESS : HDF_FAILURE;
+         DISPLAY_CHECK(ret != HDF_SUCCESS, goto EXIT);
+ 
+-        if (impl_ != nullptr && impl_->SetDisplayConstraint != nullptr) {
+-            ret = impl_->SetDisplayConstraint(devId, frameID, ns, type);
+-        }
+-
+-        if (ret != HDF_SUCCESS && ret != DISPLAY_NOT_SUPPORT && ret != HDF_ERR_NOT_SUPPORT) {
+-            HDF_LOGE("SetDisplayConstraint failed with ret = %{public}d", ret);
++        if (vdiImpl1_1_ != nullptr) {
++            ret = vdiImpl1_1_->SetDisplayConstraint(devId, frameID, ns, type);
+         }
++        DISPLAY_CHECK(ret != HDF_SUCCESS && ret != DISPLAY_NOT_SUPPORT && ret != HDF_ERR_NOT_SUPPORT, goto EXIT);
+ EXIT:
+         if (ret != HDF_SUCCESS) {
+             errMaps_.emplace(REQUEST_CMD_SET_DISPLAY_CONSTRAINT, ret);
+@@ -341,11 +353,15 @@ private:
+     using BaseType1_1::OnSetLayerMaskInfo;
+     using BaseType1_1::OnRequestEnd;
+     using BaseType1_1::OnSetLayerColor;
++    VdiImpl1_1* vdiImpl1_1_ = nullptr;
+     using BaseType1_1::requestMutex_;
+     using BaseType1_1::replyMutex_;
+ };
+ 
+-using HdiDisplayCmdResponser = DisplayCmdResponser<SharedMemQueue<int32_t>, DisplayComposerVdiAdapter>;
++using HdiDisplayCmdResponser =
++    DisplayCmdResponser<SharedMemQueue<int32_t>, IDisplayComposerVdi, IDisplayComposerVdiV1_1>;
++using HdiDisplayCmdResponser_1_1 =
++    DisplayCmdResponser<SharedMemQueue<int32_t>, IDisplayComposerVdi, IDisplayComposerVdiV1_1>;
+ } // namespace V1_2
+ } // namespace Composer
+ } // namespace Display
+diff --git a/display/composer/v1_2/hdi_impl/display_composer_hdi_impl.h b/display/composer/v1_2/hdi_impl/display_composer_hdi_impl.h
+index 9d6889e..b6201f8 100644
+--- a/display/composer/v1_2/hdi_impl/display_composer_hdi_impl.h
++++ b/display/composer/v1_2/hdi_impl/display_composer_hdi_impl.h
+@@ -147,13 +147,6 @@ public:
+         return ret;
+     }
+ 
+-    virtual int32_t SetDisplayActiveRegion(uint32_t devId, const IRect& rect) override
+-    {
+-        COMPOSER_CHECK_NULLPTR_RETURN(hdi_v1_2_);
+-        int32_t ret = ToDispErrCode(hdi_v1_2_->SetDisplayActiveRegion(devId, rect));
+-        return ret;
+-    }
+-
+ protected:
+     using BaseType1_1 = V1_1::DisplayComposerHdiImpl<Interface, CompHdi, CmdReq>;
+     using BaseType1_1::WAIT_TIME_INTERVAL;
+diff --git a/display/composer/v1_2/include/idisplay_composer_interface.h b/display/composer/v1_2/include/idisplay_composer_interface.h
+index b97b984..5a6252b 100644
+--- a/display/composer/v1_2/include/idisplay_composer_interface.h
++++ b/display/composer/v1_2/include/idisplay_composer_interface.h
+@@ -71,8 +71,6 @@ public:
+     virtual int32_t EnableHardwareCursorStats(uint32_t devId, bool enable) = 0;
+ 
+     virtual int32_t GetHardwareCursorStats(uint32_t devId, uint32_t& frameCount, uint32_t& vsyncCount) = 0;
+-
+-    virtual int32_t SetDisplayActiveRegion(uint32_t devId, const IRect& rect) = 0;
+ };
+ } // V1_2
+ } // Composer
+-- 
+2.43.0
+
