@@ -1,0 +1,13 @@
+diff --git a/frameworks/kits/js/common/picture_ndk/BUILD.gn b/frameworks/kits/js/common/picture_ndk/BUILD.gn
+index 7bdcc152..be82066c 100644
+--- a/frameworks/kits/js/common/picture_ndk/BUILD.gn
++++ b/frameworks/kits/js/common/picture_ndk/BUILD.gn
+@@ -92,7 +92,7 @@ ohos_shared_library("picture") {
+   ]
+ 
+   if (enable_libexif) {
+-    external_deps = [ "libexif:libexif" ]
++    external_deps = [ "libexif:libexif", "hilog:libhilog" ]
+   }
+   innerapi_tags = [ "ndk" ]
+   subsystem_name = "multimedia"
