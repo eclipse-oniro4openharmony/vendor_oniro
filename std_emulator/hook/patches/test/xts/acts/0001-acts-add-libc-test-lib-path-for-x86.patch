@@ -1,0 +1,32 @@
+From ab6cea1b24ddb8a7cf8668a694ce3946f1729509 Mon Sep 17 00:00:00 2001
+From: "Pan, Kris" <kris.pan@intel.com>
+Date: Fri, 29 Mar 2024 04:32:52 +0000
+Subject: [PATCH 1/5] acts: add libc-test-lib path for x86
+
+Signed-off-by: Pan, Kris <kris.pan@intel.com>
+---
+ commonlibrary/toolchain/BUILD.gn | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/commonlibrary/toolchain/BUILD.gn b/commonlibrary/toolchain/BUILD.gn
+index 4e48639823..a4ee31f951 100644
+--- a/commonlibrary/toolchain/BUILD.gn
++++ b/commonlibrary/toolchain/BUILD.gn
+@@ -107,11 +107,11 @@ action("tar_dllib") {
+       "./libc-test-lib",
+     ]
+   } else {
+-    _outputs = [ "" ]
++    _outputs = [ "$target_out_dir/libc-test-lib.tar" ]
+     outputs = _outputs
+ 
+-    input_path = rebase_path("")
+-    output_path = rebase_path("")
++    input_path = rebase_path("$dllib_path/musl/libc-test-lib")
++    output_path = rebase_path("$dllib_path/suites/acts/acts/testcases/libc-test-lib.tar")
+     print("root_build_dir-49", root_build_dir)
+     args = [
+       "--input_path",
+-- 
+2.43.2
+

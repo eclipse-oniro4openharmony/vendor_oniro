@@ -1,0 +1,26 @@
+From db91515384520e620a86412df95564fe11075dcf Mon Sep 17 00:00:00 2001
+From: yoiannis <7485109+yoainnis@user.noreply.gitee.com>
+Date: Thu, 30 Jan 2025 22:45:44 +0800
+Subject: [PATCH] tcp hdc
+
+Change-Id: I2ed586464af8ceb59a8905417b808b03e2dff1ae
+---
+ src/daemon/main.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/daemon/main.cpp b/src/daemon/main.cpp
+index 82e3e17..c30cfaa 100644
+--- a/src/daemon/main.cpp
++++ b/src/daemon/main.cpp
+@@ -27,7 +27,7 @@ static bool g_enableUsb = false;
+ #ifdef HDC_SUPPORT_UART
+ static bool g_enableUart = false;
+ #endif
+-static bool g_enableTcp = false;
++static bool g_enableTcp = true;
+ #ifdef HDC_EMULATOR
+ static bool g_enableBridge = false;
+ #endif
+-- 
+2.34.1
+

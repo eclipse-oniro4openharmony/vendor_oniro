@@ -1,0 +1,28 @@
+From 9375514dfd30a6a8474d9316915b33659ffc5228 Mon Sep 17 00:00:00 2001
+From: "Pan, Kris" <kris.pan@intel.com>
+Date: Fri, 29 Mar 2024 04:35:03 +0000
+Subject: [PATCH 3/5] acts: add correct libc++ path to camera_ndk_test
+
+Signed-off-by: Pan, Kris <kris.pan@intel.com>
+---
+ multimedia/camera/camera_ndk_test/BUILD.gn                     | 2 +-
+ multimedia/camera/camera_ndk_test/src/main/cpp/BUILD.gn        | 3 ++-
+ .../camera/camera_ndk_test/src/main/cpp/camera_manager_ndk.h   | 2 +-
+ 3 files changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/multimedia/image/image_js_standard/imageReceiverNDK/BUILD.gn b/multimedia/image/image_js_standard/imageReceiverNDK/BUILD.gn
+index e4f2780a9a..9cae46930e 100644
+--- a/multimedia/image/image_js_standard/imageReceiverNDK/BUILD.gn
++++ b/multimedia/image/image_js_standard/imageReceiverNDK/BUILD.gn
+@@ -39,7 +39,7 @@ ohos_prebuilt_shared_library("libcppso") {
+   if (target_cpu == "arm") {
+     source = "${clang_base_path}/../llvm/lib/arm-linux-ohos/libc++.so"
+   } else if (target_cpu == "x86_64") {
+-    source = "${clang_base_path}/../llvm/lib/x86_64-unknown-linux-gnu/libc++.so"
++    source = "${clang_base_path}/../llvm/lib/x86_64-linux-ohos/libc++.so"
+   } else {
+     source = "${clang_base_path}/../llvm/lib/aarch64-linux-ohos/libc++.so"
+   }
+-- 
+2.43.2
+

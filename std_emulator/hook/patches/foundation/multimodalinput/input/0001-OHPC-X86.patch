@@ -1,0 +1,28 @@
+From 706e672d6cb7fa4b43501610ef10bedf51c550ff Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E8=B4=BA=E5=B0=8F=E5=B8=85?= <hxsjs@qq.com>
+Date: Mon, 28 Oct 2024 17:23:11 +0800
+Subject: [PATCH] OHPC X86.
+
+Change-Id: Ic68e77f0486c9745e4eb9f4a69473a1d86e616b1
+---
+ .../mouse_event_normalize/src/mouse_transform_processor.cpp   | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/service/mouse_event_normalize/src/mouse_transform_processor.cpp b/service/mouse_event_normalize/src/mouse_transform_processor.cpp
+index bed6e77e2..d75deb167 100644
+--- a/service/mouse_event_normalize/src/mouse_transform_processor.cpp
++++ b/service/mouse_event_normalize/src/mouse_transform_processor.cpp
+@@ -130,10 +130,6 @@ int32_t MouseTransformProcessor::HandleMotionInner(struct libinput_event_pointer
+         MMI_HILOGE("Failed to handle motion correction");
+         return ret;
+     }
+-#ifdef OHOS_BUILD_EMULATOR
+-    cursorPos.cursorPos.x = offset.dx;
+-    cursorPos.cursorPos.y = offset.dy;
+-#endif // OHOS_BUILD_EMULATOR
+     WIN_MGR->UpdateAndAdjustMouseLocation(cursorPos.displayId, cursorPos.cursorPos.x, cursorPos.cursorPos.y);
+     pointerEvent_->SetTargetDisplayId(cursorPos.displayId);
+     MMI_HILOGD("Change coordinate: x:%.2f, y:%.2f, currentDisplayId:%d",
+-- 
+2.34.1
+
