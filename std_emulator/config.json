@@ -1,6 +1,6 @@
 {
     "product_name": "std_emulator",
-    "device_company": "vortexnova",
+    "device_company": "oniro",
     "device_build_path": "device/board/oniro/std_emulator",
     "target_cpu": "x86_64",
     "type": "standard",
@@ -64,6 +64,10 @@
       {
         "subsystem": "hdf",
         "components": [
+          {
+            "component": "drivers_interface_bluetooth",
+            "features": []
+          },
           {
             "component": "drivers_interface_audio",
             "features": []
@@ -135,8 +139,7 @@
             "features": [
               "wifi_feature_non_seperate_p2p = true",
               "wifi_feature_non_hdf_driver = true",
-              "wifi_feature_p2p_random_mac_addr = false",
-              "wifi_feature_with_hdi_chip_supported = false"
+              "wifi_feature_p2p_random_mac_addr = false"
            ]
           }
         ]
