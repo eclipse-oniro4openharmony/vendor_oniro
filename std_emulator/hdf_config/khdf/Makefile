@@ -64,4 +64,6 @@ $(CONFIG_GEN_SRCS): $(CONFIG_OUT_DIR)%.c: $(HCS_DIR)/%.hcs | $(HC_GEN)
 $(HC_GEN):
 	$(HIDE)make -C $(HC_GEN_DIR) BUILD_DIR=$(dir $@)
 
+$(shell mkdir -p $(obj))
+$(shell touch $(obj)/.hdf_hcs_hex.o.cmd)
 obj-$(CONFIG_DRIVERS_HDF) += $(HCS_OBJ)

@@ -127,6 +127,20 @@
                     serviceName = "usb_interface_service";
                     deviceMatchAttr = "usb_device_interface_driver";
                 }
+                device1 :: deviceNode {
+                    policy = 2;
+                    priority = 100;
+                    moduleName = "libusb_device_driver.z.so";
+                    serviceName = "usb_device_interface_service";
+                    deviceMatchAttr = "usb_device_interface_driver";
+                }
+                device2 :: deviceNode {
+                    policy = 2;
+                    priority = 100;
+                    moduleName = "libusb_port_driver.z.so";
+                    serviceName = "usb_port_interface_service";
+                    deviceMatchAttr = "usb_device_interface_driver";
+                }
             }
             ddk_device :: device {
                 device0 :: deviceNode {
@@ -134,6 +148,22 @@
                     priority = 100;
                     moduleName = "libusb_ddk_driver.z.so";
                     serviceName = "usb_ddk_service";
+                }
+            }
+            usb_serial_device :: device {
+                device0 :: deviceNode {
+                    policy = 2;
+                    priority = 100;
+                    moduleName = "libusb_serial_ddk_driver.z.so";
+                    serviceName = "usb_serial_ddk_service";
+                }
+            }
+            scsi_device :: device {
+                device0 :: deviceNode {
+                    policy = 2;
+                    priority = 100;
+                    moduleName = "libscsi_ddk_driver.z.so";
+                    serviceName = "scsi_peripheral_ddk_service";
                 }
             }
         }
@@ -179,6 +209,14 @@
                     priority = 100;
                     moduleName = "libwifi_hdi_c_device.z.so";
                     serviceName = "wlan_interface_service";
+                }
+            }
+            wifi_chip_device :: device {
+                device0 :: deviceNode {
+                    policy = 2;
+                    priority = 100;
+                    moduleName = "libchip_hdi_driver.z.so";
+                    serviceName = "chip_interface_service";
                 }
             }
         }
