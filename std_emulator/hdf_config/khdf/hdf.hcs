@@ -1,4 +1,5 @@
+#include "device_info/device_info.hcs"
 
 root {
-    module = "amlogic,a311d_chip";
+    module = "x86,x86_chip";
 }

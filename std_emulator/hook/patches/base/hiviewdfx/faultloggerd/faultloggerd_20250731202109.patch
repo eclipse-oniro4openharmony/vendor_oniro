@@ -1,0 +1,12 @@
+diff --git a/interfaces/innerkits/unwinder/libunwinder.map b/interfaces/innerkits/unwinder/libunwinder.map
+index aabf9b54..9336d705 100644
+--- a/interfaces/innerkits/unwinder/libunwinder.map
++++ b/interfaces/innerkits/unwinder/libunwinder.map
+@@ -84,6 +84,7 @@
+       "vtable for OHOS::HiviewDFX::DfxRegsArm";
+       "vtable for OHOS::HiviewDFX::DfxRegsArm64";
+       "vtable for OHOS::HiviewDFX::DfxRegsRiscv64";
++      "vtable for OHOS::HiviewDFX::DfxRegsX86_64";
+       "vtable for OHOS::HiviewDFX::DfxRegsLoongArch64";
+       OHOS::HiviewDFX::DfxFrameFormatter::GetFrameStr*;
+       OHOS::HiviewDFX::DfxFrameFormatter::GetFramesStr*;

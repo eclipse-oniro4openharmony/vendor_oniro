@@ -1,0 +1,13 @@
+diff --git a/core/param_update/src/log_sign_tools.cpp b/core/param_update/src/log_sign_tools.cpp
+index 46a78402..d46d8380 100644
+--- a/core/param_update/src/log_sign_tools.cpp
++++ b/core/param_update/src/log_sign_tools.cpp
+@@ -117,7 +117,7 @@ std::string LogSignTools::CalcFileSha256Digest(const std::string &fpath)
+ 
+ void LogSignTools::CalcBase64(uint8_t *input, uint32_t inputLen, std::string &encodedStr)
+ {
+-    size_t base64Len = static_cast<size_t>(ceil(static_cast<long double>(inputLen) / BASE64_ENCODE_PACKET_LEN) *
++    size_t base64Len = static_cast<size_t>(ceil(static_cast<double>(inputLen) / BASE64_ENCODE_PACKET_LEN) *
+     BASE64_ENCODE_LEN_OF_EACH_GROUP_DATA + 1);
+     std::unique_ptr<unsigned char[]> base64Str = std::make_unique<unsigned char[]>(base64Len);
+     size_t outLen = static_cast<size_t>(EVP_EncodeBlock(reinterpret_cast<uint8_t *>(base64Str.get()),
