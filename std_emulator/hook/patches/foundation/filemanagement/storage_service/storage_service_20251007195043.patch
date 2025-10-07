@@ -1,13 +1,15 @@
 diff --git a/storage_service_aafwk.gni b/storage_service_aafwk.gni
-index 664413be..7af297e2 100644
+index dbde16ab..fa56dc8f 100644
 --- a/storage_service_aafwk.gni
 +++ b/storage_service_aafwk.gni
-@@ -41,7 +41,7 @@ declare_args() {
+@@ -39,8 +39,8 @@ declare_args() {
                                 defined(global_parts_info.thirdparty_libusb) &&
                                 defined(global_parts_info.thirdparty_libfuse)
  
 -  enable_tee_client = !is_emulator
+-  enable_huks_hdi = !is_emulator
 +  enable_tee_client = !is_emulator && product_name != "std_emulator"
++  enable_huks_hdi = !is_emulator && product_name != "std_emulator"
  }
  
  storage_manager_path =

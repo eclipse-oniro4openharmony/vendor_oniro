@@ -1,5 +1,5 @@
 diff --git a/display/composer/v1_0/DisplayComposerType.idl b/display/composer/v1_0/DisplayComposerType.idl
-index fce5368..0b77902 100644
+index fce53686..0b77902a 100644
 --- a/display/composer/v1_0/DisplayComposerType.idl
 +++ b/display/composer/v1_0/DisplayComposerType.idl
 @@ -92,6 +92,7 @@ enum PixelFormat {

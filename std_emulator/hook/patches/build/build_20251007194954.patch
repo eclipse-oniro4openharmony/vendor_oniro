@@ -1,5 +1,5 @@
 diff --git a/config/BUILDCONFIG.gn b/config/BUILDCONFIG.gn
-index 151f2edd..a038a959 100755
+index dcdca670..a978e988 100755
 --- a/config/BUILDCONFIG.gn
 +++ b/config/BUILDCONFIG.gn
 @@ -373,8 +373,7 @@ is_wearable_product = "${target_platform}" == "wearable"
@@ -47,13 +47,13 @@ index d0ebca52..0ddb0f4d 100755
      os.symlink('/system/lib', os.path.join(root_dir, 'lib'))
  
 diff --git a/subsystem_config.json b/subsystem_config.json
-index 8cbaee1e..42ccfb8b 100644
+index 8ec9514f..69612ec8 100644
 --- a/subsystem_config.json
 +++ b/subsystem_config.json
-@@ -222,5 +222,9 @@
-   "llvmproject": {
-     "path": "toolchain/llvm-project",
-     "name": "llvmproject"
+@@ -226,5 +226,9 @@
+   "sdk": {
+     "path": "interface/sdk-js",
+     "name": "sdk"
 +  },
 +  "oniro_soc_products": {
 +    "path": "device/soc/oniro",
