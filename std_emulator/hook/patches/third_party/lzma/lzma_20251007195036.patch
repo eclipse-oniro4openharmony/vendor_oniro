@@ -1,8 +1,8 @@
 diff --git a/BUILD.gn b/BUILD.gn
-index 00f7708..e15f65a 100644
+index 6c471c7..e032da6 100644
 --- a/BUILD.gn
 +++ b/BUILD.gn
-@@ -69,6 +69,17 @@ ohos_source_set("lzma_source_arm64") {
+@@ -68,6 +68,17 @@ ohos_source_set("lzma_source_arm64") {
    sources += arm64_asm_source
  }
  
@@ -20,14 +20,14 @@ index 00f7708..e15f65a 100644
  # on host
  ohos_source_set("lzma_source_x86_host") {
    configs = [
-@@ -127,7 +138,9 @@ ohos_shared_library("lzma_shared") {
+@@ -126,7 +137,10 @@ ohos_shared_library("lzma_shared") {
      deps = [ ":lzma_source_arm64" ]
    } else if (target_cpu == "riscv64") {
      deps = [ ":lzma_source_riscv64" ]
--  }
 +  } else if (target_cpu == "x86_64") {
 +    deps = [ ":lzma_source_x86" ]
-+   }
+   }
++  
    innerapi_tags = [
-     "chipsetsdk_indirect",
+     "chipsetsdk_sp_indirect",
      "platformsdk_indirect",
