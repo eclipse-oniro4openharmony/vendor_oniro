@@ -16,22 +16,22 @@ index d10868e..e1940a6 100644
  #endif
  
 diff --git a/device/plugins/native_hook/BUILD.gn b/device/plugins/native_hook/BUILD.gn
-index a802003..0b5ca93 100644
+index 0d64a43..233714a 100644
 --- a/device/plugins/native_hook/BUILD.gn
 +++ b/device/plugins/native_hook/BUILD.gn
-@@ -42,6 +42,11 @@ ohos_source_set("native_hook_source") {
+@@ -43,6 +43,11 @@ ohos_source_set("native_hook_source") {
      "src/sampling.cpp",
      "src/stack_writer.cpp",
    ]
 +
 +  if (target_cpu == "x86_64") {
-+    sources += ["//base/hiviewdfx/faultloggerd/interfaces/innerkits/unwinder/getcontext_x86_64.S"]
++    sources += ["//base/hiviewdfx/faultloggerd/interfaces/innerkits/unwinder/src/registers/getcontext_x86_64.S"]
 +  }
 +
    include_dirs = [
      "./include",
      "../api/include",
-@@ -96,6 +101,9 @@ ohos_shared_library("native_hook") {
+@@ -98,6 +103,9 @@ ohos_shared_library("native_hook") {
      defines = [ "HAVE_HILOG" ]
      external_deps = [ "hilog:libhilog_base" ]
    }
@@ -42,7 +42,7 @@ index a802003..0b5ca93 100644
    install_enable = true
    subsystem_name = "${OHOS_PROFILER_SUBSYS_NAME}"
 diff --git a/device/services/ipc/include/socket_context.h b/device/services/ipc/include/socket_context.h
-index eff0438..60e3d60 100644
+index d16cd4a..4e68548 100644
 --- a/device/services/ipc/include/socket_context.h
 +++ b/device/services/ipc/include/socket_context.h
 @@ -25,6 +25,8 @@

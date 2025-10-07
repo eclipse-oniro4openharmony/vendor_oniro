@@ -1,5 +1,5 @@
 diff --git a/mindspore-src/source/mindspore/ccsrc/plugin/device/cpu/kernel/nnacl/BUILD.gn b/mindspore-src/source/mindspore/ccsrc/plugin/device/cpu/kernel/nnacl/BUILD.gn
-index b4441847..9ca5366a 100644
+index 6b803e42..deeff094 100644
 --- a/mindspore-src/source/mindspore/ccsrc/plugin/device/cpu/kernel/nnacl/BUILD.gn
 +++ b/mindspore-src/source/mindspore/ccsrc/plugin/device/cpu/kernel/nnacl/BUILD.gn
 @@ -58,7 +58,7 @@ config("nnacl_public_config") {
@@ -11,16 +11,7 @@ index b4441847..9ca5366a 100644
        cflags_c += [ "-mavx512f" ]
        defines += [ "ENABLE_AVX512" ]
      }
-@@ -789,7 +789,7 @@ sse_avx_avx512_sources = [
- ]
- 
- # only x86_64 real machine support avx512
--if (target_cpu == "x86_64" && !is_emulator) {
-+if (target_cpu == "x86_64" && !is_emulator && product_name != "std_emulator") {
-   sse_avx_avx512_sources += [ "assembly/avx512/ConvDwFp32RowAVX512.S" ]
- }
- 
-@@ -926,7 +926,7 @@ x86_64_only_sources = sse_avx_avx512_sources
+@@ -927,7 +927,7 @@ x86_64_only_sources = sse_avx_avx512_sources
  x86_64_only_sources += avx_fp32_kernel_sources
  
  # emulator not support avx512
@@ -30,7 +21,7 @@ index b4441847..9ca5366a 100644
    not_needed(gemm_avx512_kernel_sources)
    not_needed(gemm_mask_avx512_kernel_sources)
 diff --git a/mindspore-src/source/mindspore/lite/BUILD.gn b/mindspore-src/source/mindspore/lite/BUILD.gn
-index ef21bd1d..be38d1f8 100644
+index cafc7f22..4ec06706 100644
 --- a/mindspore-src/source/mindspore/lite/BUILD.gn
 +++ b/mindspore-src/source/mindspore/lite/BUILD.gn
 @@ -340,7 +340,7 @@ all_sources += missing_sources
@@ -42,7 +33,7 @@ index ef21bd1d..be38d1f8 100644
    SUPPORT_NNRT = true
  }
  
-@@ -408,7 +408,7 @@ ohos_shared_library("mindspore_lib") {
+@@ -430,7 +430,7 @@ ohos_shared_library("mindspore_lib") {
      ]
  
      # emulator not support avx512
@@ -52,7 +43,7 @@ index ef21bd1d..be38d1f8 100644
      }
    }
 diff --git a/mindspore-src/source/mindspore/lite/src/litert/kernel/cpu/BUILD.gn b/mindspore-src/source/mindspore/lite/src/litert/kernel/cpu/BUILD.gn
-index 1ddb7ca4..73b265a9 100644
+index 3ee357f6..8fb221d7 100644
 --- a/mindspore-src/source/mindspore/lite/src/litert/kernel/cpu/BUILD.gn
 +++ b/mindspore-src/source/mindspore/lite/src/litert/kernel/cpu/BUILD.gn
 @@ -249,7 +249,7 @@ control_kernel_sources = [
@@ -64,7 +55,7 @@ index 1ddb7ca4..73b265a9 100644
    cpu_kernel_sources += [
      "fp32/convolution_im2col_avx512_fp32.cc",
      "fp32/matmul_fp32_avx512.cc",
-@@ -339,7 +339,7 @@ ohos_source_set("cpu_kernel_obj") {
+@@ -342,7 +342,7 @@ ohos_source_set("cpu_kernel_obj") {
        "ENABLE_SSE",
        "ENABLE_AVX",
      ]
