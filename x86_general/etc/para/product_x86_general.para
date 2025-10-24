@@ -11,19 +11,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-const.product.brand=general
+const.product.brand=default
 const.build.product=default
-const.product.name="general pc"
-const.product.model="general pc"
-const.product.manufacturer=general
 const.security.developermode.state=true
-const.product.devicetype=tablet
-
-hilog.private.on=true
-hilog.debug.on=true
-persist.sys.hilog.kmsg.on=true
-persist.sys.hilog.debug.on=true
-hilog.flowctrl.proc.on=true
-hilog.flowctrl.domain.on=true
-persist.sys.hilog.loggable.global=D
-hilog.buffersize.global=26214400

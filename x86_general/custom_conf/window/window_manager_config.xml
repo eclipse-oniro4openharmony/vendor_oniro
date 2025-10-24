@@ -15,7 +15,7 @@
  -->
 <Configs>
     <!--decor enable is true means app main window show decoration-->
-    <decor enable="true">
+    <decor enable="false">
         <!--supportedMode could be configed as fullscreen, floating, split or the combination of them-->
         <supportedMode>floating fullscreen</supportedMode>
     </decor>
@@ -32,7 +32,7 @@
     <!--split screen ratios config-->
     <splitRatios>0.5 0.33 0.67</splitRatios>
     <!--default window mode config-->
-    <defaultWindowMode>102</defaultWindowMode>
+    <defaultWindowMode>1</defaultWindowMode>
     <!--window animation config-->
     <windowAnimation>
         <timing>
