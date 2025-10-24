@@ -1,0 +1,29 @@
+{
+  "name": "@ohos/product_x86_general",
+  "version": "3.1",
+  "license": "Apache License 2.0",
+  "private": false,
+  "scripts": {},
+  "dirs": [""],
+  "component": {
+    "name": "product_x86_general",
+    "subsystem": "product_x86_general",
+    "syscap": [],
+    "features": [],
+    "deps": {
+      "components": [],
+      "third_party": []
+    },
+    "build": {
+      "sub_component": [
+        "//vendor/oniro/x86_general/preinstall-config:preinstall-config",
+        "//vendor/oniro/x86_general/resourceschedule:resourceschedule",
+        "//vendor/oniro/x86_general/etc:product_etc_conf",
+        "//vendor/oniro/x86_general/hals/audio:hdf_audio_config",
+        "//vendor/oniro/x86_general/hdf_config/uhdf:hdf_config",
+        "//vendor/oniro/x86_general/custom_conf:custom_config",
+        "//vendor/oniro/x86_general/image_conf:custom_image_conf"
+      ]
+    }
+  }
+}
