@@ -1,0 +1,78 @@
+diff --git a/BUILD.gn b/BUILD.gn
+index 6d0618e..2e7b3c8 100755
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -210,6 +210,39 @@ ohos_shared_library("libext2_blkid") {
+   ]
+ }
+ 
++ohos_static_library("libext2_blkid_static") {
++  configs = [
++    ":libext2_blkid-defaults",
++    ":libext2-headers",
++  ]
++  public_configs = [ ":libext2_blkid_public_config" ]
++  sources = [
++    "e2fsprogs/lib/blkid/cache.c",
++    "e2fsprogs/lib/blkid/dev.c",
++    "e2fsprogs/lib/blkid/devname.c",
++    "e2fsprogs/lib/blkid/devno.c",
++    "e2fsprogs/lib/blkid/getsize.c",
++    "e2fsprogs/lib/blkid/llseek.c",
++    "e2fsprogs/lib/blkid/probe.c",
++    "e2fsprogs/lib/blkid/read.c",
++    "e2fsprogs/lib/blkid/resolve.c",
++    "e2fsprogs/lib/blkid/save.c",
++    "e2fsprogs/lib/blkid/tag.c",
++    "e2fsprogs/lib/blkid/version.c",
++  ]
++
++  include_dirs = [ "//third_party/e2fsprogs/e2fsprogs/lib/blkid" ]
++  deps = [ ":libext2_uuid_static" ]
++  cflags = [
++    "-Wno-error=attributes",
++    "-Wno-error=pointer-sign",
++    "-Wno-unused-parameter",
++    "-fno-strict-aliasing",
++  ]
++  subsystem_name = "thirdparty"
++  part_name = "e2fsprogs"
++}
++
+ ###################################################
+ ###Build libext2_e2p
+ config("libext2_e2p-defaults") {
+@@ -556,6 +589,33 @@ ohos_shared_library("libext2_uuid") {
+   ]
+ }
+ 
++ohos_static_library("libext2_uuid_static") {
++  sources = [
++    "e2fsprogs/lib/uuid/clear.c",
++    "e2fsprogs/lib/uuid/compare.c",
++    "e2fsprogs/lib/uuid/copy.c",
++    "e2fsprogs/lib/uuid/gen_uuid.c",
++    "e2fsprogs/lib/uuid/isnull.c",
++    "e2fsprogs/lib/uuid/pack.c",
++    "e2fsprogs/lib/uuid/parse.c",
++    "e2fsprogs/lib/uuid/unpack.c",
++    "e2fsprogs/lib/uuid/unparse.c",
++    "e2fsprogs/lib/uuid/uuid_time.c",
++  ]
++  include_dirs = [ "//third_party/e2fsprogs/e2fsprogs/lib/uuid" ]
++  cflags = [
++    "-Wno-unused-function",
++    "-Wno-unused-parameter",
++  ]
++  public_configs = [ ":e2fsdroid_libext2_uuid" ]
++  configs = [
++    ":libext2_uuid-defaults",
++    ":libext2-headers",
++  ]
++  subsystem_name = "thirdparty"
++  part_name = "e2fsprogs"
++}
++
+ ###################################################
+ ###Build libext2_misc
+ config("libext2_misc-defaults") {

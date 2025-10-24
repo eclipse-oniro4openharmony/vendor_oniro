@@ -1,0 +1,22 @@
+root {
+    platform {
+        uart_config {
+            template uart_device {
+                serviceName = "";
+                match_attr = "";
+                driver_name = "ttyS";
+                num = 0;
+            }
+
+            device_uart_0x0000 :: uart_device {
+                num = 0;
+                match_attr = "amlogic_a311d_uart_0";
+            }
+
+            device_uart_0x0001 :: uart_device {
+                num = 1;
+                match_attr = "amlogic_a311d_uart_1";
+            }
+        }
+    }
+}

@@ -1,0 +1,4 @@
+#include "accel/bmi160_config.hcs"
+#include "accel/mxc6655xa_config.hcs"
+#include "temperature/temperature_sht30_config.hcs"
+#include "humidity/humidity_sht30_config.hcs"

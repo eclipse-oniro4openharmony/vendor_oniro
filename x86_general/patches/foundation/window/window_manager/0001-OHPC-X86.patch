@@ -1,0 +1,15 @@
+diff --git a/window_scene/session_manager/src/scene_session_manager.cpp b/window_scene/session_manager/src/scene_session_manager.cpp
+index 9b2d4d1..f924609 100644
+--- a/window_scene/session_manager/src/scene_session_manager.cpp
++++ b/window_scene/session_manager/src/scene_session_manager.cpp
+@@ -2393,8 +2393,8 @@ void SceneSessionManager::InitSnapshotCache()
+     if (SNAPSHOT_CACHE_CAPACITY_MAP.find(uiType) != SNAPSHOT_CACHE_CAPACITY_MAP.end()) {
+         snapshotCapacity_ = SNAPSHOT_CACHE_CAPACITY_MAP.at(systemConfig_.uiType_);
+     }
+-    TLOGI(WmsLogTag::WMS_PATTERN, "type: %{public}s, capacity: %{public}u",
+-        systemConfig_.uiType_.c_str(), snapshotCapacity_);
++    // TLOGI(WmsLogTag::WMS_PATTERN, "type: %{public}s, capacity: %{public}u",
++    //     systemConfig_.uiType_.c_str(), snapshotCapacity_);
+     snapshotLRUCache_ = std::make_unique<LRUCache>(snapshotCapacity_);
+ }
+ 
