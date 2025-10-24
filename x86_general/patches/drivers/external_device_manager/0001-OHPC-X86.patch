@@ -1,0 +1,26 @@
+From f9bb8cd54ffb610ffdbb87a4ebbfa4d2403165c1 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E8=B4=BA=E5=B0=8F=E5=B8=85?= <hxsjs@qq.com>
+Date: Mon, 28 Oct 2024 17:30:27 +0800
+Subject: [PATCH] OHPC X86.
+
+Change-Id: I765d3f8636bb34914231506b1095f76ca321c405
+---
+ services/native/driver_extension/BUILD.gn | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/services/native/driver_extension/BUILD.gn b/services/native/driver_extension/BUILD.gn
+index a3dfee5..40bf0c8 100644
+--- a/services/native/driver_extension/BUILD.gn
++++ b/services/native/driver_extension/BUILD.gn
+@@ -74,6 +74,8 @@ ohos_shared_library("driver_extension_module") {
+     "napi:ace_napi",
+   ]
+ 
++  external_deps += [ "hilog:libhilog" ]
++
+   relative_install_dir = "extensionability/"
+   subsystem_name = "hdf"
+   part_name = "external_device_manager"
+-- 
+2.34.1
+

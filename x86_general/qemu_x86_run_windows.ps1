@@ -1,0 +1,26 @@
+
+qemu-system-x86_64.exe -name OHemu `
+-accel whpx `
+-machine q35 `
+-m 4G `
+-smp 8 `
+-drive if=none,file=./system-image/updater.img,format=raw,id=updater,index=0 `
+-device virtio-blk-pci,drive=updater `
+-drive if=none,file=./system-image/system.img,format=raw,id=system,index=1 `
+-device virtio-blk-pci,drive=system `
+-drive if=none,file=./system-image/vendor.img,format=raw,id=vendor,index=2 `
+-device virtio-blk-pci,drive=vendor `
+-drive if=none,file=./system-image/userdata.img,format=raw,id=userdata,index=3 `
+-device virtio-blk-pci,drive=userdata `
+-append "loglevel=7 ip=192.168.137.1:255.255.255.0::eth0:off sn=0023456789 console=tty0 console=ttyS0 init=/bin/init ohos.boot.hardware=x86_general root=/dev/ram0 rw ohos.required_mount.system=/dev/block/vdb@/usr@ext4@ro,barrier=1@wait,required ohos.required_mount.vendor=/dev/block/vdc@/vendor@ext4@ro,barrier=1@wait,required ohos.required_mount.misc=/dev/block/vda@/misc@none@none=@wait,required" `
+-kernel ./system-image/bzImage `
+-initrd ./system-image/ramdisk.img `
+-nographic `
+-vga none `
+-device virtio-gpu-pci,xres=1280,yres=720,max_outputs=1,addr=08.0 `
+-device virtio-mouse-pci `
+-device virtio-keyboard-pci `
+-device es1370 `
+-k en-us `
+-netdev user,id=net0,hostfwd=tcp::55555-:55555 -device e1000,netdev=net0 `
+-display sdl,gl=off
