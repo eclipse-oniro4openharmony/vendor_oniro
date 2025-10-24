@@ -1,0 +1,26 @@
+root {
+    platform {
+        spi_config {
+            template spi_controller {
+                serviceName = "";
+                match_attr = "";
+                busNum = 0;
+                numCs = 0;
+            }
+
+            controller_0x120c0000 :: spi_controller {
+                busNum = 0;
+                numCs = 1;
+                match_attr = "amlogic_a311d_spi_0";
+            }
+
+            controller_0x120c1000 :: spi_controller {
+                match_attr = "amlogic_a311d_spi_1";
+                busNum = 1;
+                numCs = 2;
+            }
+        }
+    }
+}
+
+

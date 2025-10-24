@@ -1,0 +1,35 @@
+diff --git a/tools/deps_guard/rules/ChipsetSDK/chipsetsdk_info.json b/tools/deps_guard/rules/ChipsetSDK/chipsetsdk_info.json
+index 01f1d86..d3f06fe 100644
+--- a/tools/deps_guard/rules/ChipsetSDK/chipsetsdk_info.json
++++ b/tools/deps_guard/rules/ChipsetSDK/chipsetsdk_info.json
+@@ -35,6 +35,30 @@
+         "path": "//build/common/musl:musl-libcxx.so",
+         "headers": []
+     },
++    {
++        "name": "build_framework:musl-libc.so",
++        "so_file_name": "ld-musl-x86_64.so.1",
++        "path": "//build/common/musl:musl-libc.so",
++        "headers": []
++    },
++    {
++        "name": "libdrm:libdrm_radeon",
++        "so_file_name": "libdrm_radeon.so",
++        "path": "//device/soc/oniro/x86_general/hardware/gpu/third_party/libdrm:ibdrm_radeon.so",
++        "headers": []
++    },
++    {
++        "name": "libdrm:libdrm_amdgpu",
++        "so_file_name": "libdrm_amdgpu.so",
++        "path": "//device/soc/oniro/x86_general/hardware/gpu/third_party/libdrm:libdrm_amdgpu.so",
++        "headers": []
++    },
++    {
++        "name": "libelf:libelf",
++        "so_file_name": "libelf.so",
++        "path": "//device/soc/oniro/x86_general/hardware/gpu/third_party/elfutils:libelf.so",
++        "headers": []
++    },
+     {
+         "name": "hilog:libhilog",
+         "so_file_name": "libhilog.so",

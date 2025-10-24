@@ -1,0 +1,224 @@
+From 88f197a93b521b689501774b3668ad2f606d9ec8 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E8=B4=BA=E5=B0=8F=E5=B8=85?= <hxsjs@qq.com>
+Date: Mon, 28 Oct 2024 17:13:58 +0800
+Subject: [PATCH] OHPC X86.
+
+Change-Id: I3474803cddf30d9a0664c8f3cf67b613cd4e7f53
+---
+ include/EGL/eglext.h                 |  8 ++++----
+ include/GL/gl.h                      |  2 +-
+ include/KHR/khrplatform.h            |  2 +-
+ src/egl/drivers/dri2/platform_ohos.c |  2 ++
+ src/egl/main/eglapi.c                | 16 ++++++++--------
+ src/intel/dev/intel_device_info.h    |  7 -------
+ src/loader/loader.c                  |  2 +-
+ src/util/build_id.c                  |  7 -------
+ 8 files changed, 17 insertions(+), 29 deletions(-)
+
+diff --git a/include/EGL/eglext.h b/include/EGL/eglext.h
+index a3a4e3c7ab7..c377a83965e 100644
+--- a/include/EGL/eglext.h
++++ b/include/EGL/eglext.h
+@@ -134,7 +134,7 @@ typedef EGLSyncKHR (EGLAPIENTRYP PFNEGLCREATESYNCKHRPROC) (EGLDisplay dpy, EGLen
+ typedef EGLBoolean (EGLAPIENTRYP PFNEGLDESTROYSYNCKHRPROC) (EGLDisplay dpy, EGLSyncKHR sync);
+ typedef EGLint (EGLAPIENTRYP PFNEGLCLIENTWAITSYNCKHRPROC) (EGLDisplay dpy, EGLSyncKHR sync, EGLint flags, EGLTimeKHR timeout);
+ typedef EGLBoolean (EGLAPIENTRYP PFNEGLGETSYNCATTRIBKHRPROC) (EGLDisplay dpy, EGLSyncKHR sync, EGLint attribute, EGLint *value);
+-#ifdef EGL_EGLEXT_PROTOTYPES
++#if defined(EGL_EGLEXT_PROTOTYPES) || defined(HAVE_OHOS_PLATFORM)
+ EGLAPI EGLSyncKHR EGLAPIENTRY eglCreateSyncKHR (EGLDisplay dpy, EGLenum type, const EGLint *attrib_list);
+ EGLAPI EGLBoolean EGLAPIENTRY eglDestroySyncKHR (EGLDisplay dpy, EGLSyncKHR sync);
+ EGLAPI EGLint EGLAPIENTRY eglClientWaitSyncKHR (EGLDisplay dpy, EGLSyncKHR sync, EGLint flags, EGLTimeKHR timeout);
+@@ -188,7 +188,7 @@ typedef void *EGLImageKHR;
+ #define EGL_NO_IMAGE_KHR                  EGL_CAST(EGLImageKHR,0)
+ typedef EGLImageKHR (EGLAPIENTRYP PFNEGLCREATEIMAGEKHRPROC) (EGLDisplay dpy, EGLContext ctx, EGLenum target, EGLClientBuffer buffer, const EGLint *attrib_list);
+ typedef EGLBoolean (EGLAPIENTRYP PFNEGLDESTROYIMAGEKHRPROC) (EGLDisplay dpy, EGLImageKHR image);
+-#ifdef EGL_EGLEXT_PROTOTYPES
++#if defined(EGL_EGLEXT_PROTOTYPES) || defined(HAVE_OHOS_PLATFORM)
+ EGLAPI EGLImageKHR EGLAPIENTRY eglCreateImageKHR (EGLDisplay dpy, EGLContext ctx, EGLenum target, EGLClientBuffer buffer, const EGLint *attrib_list);
+ EGLAPI EGLBoolean EGLAPIENTRY eglDestroyImageKHR (EGLDisplay dpy, EGLImageKHR image);
+ #endif
+@@ -443,7 +443,7 @@ EGLAPI EGLBoolean EGLAPIENTRY eglSwapBuffersWithDamageKHR (EGLDisplay dpy, EGLSu
+ #ifndef EGL_KHR_wait_sync
+ #define EGL_KHR_wait_sync 1
+ typedef EGLint (EGLAPIENTRYP PFNEGLWAITSYNCKHRPROC) (EGLDisplay dpy, EGLSyncKHR sync, EGLint flags);
+-#ifdef EGL_EGLEXT_PROTOTYPES
++#if defined(EGL_EGLEXT_PROTOTYPES) || defined(HAVE_OHOS_PLATFORM)
+ EGLAPI EGLint EGLAPIENTRY eglWaitSyncKHR (EGLDisplay dpy, EGLSyncKHR sync, EGLint flags);
+ #endif
+ #endif /* EGL_KHR_wait_sync */
+@@ -538,7 +538,7 @@ EGLAPI EGLClientBuffer EGLAPIENTRY eglGetNativeClientBufferANDROID (const struct
+ #define EGL_SYNC_NATIVE_FENCE_SIGNALED_ANDROID 0x3146
+ #define EGL_NO_NATIVE_FENCE_FD_ANDROID    -1
+ typedef EGLint (EGLAPIENTRYP PFNEGLDUPNATIVEFENCEFDANDROIDPROC) (EGLDisplay dpy, EGLSyncKHR sync);
+-#ifdef EGL_EGLEXT_PROTOTYPES
++#if defined(EGL_EGLEXT_PROTOTYPES) || defined(HAVE_OHOS_PLATFORM)
+ EGLAPI EGLint EGLAPIENTRY eglDupNativeFenceFDANDROID (EGLDisplay dpy, EGLSyncKHR sync);
+ #endif
+ #endif /* EGL_ANDROID_native_fence_sync */
+diff --git a/include/GL/gl.h b/include/GL/gl.h
+index e2f5408a5d5..f2baf442b6a 100644
+--- a/include/GL/gl.h
++++ b/include/GL/gl.h
+@@ -2085,7 +2085,7 @@ typedef void* GLeglImageOES;
+ 
+ #ifndef GL_OES_EGL_image
+ #define GL_OES_EGL_image 1
+-#ifdef GL_GLEXT_PROTOTYPES
++#if defined(GL_GLEXT_PROTOTYPES) || defined(HAVE_OHOS_PLATFORM)
+ GLAPI void APIENTRY glEGLImageTargetTexture2DOES (GLenum target, GLeglImageOES image);
+ GLAPI void APIENTRY glEGLImageTargetRenderbufferStorageOES (GLenum target, GLeglImageOES image);
+ #endif
+diff --git a/include/KHR/khrplatform.h b/include/KHR/khrplatform.h
+index ba47c26319b..1900b508062 100644
+--- a/include/KHR/khrplatform.h
++++ b/include/KHR/khrplatform.h
+@@ -108,7 +108,7 @@
+ #elif defined (__SYMBIAN32__)
+ #   define KHRONOS_APICALL IMPORT_C
+ #elif (defined(__GNUC__) && (__GNUC__ * 100 + __GNUC_MINOR__) >= 303) \
+-       || (defined(__SUNPRO_C) && (__SUNPRO_C >= 0x590))
++       || (defined(__SUNPRO_C) && (__SUNPRO_C >= 0x590)) || (defined(HAVE_OHOS_PLATFORM))
+ /* KHRONOS_APIATTRIBUTES is not used by the client API headers yet */
+ #   define KHRONOS_APICALL __attribute__((visibility("default")))
+ #else
+diff --git a/src/egl/drivers/dri2/platform_ohos.c b/src/egl/drivers/dri2/platform_ohos.c
+index 5922cc5433b..e7f23f74aaa 100644
+--- a/src/egl/drivers/dri2/platform_ohos.c
++++ b/src/egl/drivers/dri2/platform_ohos.c
+@@ -56,6 +56,8 @@
+ 
+ #define ALIGN(val, align) (((val) + (align)-1) & ~((align)-1))
+ 
++GLAPI void APIENTRY glEGLImageTargetTexture2DOES (GLenum target, GLeglImageOES image){}
++
+ static int
+ get_format_bpp(int native)
+ {
+diff --git a/src/egl/main/eglapi.c b/src/egl/main/eglapi.c
+index c1a1d8540af..7553f208ea7 100644
+--- a/src/egl/main/eglapi.c
++++ b/src/egl/main/eglapi.c
+@@ -1764,7 +1764,7 @@ _eglCreateImageCommon(_EGLDisplay *disp, EGLContext ctx, EGLenum target,
+    RETURN_EGL_EVAL(disp, ret);
+ }
+ 
+-static EGLImage EGLAPIENTRY
++EGLAPI EGLImage EGLAPIENTRY
+ eglCreateImageKHR(EGLDisplay dpy, EGLContext ctx, EGLenum target,
+                   EGLClientBuffer buffer, const EGLint *attr_list)
+ {
+@@ -1820,7 +1820,7 @@ eglDestroyImage(EGLDisplay dpy, EGLImage image)
+    return _eglDestroyImageCommon(disp, img);
+ }
+ 
+-static EGLBoolean EGLAPIENTRY
++EGLAPI EGLBoolean EGLAPIENTRY
+ eglDestroyImageKHR(EGLDisplay dpy, EGLImage image)
+ {
+    _EGLDisplay *disp = _eglLockDisplay(dpy);
+@@ -1896,7 +1896,7 @@ _eglCreateSync(_EGLDisplay *disp, EGLenum type, const EGLAttrib *attrib_list,
+ }
+ 
+ 
+-static EGLSync EGLAPIENTRY
++EGLAPI EGLSync EGLAPIENTRY
+ eglCreateSyncKHR(EGLDisplay dpy, EGLenum type, const EGLint *int_list)
+ {
+    _EGLDisplay *disp = _eglLockDisplay(dpy);
+@@ -1970,7 +1970,7 @@ eglDestroySync(EGLDisplay dpy, EGLSync sync)
+    return _eglDestroySync(disp, s);
+ }
+ 
+-static EGLBoolean EGLAPIENTRY
++EGLAPI EGLBoolean EGLAPIENTRY
+ eglDestroySyncKHR(EGLDisplay dpy, EGLSync sync)
+ {
+    _EGLDisplay *disp = _eglLockDisplay(dpy);
+@@ -2024,7 +2024,7 @@ eglClientWaitSync(EGLDisplay dpy, EGLSync sync,
+    return _eglClientWaitSyncCommon(disp, dpy, s, flags, timeout);
+ }
+ 
+-static EGLint EGLAPIENTRY
++EGLAPI EGLint EGLAPIENTRY
+ eglClientWaitSyncKHR(EGLDisplay dpy, EGLSync sync,
+                      EGLint flags, EGLTime timeout)
+ {
+@@ -2059,7 +2059,7 @@ _eglWaitSyncCommon(_EGLDisplay *disp, _EGLSync *s, EGLint flags)
+    RETURN_EGL_EVAL(disp, ret);
+ }
+ 
+-static EGLint EGLAPIENTRY
++EGLAPI EGLint EGLAPIENTRY
+ eglWaitSyncKHR(EGLDisplay dpy, EGLSync sync, EGLint flags)
+ {
+    _EGLDisplay *disp = _eglLockDisplay(dpy);
+@@ -2129,7 +2129,7 @@ eglGetSyncAttrib(EGLDisplay dpy, EGLSync sync, EGLint attribute, EGLAttrib *valu
+ }
+ 
+ 
+-static EGLBoolean EGLAPIENTRY
++EGLAPI EGLBoolean EGLAPIENTRY
+ eglGetSyncAttribKHR(EGLDisplay dpy, EGLSync sync, EGLint attribute, EGLint *value)
+ {
+    _EGLDisplay *disp = _eglLockDisplay(dpy);
+@@ -2156,7 +2156,7 @@ eglGetSyncAttribKHR(EGLDisplay dpy, EGLSync sync, EGLint attribute, EGLint *valu
+    return result;
+ }
+ 
+-static EGLint EGLAPIENTRY
++EGLAPI EGLint EGLAPIENTRY
+ eglDupNativeFenceFDANDROID(EGLDisplay dpy, EGLSync sync)
+ {
+    _EGLDisplay *disp = _eglLockDisplay(dpy);
+diff --git a/src/intel/dev/intel_device_info.h b/src/intel/dev/intel_device_info.h
+index 0f4590af0a8..774730d33bc 100644
+--- a/src/intel/dev/intel_device_info.h
++++ b/src/intel/dev/intel_device_info.h
+@@ -209,13 +209,6 @@ struct intel_device_info
+     */
+    unsigned max_subslices_per_slice;
+ 
+-   /**
+-    * Maximum number of subslices per slice present on this device (can be
+-    * more than the maximum value in the num_subslices[] array if some
+-    * subslices are fused).
+-    */
+-   unsigned max_subslices_per_slice;
+-
+    /**
+     * Number of subslices on each pixel pipe (ICL).
+     */
+diff --git a/src/loader/loader.c b/src/loader/loader.c
+index e843fc7af32..2355a13ddaf 100644
+--- a/src/loader/loader.c
++++ b/src/loader/loader.c
+@@ -110,7 +110,7 @@ static void ohos_logger(int level, const char *fmt, ...)
+     DISPLAY_LOGI();
+ }
+ 
+-static loader_logger *log_ = ohos_logger;
++static loader_logger *log_ = default_logger;
+ 
+ int
+ loader_open_device(const char *device_name)
+diff --git a/src/util/build_id.c b/src/util/build_id.c
+index e56eecd4d6b..8b4f8f30afb 100644
+--- a/src/util/build_id.c
++++ b/src/util/build_id.c
+@@ -91,13 +91,6 @@ build_id_find_nhdr_callback(struct dl_phdr_info *info, size_t size, void *data_)
+          size_t offset = sizeof(ElfW(Nhdr)) +
+                          ALIGN_POT(note->nhdr.n_namesz, 4) +
+                          ALIGN_POT(note->nhdr.n_descsz, 4);
+-
+-         // 05 00 00 00 04 00 00 00 4f 48 4f 53 00 01 00 00 00 00 00 00
+-         if ((note->nhdr.n_type == 0x534f484f) && (len > 20)) {
+-            // .note.ohos.ident is not a valid PT_NOTE section, use offset in section header later
+-            offset = 20;
+-         }
+-
+          note = (struct build_id_note *)((char *)note + offset);
+          len -= offset;
+       }
+-- 
+2.34.1
+

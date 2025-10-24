@@ -1,0 +1,29 @@
+From 448029ad4f95f8f722033c11eedb32a0f57d82b4 Mon Sep 17 00:00:00 2001
+From: sunshuyu <1582956180@qq.com>
+Date: Thu, 19 Jun 2025 21:24:11 +0800
+Subject: [PATCH] test
+
+Change-Id: I95454250f47f3c965bcd2e3a4e52665ecb688f9f
+---
+ sepolicy/base/system/file_contexts | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/sepolicy/base/system/file_contexts b/sepolicy/base/system/file_contexts
+index daf03988c..e66075ac1 100644
+--- a/sepolicy/base/system/file_contexts
++++ b/sepolicy/base/system/file_contexts
+@@ -29,6 +29,11 @@
+ /preload      u:object_r:system_file:s0
+ /tmp      u:object_r:rootfs:s0
+ /sys           u:object_r:sys_file:s0
++/run                u:object_r:rootfs:s0
++/var                u:object_r:rootfs:s0
++/opt                u:object_r:rootfs:s0
++/usr                u:object_r:rootfs:s0
++/lib                u:object_r:rootfs:s0
+ 
+ /dev(/.*)?       u:object_r:dev_file:s0
+ /dev/functionfs(/.*)?       u:object_r:dev_functionfs_file:s0
+-- 
+2.25.1
+

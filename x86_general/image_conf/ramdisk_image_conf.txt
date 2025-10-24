@@ -1,0 +1,4 @@
+/ramdisk
+314572800
+--fs_type=cpio
+--dac_config ../../build/ohos/images/mkimage/dac.txt

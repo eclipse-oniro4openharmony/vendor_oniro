@@ -1,0 +1,28 @@
+From e44edfbb2058cd22cbecd86c51f337fad474d55b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E8=B4=BA=E5=B0=8F=E5=B8=85?= <hxsjs@qq.com>
+Date: Mon, 28 Oct 2024 17:21:56 +0800
+Subject: [PATCH] OHPC X86.
+
+Change-Id: I5093be173e0ae23b89724c3af32938d02fee4068
+---
+ services/key_enable/src/key_enable.rs | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/services/key_enable/src/key_enable.rs b/services/key_enable/src/key_enable.rs
+index b9867d6..30f6010 100644
+--- a/services/key_enable/src/key_enable.rs
++++ b/services/key_enable/src/key_enable.rs
+@@ -51,8 +51,8 @@ type KeySerial = i32;
+ extern "C" {
+     fn InitLocalCertificate(cert_data: *mut u8, cert_size: *mut usize) -> i32;
+     fn AddKey(
+-        type_name: *const u8,
+-        description: *const u8,
++        type_name: *const c_char,
++        description: *const c_char,
+         payload: *const u8,
+         plen: usize,
+         ring_id: KeySerial,
+-- 
+2.34.1
+

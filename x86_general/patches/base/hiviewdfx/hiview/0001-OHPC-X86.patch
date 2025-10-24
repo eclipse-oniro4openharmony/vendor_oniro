@@ -1,0 +1,13 @@
+diff --git a/plugins/eventlogger/log_catcher/peer_binder_catcher.cpp b/plugins/eventlogger/log_catcher/peer_binder_catcher.cpp
+index c156683..6cf3978 100644
+--- a/plugins/eventlogger/log_catcher/peer_binder_catcher.cpp
++++ b/plugins/eventlogger/log_catcher/peer_binder_catcher.cpp
+@@ -405,7 +405,7 @@ void PeerBinderCatcher::DumpHiperf(const std::set<int>& pids)
+             FileUtil::RemoveFile(fullPath);
+         }
+     }
+-    DoExecHiperf(fileName, pids, processId, perfCmd);
++    DoExecHiperf(fileName, pids);
+ #endif
+ }
+ #endif
