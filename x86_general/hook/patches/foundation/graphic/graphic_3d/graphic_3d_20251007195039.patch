@@ -1,0 +1,178 @@
+diff --git a/3d_scene_adapter/BUILD.gn b/3d_scene_adapter/BUILD.gn
+index 6364fd6..a862a93 100644
+--- a/3d_scene_adapter/BUILD.gn
++++ b/3d_scene_adapter/BUILD.gn
+@@ -160,7 +160,7 @@ ohos_source_set("scene_adapter_source") {
+     ]
+   }
+ 
+-  if (target_cpu == "arm64" || target_cpu == "x64") {
++  if (target_cpu == "arm64" || target_cpu == "x86_64") {
+     defines += [
+       "PLATFORM_CORE_ROOT_PATH=/system/lib64/",
+       "PLATFORM_CORE_PLUGIN_PATH=/system/lib64/graphics3d/",
+diff --git a/3d_widget_adapter/BUILD.gn b/3d_widget_adapter/BUILD.gn
+index 012f163..052705c 100644
+--- a/3d_widget_adapter/BUILD.gn
++++ b/3d_widget_adapter/BUILD.gn
+@@ -205,7 +205,7 @@ ohos_source_set("widget_adapter_source") {
+       ]
+     }
+ 
+-    if (target_cpu == "arm64" || target_cpu == "x64") {
++    if (target_cpu == "arm64" || target_cpu == "x86_64") {
+       defines += [
+         "PLATFORM_CORE_ROOT_PATH=/system/lib64/",
+         "PLATFORM_CORE_PLUGIN_PATH=/system/lib64/graphics3d/",
+diff --git a/camera_preview_plugin/BUILD.gn b/camera_preview_plugin/BUILD.gn
+index d8d9d2c..76a8b89 100644
+--- a/camera_preview_plugin/BUILD.gn
++++ b/camera_preview_plugin/BUILD.gn
+@@ -102,7 +102,7 @@ lume_rofs("CAM_PREVIEW_ROFS") {
+     output_obj = "${CAM_PREVIEW_ROFS}_x32.o"
+   }
+ 
+-  if (target_cpu == "x64") {
++  if (target_cpu == "x86_64") {
+     output_obj = "${CAM_PREVIEW_ROFS}_x64.o"
+   }
+ 
+@@ -142,7 +142,7 @@ source_set("campreview_rofs_obj") {
+     output_obj = "${CAM_PREVIEW_ROFS}_x32.o"
+   }
+ 
+-  if (target_cpu == "x64") {
++  if (target_cpu == "x86_64") {
+     output_obj = "${CAM_PREVIEW_ROFS}_x64.o"
+   }
+   
+diff --git a/lume/LumeDotfield/BUILD.gn b/lume/LumeDotfield/BUILD.gn
+index 2deadd7..a79b841 100644
+--- a/lume/LumeDotfield/BUILD.gn
++++ b/lume/LumeDotfield/BUILD.gn
+@@ -136,7 +136,7 @@ lume_rofs("lume_dotfield_rofs") {
+     output_obj = "${DOTFIELD_ROFS}_x32.o"
+   }
+ 
+-  if (target_cpu == "x64") {
++  if (target_cpu == "x86_64") {
+     output_obj = "${DOTFIELD_ROFS}_x64.o"
+   }
+ 
+@@ -176,7 +176,7 @@ source_set("lume_dotfield_rofs_obj") {
+     output_obj = "${DOTFIELD_ROFS}_x32.o"
+   }
+ 
+-  if (target_cpu == "x64") {
++  if (target_cpu == "x86_64") {
+     output_obj = "${DOTFIELD_ROFS}_x64.o"
+   }
+ 
+diff --git a/lume/LumeEngine/BUILD.gn b/lume/LumeEngine/BUILD.gn
+index d818fd0..0fefde0 100644
+--- a/lume/LumeEngine/BUILD.gn
++++ b/lume/LumeEngine/BUILD.gn
+@@ -292,7 +292,7 @@ lume_rofs("lume_engine_rofs")
+     output_obj = "${CORE_ROFS}_x32.o"
+   }
+ 
+-  if (target_cpu == "x64") {
++  if (target_cpu == "x86_64") {
+     output_obj = "${CORE_ROFS}_x64.o"
+   }
+ 
+@@ -329,7 +329,7 @@ source_set("lume_engine_rofs_obj") {
+     output_obj = "${CORE_ROFS}_x32.o"
+   }
+ 
+-  if (target_cpu == "x64") {
++  if (target_cpu == "x86_64") {
+     output_obj = "${CORE_ROFS}_x64.o"
+   }
+ 
+diff --git a/lume/LumeRender/BUILD.gn b/lume/LumeRender/BUILD.gn
+index 8b91e50..91dbae3 100644
+--- a/lume/LumeRender/BUILD.gn
++++ b/lume/LumeRender/BUILD.gn
+@@ -493,7 +493,7 @@ lume_rofs("lume_render_rofs")
+     output_obj = "${RENDER_ROFS}_x32.o"
+   }
+ 
+-  if (target_cpu == "x64") {
++  if (target_cpu == "x86_64") {
+     output_obj = "${RENDER_ROFS}_x64.o"
+   }
+ 
+@@ -533,7 +533,7 @@ source_set("lume_render_rofs_obj") {
+     output_obj = "${RENDER_ROFS}_x32.o"
+   }
+ 
+-  if (target_cpu == "x64") {
++  if (target_cpu == "x86_64") {
+     output_obj = "${RENDER_ROFS}_x64.o"
+   }
+ 
+diff --git a/lume/Lume_3D/BUILD.gn b/lume/Lume_3D/BUILD.gn
+index 3ca813b..42e5ef7 100644
+--- a/lume/Lume_3D/BUILD.gn
++++ b/lume/Lume_3D/BUILD.gn
+@@ -268,7 +268,7 @@ lume_rofs("lume_3d_rofs")
+     output_obj = "${CORE3D_ROFS}_x32.o"
+   }
+ 
+-  if (target_cpu == "x64") {
++  if (target_cpu == "x86_64") {
+     output_obj = "${CORE3D_ROFS}_x64.o"
+   }
+ 
+@@ -308,7 +308,7 @@ source_set("lume_3d_rofs_obj") {
+     output_obj = "${CORE3D_ROFS}_x32.o"
+   }
+ 
+-  if (target_cpu == "x64") {
++  if (target_cpu == "x86_64") {
+     output_obj = "${CORE3D_ROFS}_x64.o"
+   }
+ 
+diff --git a/lume/Lume_3DText/BUILD.gn b/lume/Lume_3DText/BUILD.gn
+index c85bb15..e623c0b 100644
+--- a/lume/Lume_3DText/BUILD.gn
++++ b/lume/Lume_3DText/BUILD.gn
+@@ -120,7 +120,7 @@ lume_rofs("lume_3dtext_rofs") {
+     output_obj = "${base_name}_x32.o"
+   }
+ 
+-  if (target_cpu == "x64") {
++  if (target_cpu == "x86_64") {
+     output_obj = "${base_name}_x64.o"
+   }
+ 
+@@ -160,7 +160,7 @@ source_set("lume_3dtext_rofs_obj") {
+     output_obj = "${base_name}_x32.o"
+   }
+ 
+-  if (target_cpu == "x64") {
++  if (target_cpu == "x86_64") {
+     output_obj = "${base_name}_x64.o"
+   }
+ 
+diff --git a/lume/lume_config.gni b/lume/lume_config.gni
+index cdd9752..872fd38 100644
+--- a/lume/lume_config.gni
++++ b/lume/lume_config.gni
+@@ -108,12 +108,12 @@ template("lume_rofs") {
+     }
+ 
+     if (target_cpu == "x86") {
+-      cpu_type = "armeabi-v7a"
++      cpu_type = "x86"
+       output_obj = "${invoker.base_name}_x32.o"
+     }
+ 
+-    if (target_cpu == "x64") {
+-      cpu_type = "arm64-v8a"
++    if (target_cpu == "x86_64") {
++      cpu_type = "x86_64"
+       output_obj = "${invoker.base_name}_x64.o"
+     }
+ 
