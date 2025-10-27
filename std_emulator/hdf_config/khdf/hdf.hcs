@@ -1,5 +1,0 @@
-#include "device_info/device_info.hcs"
-
-root {
-    module = "x86,x86_chip";
-}
