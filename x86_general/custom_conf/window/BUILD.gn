@@ -24,9 +24,6 @@ ohos_prebuilt_etc("window_manager_config") {
 
 ohos_prebuilt_etc("display_manager_config") {
     source = "display_manager_config.xml"
-    if (is_qemu) {
-      source = "display_manager_config.qemu.xml"
-    }
     output = "display_manager_config.xml"
     install_enable = true
     install_images = [ vendor_base_dir ]

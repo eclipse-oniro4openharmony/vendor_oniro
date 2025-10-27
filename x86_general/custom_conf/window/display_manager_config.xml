@@ -15,7 +15,7 @@
  -->
  <Configs>
     <!--Window display dpi, valid range is 80~640, use 0 if no configuration is requeired-->
-    <dpi>240</dpi>
+    <dpi>160</dpi>
     <!-- Indicate the deviation between the default device display direction and the direction -->
     <!-- of the sensor. Use 0 in default, available values are {0, 90, 180, 270} -->
     <defaultDeviceRotationOffset>0</defaultDeviceRotationOffset>

@@ -13,7 +13,3 @@
 
 import("//device/board/${product_company}/${device_name}/device.gni")
 
-declare_args() {
-    is_use_phone_ui = false
-    is_qemu = false
-}
