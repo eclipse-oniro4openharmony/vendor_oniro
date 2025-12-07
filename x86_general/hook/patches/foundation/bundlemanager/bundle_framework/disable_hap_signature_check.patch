@@ -1,0 +1,109 @@
+diff --git a/services/bundlemgr/BUILD.gn b/services/bundlemgr/BUILD.gn
+index 9a2de6c7f..e8d47b0eb 100644
+--- a/services/bundlemgr/BUILD.gn
++++ b/services/bundlemgr/BUILD.gn
+@@ -215,9 +215,7 @@ ohos_source_set("bundle_parser") {
+     defines += [ "BUNDLE_FRAMEWORK_OVERLAY_INSTALLATION" ]
+   }
+ 
+-  if (is_emulator) {
+-    defines += [ "X86_EMULATOR_MODE" ]
+-  }
++  defines += [ "X86_EMULATOR_MODE" ]
+   part_name = "bundle_framework"
+   subsystem_name = "bundlemanager"
+ }
+@@ -258,9 +256,7 @@ ohos_shared_library("libbms") {
+     "LOG_DOMAIN = 0xD001120",
+   ]
+ 
+-  if (is_emulator) {
+-    defines += [ "X86_EMULATOR_MODE" ]
+-  }
++  defines += [ "X86_EMULATOR_MODE" ]
+ 
+   if (build_variant == "user") {
+     defines += [ "BUILD_VARIANT_USER" ]
+diff --git a/services/bundlemgr/src/base_bundle_installer.cpp b/services/bundlemgr/src/base_bundle_installer.cpp
+index 2d83c0316..8b7234822 100644
+--- a/services/bundlemgr/src/base_bundle_installer.cpp
++++ b/services/bundlemgr/src/base_bundle_installer.cpp
+@@ -5984,8 +5984,10 @@ ErrCode BaseBundleInstaller::FindSignatureFileDir(const std::string &moduleName,
+     }
+     auto iterator = verifyCodeParams_.find(moduleName);
+     if (iterator == verifyCodeParams_.end()) {
+-        LOG_E(BMS_TAG_INSTALLER, "no signature file dir exist of module %{public}s", moduleName.c_str());
+-        return ERR_BUNDLEMANAGER_INSTALL_CODE_SIGNATURE_FAILED;
++        LOG_W(BMS_TAG_INSTALLER, "no signature file dir exist of module %{public}s, but bypassing...", moduleName.c_str());
++        signatureFileDir = "";
++        return ERR_OK;
++        // return ERR_BUNDLEMANAGER_INSTALL_CODE_SIGNATURE_FAILED;
+     }
+     signatureFileDir = verifyCodeParams_.at(moduleName);
+ 
+diff --git a/services/bundlemgr/src/bundle_install_checker.cpp b/services/bundlemgr/src/bundle_install_checker.cpp
+index 6c25a8dca..306d629a9 100644
+--- a/services/bundlemgr/src/bundle_install_checker.cpp
++++ b/services/bundlemgr/src/bundle_install_checker.cpp
+@@ -215,8 +215,8 @@ ErrCode BundleInstallChecker::CheckMultipleHapsSignInfo(
+         }
+ #ifndef X86_EMULATOR_MODE
+         if (verifyRes != ERR_OK) {
+-            LOG_E(BMS_TAG_INSTALLER, "hap file verify failed, bundlePath: %{public}s", bundlePath.c_str());
+-            return readFile ? ERR_APPEXECFWK_INSTALL_FAILED_BUNDLE_SIGNATURE_VERIFICATION_FAILURE : verifyRes;
++            LOG_W(BMS_TAG_INSTALLER, "hap file verify failed, bundlePath: %{public}s, but bypassing...", bundlePath.c_str());
++            // return readFile ? ERR_APPEXECFWK_INSTALL_FAILED_BUNDLE_SIGNATURE_VERIFICATION_FAILURE : verifyRes;
+         }
+ #endif
+         hapVerifyRes.emplace_back(hapVerifyResult);
+@@ -229,7 +229,8 @@ ErrCode BundleInstallChecker::CheckMultipleHapsSignInfo(
+ 
+     if (!CheckProvisionInfoIsValid(hapVerifyRes)) {
+ #ifndef X86_EMULATOR_MODE
+-        return ERR_APPEXECFWK_INSTALL_FAILED_INCOMPATIBLE_SIGNATURE;
++        // return ERR_APPEXECFWK_INSTALL_FAILED_INCOMPATIBLE_SIGNATURE;
++        LOG_W(BMS_TAG_INSTALLER, "provision info invalid, but bypassing...");
+ #else
+         // on emulator if check signature failed clear appid
+         for (auto &verifyRes : hapVerifyRes) {
+@@ -1659,19 +1660,6 @@ ErrCode BundleInstallChecker::CheckIsolationMode(const std::unordered_map<std::s
+ 
+ ErrCode BundleInstallChecker::CheckSignatureFileDir(const std::string &signatureFileDir) const
+ {
+-    if (!BundleUtil::CheckFileName(signatureFileDir)) {
+-        LOG_E(BMS_TAG_INSTALLER, "code signature file dir is invalid");
+-        return ERR_BUNDLEMANAGER_INSTALL_CODE_SIGNATURE_FILE_IS_INVALID;
+-    }
+-    if (!BundleUtil::CheckFileType(signatureFileDir, ServiceConstants::CODE_SIGNATURE_FILE_SUFFIX)) {
+-        LOG_E(BMS_TAG_INSTALLER, "signatureFileDir is not suffixed with .sig");
+-        return ERR_BUNDLEMANAGER_INSTALL_CODE_SIGNATURE_FILE_IS_INVALID;
+-    }
+-    // signatureFileDir not support relevant dir
+-    if (signatureFileDir.find(ServiceConstants::RELATIVE_PATH) != std::string::npos) {
+-        LOG_E(BMS_TAG_INSTALLER, "signatureFileDir is invalid");
+-        return ERR_BUNDLEMANAGER_INSTALL_CODE_SIGNATURE_FILE_IS_INVALID;
+-    }
+     return ERR_OK;
+ }
+ 
+diff --git a/services/bundlemgr/src/bundle_mgr_service.cpp b/services/bundlemgr/src/bundle_mgr_service.cpp
+index 9051b2f95..298fa890b 100644
+--- a/services/bundlemgr/src/bundle_mgr_service.cpp
++++ b/services/bundlemgr/src/bundle_mgr_service.cpp
+@@ -35,6 +35,7 @@
+ #include "perf_profile.h"
+ #include "scope_guard.h"
+ #include "bundle_backup_mgr.h"
++#include "bundle_verify_mgr.h"
+ #include "system_ability_definition.h"
+ #include "system_ability_helper.h"
+ #include "xcollie_helper.h"
+@@ -130,6 +131,8 @@ bool BundleMgrService::Init()
+     CreateBmsServiceDir();
+     InitBmsParam();
+     InitPreInstallExceptionMgr();
++    // Enable debug mode to skip strict HAP signature verification
++    BundleVerifyMgr::EnableDebug();
+     CHECK_INIT_RESULT(InitBundleMgrHost(), "Init bundleMgr fail");
+     CHECK_INIT_RESULT(InitBundleInstaller(), "Init bundleInstaller fail");
+     InitBundleDataMgr();
