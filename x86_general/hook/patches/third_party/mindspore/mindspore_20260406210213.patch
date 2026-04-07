@@ -1,0 +1,39 @@
+diff --git a/mindspore-src/source/mindspore-lite/BUILD.gn b/mindspore-src/source/mindspore-lite/BUILD.gn
+index 916893fb..b8be5139 100644
+--- a/mindspore-src/source/mindspore-lite/BUILD.gn
++++ b/mindspore-src/source/mindspore-lite/BUILD.gn
+@@ -349,7 +349,7 @@ missing_sources = [
+ all_sources += missing_sources
+ SUPPORT_NNRT = false
+ # currently, only arm/arm64 real machine support nnrt
+-if ((target_cpu == "arm" || target_cpu == "arm64") && !is_emulator) {
++if ((target_cpu == "arm" || target_cpu == "arm64") && !is_emulator && product_name != "x86_general") {
+   SUPPORT_NNRT = true
+ }
+ 
+diff --git a/mindspore-src/source/mindspore-lite/src/litert/kernel/cpu/BUILD.gn b/mindspore-src/source/mindspore-lite/src/litert/kernel/cpu/BUILD.gn
+index 5d591675..bc492e4d 100644
+--- a/mindspore-src/source/mindspore-lite/src/litert/kernel/cpu/BUILD.gn
++++ b/mindspore-src/source/mindspore-lite/src/litert/kernel/cpu/BUILD.gn
+@@ -250,7 +250,7 @@ control_kernel_sources = [
+ ]
+ 
+ # emulator not support avx512
+-if (!is_emulator) {
++if (!is_emulator && product_name != "x86_general") {
+   cpu_kernel_sources += [
+     "fp32/convolution_im2col_avx512_fp32.cc",
+     "fp32/matmul_fp32_avx512.cc",
+diff --git a/mindspore-src/source/mindspore-lite/src/litert/kernel/cpu/nnacl_c/BUILD.gn b/mindspore-src/source/mindspore-lite/src/litert/kernel/cpu/nnacl_c/BUILD.gn
+index 9a9b28fd..1e65b8cc 100644
+--- a/mindspore-src/source/mindspore-lite/src/litert/kernel/cpu/nnacl_c/BUILD.gn
++++ b/mindspore-src/source/mindspore-lite/src/litert/kernel/cpu/nnacl_c/BUILD.gn
+@@ -922,7 +922,7 @@ arm64_only_sources += arm64_fp32_kernel_sources
+ x86_64_only_sources = sse_avx_avx512_sources
+ x86_64_only_sources += avx_fp32_kernel_sources
+ # emulator not support avx512
+-if (is_emulator) {
++if (is_emulator || product_name == "x86_general") {
+   not_needed(avx512_fp32_kernel_sources)
+   not_needed(gemm_avx512_kernel_sources)
+   not_needed(gemm_mask_avx512_kernel_sources)
