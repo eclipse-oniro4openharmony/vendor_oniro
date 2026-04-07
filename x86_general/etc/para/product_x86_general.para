@@ -14,3 +14,4 @@
 const.product.brand=default
 const.build.product=default
 const.security.developermode.state=true
+const.settings.screen_never_sleep=true
