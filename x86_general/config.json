@@ -336,7 +336,8 @@
           "features": [
             "graphic_2d_feature_rs_enable_eglimage = true",
             "graphic_2d_feature_use_texgine = true",
-            "graphic_2d_feature_upgrade_skia = true"
+            "graphic_2d_feature_upgrade_skia = true",
+            "graphic_2d_feature_bootanimation_enable = false"
           ]
         },
         {
