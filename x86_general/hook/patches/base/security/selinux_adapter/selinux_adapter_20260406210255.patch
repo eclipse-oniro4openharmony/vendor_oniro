@@ -1,0 +1,15 @@
+diff --git a/framework/policycoreutils/src/selinux_restorecon.c b/framework/policycoreutils/src/selinux_restorecon.c
+index 5e00d1895..c5c6a658f 100644
+--- a/framework/policycoreutils/src/selinux_restorecon.c
++++ b/framework/policycoreutils/src/selinux_restorecon.c
+@@ -66,6 +66,10 @@ static void SetFileContextsHandle(void)
+ 
+ int RestoreconCommon(const char *path, unsigned int flag, unsigned int nthreads)
+ {
++    // check selinux state, less than 1 is disabled
++    if (is_selinux_enabled() < 1) {
++        return 0;
++    }
+     __selinux_once(g_fcOnce, SetFileContextsHandle);
+     if (g_fcHandle == NULL) {
+         selinux_log(SELINUX_ERROR, "File_contexts handle is null\n");

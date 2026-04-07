@@ -56,6 +56,6 @@ for path in "${patch_files[@]}"; do
     # Output the relative path
     echo "patching $path"
     cd $SOURCE_ROOT_DIR/$relative_path
-    patch -R -p1 < $path
+    patch --batch -R -p1 < $path
 done
 

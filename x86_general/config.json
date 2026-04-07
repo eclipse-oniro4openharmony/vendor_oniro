@@ -52,6 +52,10 @@
       "subsystem": "hdf",
       "components": [
         {
+          "component": "drivers_adapter",
+          "features": []
+        },
+        {
           "component": "drivers_interface_lpplayer",
           "features":[]
         },
@@ -108,6 +112,10 @@
             "hdf_core_platform_test_support = false",
             "hdf_core_default_peripheral_config = false"
           ]
+        },
+        {
+          "component": "drivers_tools",
+          "features": []
         }
       ]
     },
@@ -205,6 +213,14 @@
     {
       "subsystem": "thirdparty",
       "components": [
+        {
+          "component": "asmjit",
+          "features": []
+        },
+        {
+          "component": "zydis",
+          "features": []
+        },
         {
           "component": "rust_libc",
           "features": []
@@ -394,6 +410,10 @@
       "components": [
         {
           "component": "ace_ets2bundle",
+          "features": []
+        },
+        {
+          "component": "hdc",
           "features": []
         }
       ]

@@ -1,5 +1,5 @@
 diff --git a/device/plugins/native_daemon/src/call_stack.cpp b/device/plugins/native_daemon/src/call_stack.cpp
-index d10868e..e1940a6 100644
+index d10868e88..e1940a651 100644
 --- a/device/plugins/native_daemon/src/call_stack.cpp
 +++ b/device/plugins/native_daemon/src/call_stack.cpp
 @@ -519,8 +519,12 @@ bool CallStack::DoUnwind2(const VirtualThread &thread, std::vector<CallFrame> &c
@@ -16,10 +16,10 @@ index d10868e..e1940a6 100644
  #endif
  
 diff --git a/device/plugins/native_hook/BUILD.gn b/device/plugins/native_hook/BUILD.gn
-index 0d64a43..233714a 100644
+index aea4baa6d..e9724967f 100644
 --- a/device/plugins/native_hook/BUILD.gn
 +++ b/device/plugins/native_hook/BUILD.gn
-@@ -43,6 +43,11 @@ ohos_source_set("native_hook_source") {
+@@ -48,6 +48,11 @@ ohos_source_set("native_hook_source") {
      "src/sampling.cpp",
      "src/stack_writer.cpp",
    ]
@@ -31,18 +31,8 @@ index 0d64a43..233714a 100644
    include_dirs = [
      "./include",
      "../api/include",
-@@ -98,6 +103,9 @@ ohos_shared_library("native_hook") {
-     defines = [ "HAVE_HILOG" ]
-     external_deps = [ "hilog:libhilog_base" ]
-   }
-+  if (hiprofiler_use_libunwinder) {
-+    external_deps += [ "faultloggerd:libunwinder" ]
-+  }
-   version_script = "libnative_hook.map"
-   install_enable = true
-   subsystem_name = "${OHOS_PROFILER_SUBSYS_NAME}"
 diff --git a/device/services/ipc/include/socket_context.h b/device/services/ipc/include/socket_context.h
-index d16cd4a..4e68548 100644
+index d16cd4ae6..4e68548a1 100644
 --- a/device/services/ipc/include/socket_context.h
 +++ b/device/services/ipc/include/socket_context.h
 @@ -25,6 +25,8 @@

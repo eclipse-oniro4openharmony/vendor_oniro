@@ -57,6 +57,6 @@ for path in "${patch_files[@]}"; do
     # Output the relative path
     echo "patching $path"
     cd $SOURCE_ROOT_DIR/$relative_path
-    patch -p1 < $path
+    patch --forward --batch --reject-file=/dev/null -p1 < $path || true
 done
 

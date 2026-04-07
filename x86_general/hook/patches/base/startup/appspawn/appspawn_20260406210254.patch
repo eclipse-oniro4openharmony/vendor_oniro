@@ -1,0 +1,40 @@
+diff --git a/modules/common/appspawn_adapter.cpp b/modules/common/appspawn_adapter.cpp
+index aa5504c8..f602d7f5 100644
+--- a/modules/common/appspawn_adapter.cpp
++++ b/modules/common/appspawn_adapter.cpp
+@@ -44,8 +44,10 @@ using GetPermissionFunc = int32_t (*)(void *, const char *);
+ using namespace OHOS::Security::AccessToken;
+ 
+ static const uint64_t TOKEN_ID_LOWMASK = 0xffffffff;
++#ifdef WITH_SELINUX
+ void CheckSpecialSpawnMode(const AppSpawnMgr *content, const AppSpawningCtx *property,
+     HapDomainInfo *hapDomainInfo);
++#endif
+ 
+ int SetAppAccessToken(const AppSpawnMgr *content, const AppSpawningCtx *property)
+ {
+@@ -278,7 +280,11 @@ int32_t SetEnvInfo(const AppSpawnMgr *content, const AppSpawningCtx *property)
+ 
+ int LoadSeLinuxConfig(void)
+ {
++#ifdef WITH_SELINUX
+     return HapContextLoadConfig();
++#else
++    return 0;
++#endif
+ }
+ 
+ uint32_t GetHostId(const AppSpawningCtx *property)
+@@ -299,6 +305,7 @@ uint32_t GetHostId(const AppSpawningCtx *property)
+     return hostId;
+ }
+ 
++#ifdef WITH_SELINUX
+ void CheckSpecialSpawnMode(const AppSpawnMgr *content, const AppSpawningCtx *property,
+     HapDomainInfo *hapDomainInfo)
+ {
+@@ -318,3 +325,4 @@ void CheckSpecialSpawnMode(const AppSpawnMgr *content, const AppSpawningCtx *pro
+         hapDomainInfo->hapFlags |= SELINUX_HAP_ISOLATED_RENDER;
+     }
+ }
++#endif

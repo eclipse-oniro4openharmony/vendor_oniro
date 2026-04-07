@@ -1,8 +1,8 @@
 diff --git a/services/bundlemgr/BUILD.gn b/services/bundlemgr/BUILD.gn
-index 9a2de6c7f..e8d47b0eb 100644
+index 9d1a49ed0..23f66a500 100644
 --- a/services/bundlemgr/BUILD.gn
 +++ b/services/bundlemgr/BUILD.gn
-@@ -215,9 +215,7 @@ ohos_source_set("bundle_parser") {
+@@ -217,9 +217,7 @@ ohos_source_set("bundle_parser") {
      defines += [ "BUNDLE_FRAMEWORK_OVERLAY_INSTALLATION" ]
    }
  
@@ -13,7 +13,7 @@ index 9a2de6c7f..e8d47b0eb 100644
    part_name = "bundle_framework"
    subsystem_name = "bundlemanager"
  }
-@@ -258,9 +256,7 @@ ohos_shared_library("libbms") {
+@@ -311,9 +309,7 @@ ohos_shared_library("libbms") {
      "LOG_DOMAIN = 0xD001120",
    ]
  
@@ -25,10 +25,10 @@ index 9a2de6c7f..e8d47b0eb 100644
    if (build_variant == "user") {
      defines += [ "BUILD_VARIANT_USER" ]
 diff --git a/services/bundlemgr/src/base_bundle_installer.cpp b/services/bundlemgr/src/base_bundle_installer.cpp
-index 2d83c0316..8b7234822 100644
+index d17c1f01c..ef2dcf0df 100644
 --- a/services/bundlemgr/src/base_bundle_installer.cpp
 +++ b/services/bundlemgr/src/base_bundle_installer.cpp
-@@ -5984,8 +5984,10 @@ ErrCode BaseBundleInstaller::FindSignatureFileDir(const std::string &moduleName,
+@@ -6593,8 +6593,10 @@ ErrCode BaseBundleInstaller::FindSignatureFileDir(const std::string &moduleName,
      }
      auto iterator = verifyCodeParams_.find(moduleName);
      if (iterator == verifyCodeParams_.end()) {
@@ -42,10 +42,10 @@ index 2d83c0316..8b7234822 100644
      signatureFileDir = verifyCodeParams_.at(moduleName);
  
 diff --git a/services/bundlemgr/src/bundle_install_checker.cpp b/services/bundlemgr/src/bundle_install_checker.cpp
-index 6c25a8dca..306d629a9 100644
+index 1e0403289..2e52f073f 100644
 --- a/services/bundlemgr/src/bundle_install_checker.cpp
 +++ b/services/bundlemgr/src/bundle_install_checker.cpp
-@@ -215,8 +215,8 @@ ErrCode BundleInstallChecker::CheckMultipleHapsSignInfo(
+@@ -273,8 +273,8 @@ ErrCode BundleInstallChecker::CheckMultipleHapsSignInfo(
          }
  #ifndef X86_EMULATOR_MODE
          if (verifyRes != ERR_OK) {
@@ -56,7 +56,7 @@ index 6c25a8dca..306d629a9 100644
          }
  #endif
          hapVerifyRes.emplace_back(hapVerifyResult);
-@@ -229,7 +229,8 @@ ErrCode BundleInstallChecker::CheckMultipleHapsSignInfo(
+@@ -292,7 +292,8 @@ ErrCode BundleInstallChecker::CheckMultipleHapsSignInfo(
  
      if (!CheckProvisionInfoIsValid(hapVerifyRes)) {
  #ifndef X86_EMULATOR_MODE
@@ -66,11 +66,12 @@ index 6c25a8dca..306d629a9 100644
  #else
          // on emulator if check signature failed clear appid
          for (auto &verifyRes : hapVerifyRes) {
-@@ -1659,19 +1660,6 @@ ErrCode BundleInstallChecker::CheckIsolationMode(const std::unordered_map<std::s
+@@ -1832,20 +1833,6 @@ ErrCode BundleInstallChecker::CheckIsolationMode(const std::unordered_map<std::s
  
  ErrCode BundleInstallChecker::CheckSignatureFileDir(const std::string &signatureFileDir) const
  {
--    if (!BundleUtil::CheckFileName(signatureFileDir)) {
+-    ErrCode ret = BundleUtil::CheckFileName(signatureFileDir);
+-    if (ret != ERR_OK) {
 -        LOG_E(BMS_TAG_INSTALLER, "code signature file dir is invalid");
 -        return ERR_BUNDLEMANAGER_INSTALL_CODE_SIGNATURE_FILE_IS_INVALID;
 -    }
@@ -87,7 +88,7 @@ index 6c25a8dca..306d629a9 100644
  }
  
 diff --git a/services/bundlemgr/src/bundle_mgr_service.cpp b/services/bundlemgr/src/bundle_mgr_service.cpp
-index 9051b2f95..298fa890b 100644
+index a225a8816..7080147fd 100644
 --- a/services/bundlemgr/src/bundle_mgr_service.cpp
 +++ b/services/bundlemgr/src/bundle_mgr_service.cpp
 @@ -35,6 +35,7 @@
@@ -98,9 +99,9 @@ index 9051b2f95..298fa890b 100644
  #include "system_ability_definition.h"
  #include "system_ability_helper.h"
  #include "xcollie_helper.h"
-@@ -130,6 +131,8 @@ bool BundleMgrService::Init()
-     CreateBmsServiceDir();
+@@ -132,6 +133,8 @@ bool BundleMgrService::Init()
      InitBmsParam();
+     APP_LOGI_NOFUNC("BundleMgrService InitPreInstallExceptionMgr");
      InitPreInstallExceptionMgr();
 +    // Enable debug mode to skip strict HAP signature verification
 +    BundleVerifyMgr::EnableDebug();
