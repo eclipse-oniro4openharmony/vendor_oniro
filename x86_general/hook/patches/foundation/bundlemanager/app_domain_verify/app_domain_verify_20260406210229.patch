@@ -1,0 +1,42 @@
+diff --git a/services/BUILD.gn b/services/BUILD.gn
+index 13a6d79..5495b71 100644
+--- a/services/BUILD.gn
++++ b/services/BUILD.gn
+@@ -105,8 +105,11 @@ ohos_shared_library("app_domain_verify_mgr_service") {
+     "relational_store:native_rdb",
+     "safwk:system_ability_fwk",
+     "samgr:samgr_proxy",
+-    "selinux_adapter:librestorecon"
+   ]
++  if (build_selinux) {
++    external_deps += [ "selinux_adapter:librestorecon" ]
++    defines += [ "WITH_SELINUX" ]
++  }
+ 
+   sanitize = {
+     boundary_sanitize = true
+diff --git a/services/src/manager/core/app_domain_verify_mgr_service.cpp b/services/src/manager/core/app_domain_verify_mgr_service.cpp
+index de70b12..d399241 100644
+--- a/services/src/manager/core/app_domain_verify_mgr_service.cpp
++++ b/services/src/manager/core/app_domain_verify_mgr_service.cpp
+@@ -29,7 +29,9 @@
+ #include "sa_interface/app_domain_verify_mgr_service.h"
+ #include "common_event_manager.h"
+ #include "common_event_support.h"
++#ifdef WITH_SELINUX
+ #include "policycoreutils.h"
++#endif
+ #include <sys/stat.h>
+ #include <unistd.h>
+ namespace OHOS {
+@@ -71,8 +73,10 @@ bool AppDomainVerifyMgrService::ResetDBSecurityByPath()
+         return false;
+     }
+ 
++#ifdef WITH_SELINUX
+     auto ret = RestoreconRecurse(Constants::SERVICE_PATH);
+     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "RestoreconRecurse %{public}d.", ret);
++#endif
+     return ERR_OK;
+ }
+ 

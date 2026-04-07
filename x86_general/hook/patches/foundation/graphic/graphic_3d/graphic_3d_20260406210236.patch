@@ -1,0 +1,48 @@
+diff --git a/3d_scene_adapter/BUILD.gn b/3d_scene_adapter/BUILD.gn
+index 3eca873c..829db343 100644
+--- a/3d_scene_adapter/BUILD.gn
++++ b/3d_scene_adapter/BUILD.gn
+@@ -164,7 +164,7 @@ ohos_source_set("scene_adapter_source") {
+     ]
+   }
+ 
+-  if (target_cpu == "arm64" || target_cpu == "x64") {
++  if (target_cpu == "arm64" || target_cpu == "x86_64") {
+     defines += [
+       "PLATFORM_CORE_ROOT_PATH=/system/lib64/",
+       "PLATFORM_CORE_PLUGIN_PATH=/system/lib64/graphics3d/",
+diff --git a/3d_widget_adapter/BUILD.gn b/3d_widget_adapter/BUILD.gn
+index 17ddb8fd..50128162 100644
+--- a/3d_widget_adapter/BUILD.gn
++++ b/3d_widget_adapter/BUILD.gn
+@@ -206,7 +206,7 @@ ohos_source_set("widget_adapter_source") {
+       ]
+     }
+ 
+-    if (target_cpu == "arm64" || target_cpu == "x64") {
++    if (target_cpu == "arm64" || target_cpu == "x86_64") {
+       defines += [
+         "PLATFORM_CORE_ROOT_PATH=/system/lib64/",
+         "PLATFORM_CORE_PLUGIN_PATH=/system/lib64/graphics3d/",
+diff --git a/camera_preview_plugin/BUILD.gn b/camera_preview_plugin/BUILD.gn
+index d8d9d2c2..76a8b89d 100644
+--- a/camera_preview_plugin/BUILD.gn
++++ b/camera_preview_plugin/BUILD.gn
+@@ -102,7 +102,7 @@ lume_rofs("CAM_PREVIEW_ROFS") {
+     output_obj = "${CAM_PREVIEW_ROFS}_x32.o"
+   }
+ 
+-  if (target_cpu == "x64") {
++  if (target_cpu == "x86_64") {
+     output_obj = "${CAM_PREVIEW_ROFS}_x64.o"
+   }
+ 
+@@ -142,7 +142,7 @@ source_set("campreview_rofs_obj") {
+     output_obj = "${CAM_PREVIEW_ROFS}_x32.o"
+   }
+ 
+-  if (target_cpu == "x64") {
++  if (target_cpu == "x86_64") {
+     output_obj = "${CAM_PREVIEW_ROFS}_x64.o"
+   }
+   

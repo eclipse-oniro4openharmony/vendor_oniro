@@ -1,0 +1,12 @@
+diff --git a/BUILD.gn b/BUILD.gn
+index ffa8c5d..ed98d99 100644
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -730,6 +730,7 @@ if (defined(ohos_lite)) {
+       "-Wno-tautological-constant-compare",
+       "-Wno-string-conversion",
+       "-Wno-unused-but-set-variable",
++      "-Wno-misleading-indentation",
+     ]
+ 
+     ldflags = [

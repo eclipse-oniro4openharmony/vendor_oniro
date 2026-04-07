@@ -1,0 +1,42 @@
+diff --git a/bundle.json b/bundle.json
+index 9f9f6f3498..4e0a7d56dd 100644
+--- a/bundle.json
++++ b/bundle.json
+@@ -50,7 +50,7 @@
+                 "qos_manager",
+                 "ffrt"
+             ],
+-            "third_party": []
++            "third_party": ["asmjit", "zydis"]
+         },
+         "build": {
+             "sub_component": [
+diff --git a/static_core/runtime/BUILD.gn b/static_core/runtime/BUILD.gn
+index 00a3bce1f0..0bbf41d205 100644
+--- a/static_core/runtime/BUILD.gn
++++ b/static_core/runtime/BUILD.gn
+@@ -639,6 +639,13 @@ ohos_source_set("libarkruntime_set_static_host") {
+   deps = []
+   defines = []
+ 
++  if (enable_irtoc) {
++    sources += [ "$ark_root_gen_dir/generated/irtoc_lib.o" ]
++    if (is_llvm_interpreter || is_llvm_fastpath) {
++      sources += [ "$ark_root_gen_dir/generated/irtoc_llvm_lib.o" ]
++    }
++  }
++
+   public_configs = _libarkruntime_calculated_configs
+   public_configs += [ "$ark_root:ark_host_config" ]
+ 
+@@ -653,6 +660,10 @@ ohos_source_set("libarkruntime_set_static_host") {
+     "$ark_root/compiler:libarktscompiler_host",
+   ]
+ 
++  if (enable_irtoc) {
++    deps += [ "$ark_root/irtoc:irtoc_generate" ]
++  }
++
+   external_deps = _libarkruntime_calculated_external_deps
+   defines += _libarkruntime_calculated_defines
+   include_dirs = _libarkruntime_calculated_include_dirs
