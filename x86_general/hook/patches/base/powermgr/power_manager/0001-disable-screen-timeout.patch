@@ -1,0 +1,40 @@
+From 37edd248da3320f5fe397f267050dc4dc2bc075e Mon Sep 17 00:00:00 2001
+From: Francesco Pham <francesco.pham1@h-partners.com>
+Date: Tue, 7 Apr 2026 10:05:15 +0000
+Subject: [PATCH] disable screen timeout
+
+Change-Id: I74e9c06ef0181cea58d2ff7ddd29f2e5da24d982
+---
+ services/native/include/power_state_machine.h | 2 +-
+ services/native/profile/power_mode_config.xml | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/services/native/include/power_state_machine.h b/services/native/include/power_state_machine.h
+index 55d1e7d3..b1938878 100644
+--- a/services/native/include/power_state_machine.h
++++ b/services/native/include/power_state_machine.h
+@@ -107,7 +107,7 @@ public:
+     static constexpr int32_t DEFAULT_DC_DISPLAY_OFF_TIME_MS = 300000
+     static constexpr int32_t DEFAULT_DISPLAY_OFF_TIME_MS = DEFAULT_DC_DISPLAY_OFF_TIME_MS;
+ #else
+-    static constexpr int32_t DEFAULT_DISPLAY_OFF_TIME_MS = 30000;
++    static constexpr int32_t DEFAULT_DISPLAY_OFF_TIME_MS = -1;
+ #endif
+     static constexpr int32_t DEFAULT_SLEEP_TIME_MS = 5000;
+     static constexpr int64_t OFF_TIMEOUT_FACTOR = 5;
+diff --git a/services/native/profile/power_mode_config.xml b/services/native/profile/power_mode_config.xml
+index f4fcfcbc..9d507121 100644
+--- a/services/native/profile/power_mode_config.xml
++++ b/services/native/profile/power_mode_config.xml
+@@ -34,7 +34,7 @@
+ -->
+ <switch_proxy version="1">
+     <proxy id="600">
+-        <switch id="101" value="30000" recover_flag="0"/>
++        <switch id="101" value="-1" recover_flag="0"/>
+         <switch id="102" value="0" recover_flag="0"/>
+         <switch id="103" value="-1" recover_flag="0"/>
+         <switch id="107" value="1" recover_flag="0"/>
+-- 
+2.50.1
+
