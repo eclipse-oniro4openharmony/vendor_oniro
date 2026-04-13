@@ -15,14 +15,14 @@ import("//drivers/hdf_core/adapter/uhdf2/hcs/hcs.gni")
 
 hdf_hcb("hdf_default.hcb") {
   source = "./hdf.hcs"
-  part_name = "product_x23"
-  subsystem_name = "product_x23"
+  part_name = "product_hybris_generic"
+  subsystem_name = "product_hybris_generic"
 }
 
 hdf_cfg("hdf_devhost.cfg") {
   source = "./hdf.hcs"
-  part_name = "product_x23"
-  subsystem_name = "product_x23"
+  part_name = "product_hybris_generic"
+  subsystem_name = "product_hybris_generic"
 }
 
 group("hdf_config") {
