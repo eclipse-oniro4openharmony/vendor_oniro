@@ -129,7 +129,7 @@
           "features": [
             "drivers_peripheral_wlan_feature_enable_HDF_NL80211 = true",
             "drivers_peripheral_wlan_feature_enable_HDF_UT = false",
-            "drivers_peripheral_wlan_feature_vendor = default",
+            "drivers_peripheral_wlan_feature_vendor = hybris",
             "drivers_peripheral_wlan_p2p_name = p2p-dev-wlan0"
           ]
         },
