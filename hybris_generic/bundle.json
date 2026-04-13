@@ -15,7 +15,9 @@
       "third_party": []
     },
     "build": {
-      "sub_component": []
+      "sub_component": [
+        "//vendor/oniro/hybris_generic/hdf_config/uhdf:hdf_config"
+      ]
     }
   }
 }
