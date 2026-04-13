@@ -1,0 +1,1 @@
+import("//device/board/${product_company}/${device_name}/device.gni")

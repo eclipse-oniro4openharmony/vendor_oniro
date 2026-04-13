@@ -1,0 +1,21 @@
+{
+  "name": "@ohos/product_hybris_generic",
+  "version": "3.1",
+  "license": "Apache License 2.0",
+  "private": false,
+  "scripts": {},
+  "dirs": [""],
+  "component": {
+    "name": "product_hybris_generic",
+    "subsystem": "product_hybris_generic",
+    "syscap": [],
+    "features": [],
+    "deps": {
+      "components": [],
+      "third_party": []
+    },
+    "build": {
+      "sub_component": []
+    }
+  }
+}
