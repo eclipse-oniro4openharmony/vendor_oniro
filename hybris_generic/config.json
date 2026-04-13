@@ -10,7 +10,7 @@
   "enable_ramdisk": true,
   "enable_absystem": false,
   "build_selinux": false,
-  "build_seccomp": true,
+  "build_seccomp": false,
   "inherit": [ "productdefine/common/inherit/rich.json", "productdefine/common/inherit/chipset_common.json" ],
   "subsystems": [
     {
