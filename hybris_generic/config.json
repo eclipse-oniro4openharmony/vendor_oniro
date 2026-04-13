@@ -171,6 +171,17 @@
       ]
     },
     {
+      "subsystem": "powermgr",
+      "components": [
+        {
+          "component": "power_manager",
+          "features": [
+            "power_manager_feature_disable_auto_displayoff = true"
+          ]
+        }
+      ]
+    },
+    {
       "subsystem": "msdp",
       "components": [
         {
