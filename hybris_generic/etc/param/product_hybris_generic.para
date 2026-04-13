@@ -13,3 +13,10 @@
 
 const.product.brand=default
 const.build.product=default
+
+# HDC (OpenHarmony Device Connector) — TCP mode for LXC container environment
+# USB is unavailable (Ubuntu Touch host owns the USB port)
+const.security.developermode.state = "true"
+persist.hdc.mode.usb = "disable"
+persist.hdc.mode.tcp = "enable"
+persist.hdc.port = "8712"
