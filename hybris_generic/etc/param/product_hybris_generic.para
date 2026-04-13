@@ -24,3 +24,6 @@ persist.hdc.port = "8712"
 # Seccomp workaround: disable seccomp for container environment.
 # LXC containers do not support the same seccomp filters as native boot.
 persist.init.debug.seccomp.enable = 0
+
+# Disable screen timeout — keep display on indefinitely
+const.settings.screen_never_sleep=true
