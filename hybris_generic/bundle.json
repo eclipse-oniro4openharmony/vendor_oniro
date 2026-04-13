@@ -16,7 +16,13 @@
     },
     "build": {
       "sub_component": [
-        "//vendor/oniro/hybris_generic/hdf_config/uhdf:hdf_config"
+        "//vendor/oniro/hybris_generic/hdf_config/uhdf:hdf_config",
+        "//vendor/oniro/hybris_generic/preinstall-config:preinstall-config",
+        "//vendor/oniro/hybris_generic/etc:product_etc_conf",
+        "//vendor/oniro/hybris_generic/hals/audio:hdf_audio_config",
+        "//vendor/oniro/hybris_generic/hals/codec:hdf_codec_config",
+        "//vendor/oniro/hybris_generic/resourceschedule:resourceschedule",
+        "//vendor/oniro/hybris_generic/custom_conf:custom_config"
       ]
     }
   }
