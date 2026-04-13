@@ -1,0 +1,4 @@
+
+root {
+    module = "amlogic,a311d_chip";
+}
