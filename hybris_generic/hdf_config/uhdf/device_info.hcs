@@ -316,7 +316,13 @@
             priority = 40;
             processPriority = -8;
             threadPriority = 1;
-            caps = ["SYS_NICE"];
+            /* DAC_OVERRIDE: the panel backlight sysfs node on Halium kernels
+             * is typically root:system 0664 (e.g. /sys/class/leds/lcd-backlight/
+             * brightness).  composer_host runs as uid/gid composer_host and is
+             * not in the system group, so it needs DAC_OVERRIDE to write the
+             * backlight level.  Without it SetDisplayBacklight (hybris VDI)
+             * would silently fail, leaving the panel lit after power-off. */
+            caps = ["SYS_NICE", "DAC_OVERRIDE"];
             uid = ["composer_host"];
             gid = ["composer_host", "graphics", "vendor_mpp_driver"];
 	        composer_device :: device {
