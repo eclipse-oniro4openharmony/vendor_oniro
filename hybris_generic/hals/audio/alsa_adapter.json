@@ -1,0 +1,14 @@
+{
+    "adapters": [
+        {
+            "name": "primary",
+            "cardId": 0,
+            "cardName": "rockchiprk809co"
+        },
+        {
+            "name": "hdmi",
+            "cardId": 1,
+            "cardName": "rockchiphdmi"
+        }
+    ]
+}
