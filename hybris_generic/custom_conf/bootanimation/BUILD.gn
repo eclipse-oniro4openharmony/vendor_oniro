@@ -13,9 +13,23 @@
 
 import("//build/ohos.gni")
 
-ohos_prebuilt_etc("bootanimation_config") {
+ohos_prebuilt_etc("bootanimation_cust_config") {
   source = "bootanimation_custom_config.json"
   install_images = [ vendor_base_dir ]
   relative_install_dir = "bootanimation"
   part_name = "product_hybris_generic"
+}
+
+ohos_prebuilt_etc("bootanimation_cust_pic") {
+  source = "bootpic.zip"
+  install_images = [ vendor_base_dir ]
+  relative_install_dir = "bootanimation"
+  part_name = "product_hybris_generic"
+}
+
+group("bootanimation_config") {
+  deps = [
+    ":bootanimation_cust_config",
+    ":bootanimation_cust_pic",
+  ]
 }
