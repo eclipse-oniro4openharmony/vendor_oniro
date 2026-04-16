@@ -1,5 +1,5 @@
 {
-	"cust.bootanimation.pics": "/system/etc/graphic/bootpic.zip",
+	"cust.bootanimation.pics": "/vendor/etc/bootanimation/bootpic.zip",
 	"cust.bootanimation.sounds": "/system/etc/graphic/bootsound.wav",
 	"cust.bootanimation.video": ""
 }

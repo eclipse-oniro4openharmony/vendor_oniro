@@ -27,3 +27,11 @@ persist.init.debug.seccomp.enable = 0
 
 # Disable screen timeout — keep display on indefinitely
 const.settings.screen_never_sleep=true
+
+# Default UI language / locale — English (UK) for European formatting
+# (metric units, DD/MM dates, 24h time). Overrides base zh-Hans default
+# from base/global/i18n/frameworks/intl/etc/i18n.para via first-write-wins
+# (sys_prod loads before /system/etc/param).
+const.global.language=en-Latn-GB
+const.global.locale=en-Latn-GB
+const.global.region=GB
