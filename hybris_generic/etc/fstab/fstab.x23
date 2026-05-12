@@ -19,10 +19,13 @@
 # Persist (factory calibration, bluetooth pairing keys) — optional, read-only
 /dev/disk/by-partlabel/persist          /persist        ext4    ro,nosuid,nodev        wait,nofail
 
-# chip_prod / sys_prod logical partitions inside super (deferred — empty for now)
-# When N5 carves these out:
-# /dev/block/mapper/chip_prod_b         /chip_prod      ext4    ro,barrier=1           wait,nofail
-# /dev/block/mapper/sys_prod_b          /sys_prod       ext4    ro,barrier=1           wait,nofail
+# chip_prod / sys_prod logical partitions inside super are mounted in the
+# chainload (init-chainload.sh Stage 3) — NOT here.  sys_prod must be
+# present before OHOS init's InitLoadParamFiles() runs (which is before
+# pre-init's mount_fstab_sp), so the chainload is the only correct place.
+# These lines stay commented out as documentation:
+# /dev/mapper/chip_prod_a               /chip_prod      ext4    ro,barrier=1           wait,nofail
+# /dev/mapper/sys_prod_a                /sys_prod       ext4    ro,barrier=1           wait,nofail
 
 # Note: the Halium Android rootfs is mounted by the androidd launcher (Phase N4)
 # inside its own mount namespace — NOT here. The required mounts (system at /usr,
