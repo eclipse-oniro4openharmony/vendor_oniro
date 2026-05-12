@@ -1,0 +1,17 @@
+# Phase N7.2 — Native-boot params for hybris_generic.
+#
+# Loaded into the OHOS param service via ohos_prebuilt_etc → /sys_prod/etc/param/.
+# Overrides product_hybris_generic.para's LXC-era defaults.
+#
+# Sticky on the eng build; production rollouts must add a settings UI to flip
+# const.security.developermode.state and persist.hdc.mode.usb.
+
+# HDC over USB (Phase N7) — replaces TCP-only setup that worked under LXC.
+persist.hdc.mode.usb = "enable"
+
+# Keep TCP enabled too (debug fallback when USB role-switch is host-mode).
+persist.hdc.mode.tcp = "enable"
+
+# Developer mode (Phase N7.2). On unset, hdcd accepts the FFS endpoint binding
+# but rejects all inbound shell connections — see project memory hdc_connection.
+const.security.developermode.state = "true"

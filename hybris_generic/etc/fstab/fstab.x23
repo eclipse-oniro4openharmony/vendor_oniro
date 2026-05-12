@@ -1,0 +1,29 @@
+# Volla X23 fstab — Phase N3.1 native-boot mounts
+#
+# Read by mount_fstab_sp (init.cfg:16) at OHOS pre-init for non-required mounts.
+# REQUIRED mounts (system/vendor/userdata) are delivered via kernel cmdline
+# ohos.required_mount.* (set by kernel/x23/build_boot_img_ohos.sh) so they
+# happen at first-stage before SwitchRoot.
+#
+# Allowed fs_mgr flags (per fstab.c parsing): wait, check, required, nofail,
+# hvb, projquota, casefold, compression, dedup, formattable.
+#
+# This file is for SECOND-STAGE mounts only. Anything time-critical for the
+# /usr SwitchRoot must go in the cmdline, not here.
+#
+#<src>                                  <mnt>           <type>  <mnt_flags>            <fs_mgr_flags>
+
+# Misc partition (bootloader command messages, OEM unlock signals) — optional
+/dev/disk/by-partlabel/misc             /misc           none    none                   wait,nofail
+
+# Persist (factory calibration, bluetooth pairing keys) — optional, read-only
+/dev/disk/by-partlabel/persist          /persist        ext4    ro,nosuid,nodev        wait,nofail
+
+# chip_prod / sys_prod logical partitions inside super (deferred — empty for now)
+# When N5 carves these out:
+# /dev/block/mapper/chip_prod_b         /chip_prod      ext4    ro,barrier=1           wait,nofail
+# /dev/block/mapper/sys_prod_b          /sys_prod       ext4    ro,barrier=1           wait,nofail
+
+# Note: the Halium Android rootfs is mounted by the androidd launcher (Phase N4)
+# inside its own mount namespace — NOT here. The required mounts (system at /usr,
+# vendor at /vendor, userdata at /data) come from kernel cmdline.
