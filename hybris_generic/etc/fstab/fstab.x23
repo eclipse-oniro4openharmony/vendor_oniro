@@ -13,11 +13,28 @@
 #
 #<src>                                  <mnt>           <type>  <mnt_flags>            <fs_mgr_flags>
 
+# Note on device paths: /dev/disk/by-partlabel/* is NOT populated by
+# ueventd on this device — the Halium-shipped ueventd rules only create
+# /dev/block/platform/soc/11270000.ufshci/by-name/* symlinks (matching
+# the MT6789 UFS controller path).  Use those literal paths here.
+
 # Misc partition (bootloader command messages, OEM unlock signals) — optional
-/dev/disk/by-partlabel/misc             /misc           none    none                   wait,nofail
+/dev/block/platform/soc/11270000.ufshci/by-name/misc             /misc           none    none                   wait,nofail
 
 # Persist (factory calibration, bluetooth pairing keys) — optional, read-only
-/dev/disk/by-partlabel/persist          /persist        ext4    ro,nosuid,nodev        wait,nofail
+/dev/block/platform/soc/11270000.ufshci/by-name/persist          /persist        ext4    ro,nosuid,nodev        wait,nofail
+
+# Userdata — OHOS-writable /data.  Must be mounted before init.cfg's
+# pre-init `load_access_token_id` cmd runs, otherwise SetSelfTokenID
+# silently no-ops because the nativetoken.json write fails on RO /,
+# every native service ends up with tokenId=0/tokenType=TOKEN_INVALID,
+# and samgr's CanRequest rejects all SA registrations.
+# mount_fstab_sp processes this file before load_access_token_id (see
+# base/startup/init/services/etc/init.cfg pre-init job order).
+# Halium also uses this partition when booted, but its data layout
+# (android-data/, app/, cache/, …) coexists peacefully with OHOS's
+# service/el0/ tree.
+/dev/block/platform/soc/11270000.ufshci/by-name/userdata         /data           ext4    noexec,nosuid,nodev    wait,nofail
 
 # chip_prod / sys_prod logical partitions inside super are mounted in the
 # chainload (init-chainload.sh Stage 3) — NOT here.  sys_prod must be
