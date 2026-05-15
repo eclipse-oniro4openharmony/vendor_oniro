@@ -49,7 +49,7 @@ ohos_prebuilt_etc("fstab_x23") {
 
 # Phase N3.3 — Volla X23 vendor init.cfg overlay imported by /system/etc/init.cfg
 # (line 5: "/vendor/etc/init.${ohos.boot.hardware}.cfg"). Runs binderfs mount,
-# /android mount-tree pre-creation, rfkill unblock, USB controller setup.
+# property-fs mount, GPU/touch insmod, rfkill unblock, USB controller setup.
 ohos_prebuilt_etc("init_x23_cfg") {
   source = "./init/init.x23.cfg"
   install_images = [ vendor_base_dir ]
