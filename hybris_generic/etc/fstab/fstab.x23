@@ -34,7 +34,18 @@
 # Halium also uses this partition when booted, but its data layout
 # (android-data/, app/, cache/, …) coexists peacefully with OHOS's
 # service/el0/ tree.
-/dev/block/platform/soc/11270000.ufshci/by-name/userdata         /data           ext4    noexec,nosuid,nodev    wait,nofail
+#
+# NOTE: mounted WITHOUT noexec.  App native libraries live under the app
+# sandbox in /data (e.g. /data/app/.../<bundle>/libs/arm64/*.so) and must
+# be mmap'd PROT_EXEC.  Stock OHOS keeps /data noexec and relies on the
+# kernel XPM ("eXecutable Permission Manager") to grant per-file exec for
+# code-signed app .so files; the Halium 5.10 kernel has no XPM, so noexec
+# is enforced strictly and every app native lib fails to load.  Most OHOS
+# apps are pure ArkTS bytecode and don't notice, but webview apps need
+# libarkweb_engine.so from ArkWebCore's sandbox dir — with noexec it fails
+# (`mmap fix failed errno=1`), the webview never initialises, and the app
+# shows a blank white screen.  Dropping noexec restores app .so loading.
+/dev/block/platform/soc/11270000.ufshci/by-name/userdata         /data           ext4    nosuid,nodev           wait,nofail
 
 # chip_prod / sys_prod logical partitions inside super are mounted in the
 # chainload (init-chainload.sh Stage 3) — NOT here.  sys_prod must be
