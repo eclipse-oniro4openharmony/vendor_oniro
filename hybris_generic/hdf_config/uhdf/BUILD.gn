@@ -12,6 +12,7 @@
 # limitations under the License.
 
 import("//drivers/hdf_core/adapter/uhdf2/hcs/hcs.gni")
+import("//build/config/components/hc_gen/hc_gen.gni")
 
 hdf_hcb("hdf_default.hcb") {
   source = "./hdf.hcs"
@@ -25,9 +26,81 @@ hdf_cfg("hdf_devhost.cfg") {
   subsystem_name = "product_hybris_generic"
 }
 
+# Camera host static-ability config — read by camera_host_service.cpp at
+# startup via SetHcsBlobPath(/vendor/etc/hdfconfig/camera_host_config.hcb).
+# Compiled here from camera/hdi_impl/camera_host_config.hcs so the
+# camera_host can discover the VDI library and ability template.
+# See device/board/oniro/docs/hybris_generic/phase_n12_camera.md.
+hc_gen("camera_host_config_hcb_gen") {
+  sources = [ rebase_path("./camera/hdi_impl/camera_host_config.hcs") ]
+  outputs = [ "$target_gen_dir/camera_host_config.hcb" ]
+}
+
+ohos_prebuilt_etc("camera_host_config.hcb") {
+  deps = [ ":camera_host_config_hcb_gen" ]
+  hcb_outputs = get_target_outputs(":camera_host_config_hcb_gen")
+  source = hcb_outputs[0]
+  relative_install_dir = "hdfconfig"
+  install_images = [ chipset_base_dir ]
+  part_name = "product_hybris_generic"
+  subsystem_name = "product_hybris_generic"
+}
+
+# Camera pipeline_core HCS files — read by the pipeline_core inside the
+# VDI to build the capture graph.  Compiled to .hcb and installed
+# alongside camera_host_config.hcb.
+hc_gen("camera_pipeline_params_hcb_gen") {
+  sources = [ rebase_path("./camera/pipeline_core/params.hcs") ]
+  outputs = [ "$target_gen_dir/params.hcb" ]
+}
+
+ohos_prebuilt_etc("camera_pipeline_params.hcb") {
+  deps = [ ":camera_pipeline_params_hcb_gen" ]
+  hcb_outputs = get_target_outputs(":camera_pipeline_params_hcb_gen")
+  source = hcb_outputs[0]
+  relative_install_dir = "hdfconfig"
+  install_images = [ chipset_base_dir ]
+  part_name = "product_hybris_generic"
+  subsystem_name = "product_hybris_generic"
+}
+
+hc_gen("camera_pipeline_config_hcb_gen") {
+  sources = [ rebase_path("./camera/pipeline_core/config.hcs") ]
+  outputs = [ "$target_gen_dir/config.hcb" ]
+}
+
+ohos_prebuilt_etc("camera_pipeline_config.hcb") {
+  deps = [ ":camera_pipeline_config_hcb_gen" ]
+  hcb_outputs = get_target_outputs(":camera_pipeline_config_hcb_gen")
+  source = hcb_outputs[0]
+  relative_install_dir = "hdfconfig"
+  install_images = [ chipset_base_dir ]
+  part_name = "product_hybris_generic"
+  subsystem_name = "product_hybris_generic"
+}
+
+hc_gen("camera_pipeline_ipp_algo_hcb_gen") {
+  sources = [ rebase_path("./camera/pipeline_core/ipp_algo_config.hcs") ]
+  outputs = [ "$target_gen_dir/ipp_algo_config.hcb" ]
+}
+
+ohos_prebuilt_etc("camera_pipeline_ipp_algo_config.hcb") {
+  deps = [ ":camera_pipeline_ipp_algo_hcb_gen" ]
+  hcb_outputs = get_target_outputs(":camera_pipeline_ipp_algo_hcb_gen")
+  source = hcb_outputs[0]
+  relative_install_dir = "hdfconfig"
+  install_images = [ chipset_base_dir ]
+  part_name = "product_hybris_generic"
+  subsystem_name = "product_hybris_generic"
+}
+
 group("hdf_config") {
   deps = [
     ":hdf_default.hcb",
     ":hdf_devhost.cfg",
+    ":camera_host_config.hcb",
+    ":camera_pipeline_params.hcb",
+    ":camera_pipeline_config.hcb",
+    ":camera_pipeline_ipp_algo_config.hcb",
   ]
 }
