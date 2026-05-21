@@ -274,6 +274,13 @@
             hostName = "camera_host";
             priority = 50;
             gid = ["camera_host", "uhdf_driver", "vendor_mpp_driver"];
+            // SYS_ADMIN — Droid::Loader (libcamera_host_vdi_impl) needs
+            // unshare(CLONE_NEWNS) + mount(MS_BIND) to bind
+            // /dev/binderfs/android-binder over /dev/binder so AOSP
+            // libbinder ProcessState::self() inside libdroidmedia.so
+            // lands on Halium's binder (not OHOS's).  See
+            // device/board/oniro/docs/hybris_generic/phase_n12_camera_droidmedia.md.
+            caps = ["SYS_ADMIN"];
             camera_device :: device {
                  device0 :: deviceNode {
                      policy = 2;
