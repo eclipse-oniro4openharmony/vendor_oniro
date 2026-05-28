@@ -1,3 +1,24 @@
+From 86ea3cd2d9db1487a62da978ea4d6e9ec23f4fd6 Mon Sep 17 00:00:00 2001
+From: Francesco Pham <francesco.pham1@h-partners.com>
+Date: Thu, 28 May 2026 11:59:53 +0200
+Subject: [PATCH] bms: bypass HAP signature verification on dev builds
+
+Make BMS tolerate unsigned and dev-signed HAPs:
+- always define X86_EMULATOR_MODE (was is_emulator-only) so the X86_EMULATOR_MODE branches in the install checker stay enabled on the x86_general dev image
+- in CheckMultipleHapsSignInfo, downgrade signature-verify and provision-invalid failures to a warning (instead of returning a failure ErrCode) so install proceeds
+- drop the CheckFileName/CheckFileType/RELATIVE_PATH gates in CheckSignatureFileDir
+- in FindSignatureFileDir, treat 'no signature file dir' as OK with empty path (instead of ERR_BUNDLEMANAGER_INSTALL_CODE_SIGNATURE_FAILED)
+- call BundleVerifyMgr::EnableDebug() during BMS init so signature debug mode is on by default.
+
+Change-Id: I83256015cbacec8f16ffe6da148aee73ca55d0d1
+Signed-off-by: Francesco Pham <francesco.pham1@h-partners.com>
+---
+ services/bundlemgr/BUILD.gn                   |  8 ++-----
+ .../bundlemgr/src/base_bundle_installer.cpp   |  6 ++++--
+ .../bundlemgr/src/bundle_install_checker.cpp  | 21 ++++---------------
+ services/bundlemgr/src/bundle_mgr_service.cpp |  3 +++
+ 4 files changed, 13 insertions(+), 25 deletions(-)
+
 diff --git a/services/bundlemgr/BUILD.gn b/services/bundlemgr/BUILD.gn
 index 9d1a49ed0..23f66a500 100644
 --- a/services/bundlemgr/BUILD.gn
@@ -108,3 +129,6 @@ index a225a8816..7080147fd 100644
      CHECK_INIT_RESULT(InitBundleMgrHost(), "Init bundleMgr fail");
      CHECK_INIT_RESULT(InitBundleInstaller(), "Init bundleInstaller fail");
      InitBundleDataMgr();
+-- 
+2.43.0
+

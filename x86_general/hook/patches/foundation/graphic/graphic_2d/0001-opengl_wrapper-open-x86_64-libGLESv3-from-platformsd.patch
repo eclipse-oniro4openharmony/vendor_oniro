@@ -1,3 +1,17 @@
+From d976cd73733acbb8aead09ba8a8825ead003cc3e Mon Sep 17 00:00:00 2001
+From: Francesco Pham <francesco.pham1@h-partners.com>
+Date: Thu, 28 May 2026 12:00:10 +0200
+Subject: [PATCH 1/2] opengl_wrapper: open x86_64 libGLESv3 from platformsdk
+ path
+
+On arm/arm64 the entry already dlopens /system/lib(64)?/platformsdk/libGLESv3.so. The x86_64 branch was loading /system/lib64/libGLESv3.so directly, missing the platformsdk subdir layout. Align it.
+
+Change-Id: Iba6a61255e6303fe599aa45ce2931ae2d2b1080b
+Signed-off-by: Francesco Pham <francesco.pham1@h-partners.com>
+---
+ frameworks/opengl_wrapper/src/EGL/egl_wrapper_entry.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
 diff --git a/frameworks/opengl_wrapper/src/EGL/egl_wrapper_entry.cpp b/frameworks/opengl_wrapper/src/EGL/egl_wrapper_entry.cpp
 index b3446f1774..fe8b354603 100644
 --- a/frameworks/opengl_wrapper/src/EGL/egl_wrapper_entry.cpp
@@ -11,3 +25,6 @@ index b3446f1774..fe8b354603 100644
  #else
      static void* dlglv3Handle = dlopen("/system/lib/platformsdk/libGLESv3.so", RTLD_NOW | RTLD_LOCAL);
  #endif
+-- 
+2.43.0
+

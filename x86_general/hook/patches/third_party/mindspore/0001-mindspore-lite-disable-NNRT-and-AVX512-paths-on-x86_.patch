@@ -1,3 +1,18 @@
+From b93556e7e27bf0eb37b51d1900783d780a034fc1 Mon Sep 17 00:00:00 2001
+From: Francesco Pham <francesco.pham1@h-partners.com>
+Date: Thu, 28 May 2026 11:59:30 +0200
+Subject: [PATCH] mindspore-lite: disable NNRT and AVX512 paths on x86_general
+
+x86_general does not ship NNRT, and the AVX512 paths require CPU support absent on QEMU. Mirror the existing is_emulator gates so the build does not attempt to compile those sources.
+
+Change-Id: I8daa68f747c02f759ae034a7d6318f73bcbbec5a
+Signed-off-by: Francesco Pham <francesco.pham1@h-partners.com>
+---
+ mindspore-src/source/mindspore-lite/BUILD.gn                    | 2 +-
+ .../source/mindspore-lite/src/litert/kernel/cpu/BUILD.gn        | 2 +-
+ .../mindspore-lite/src/litert/kernel/cpu/nnacl_c/BUILD.gn       | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
 diff --git a/mindspore-src/source/mindspore-lite/BUILD.gn b/mindspore-src/source/mindspore-lite/BUILD.gn
 index 916893fb..b8be5139 100644
 --- a/mindspore-src/source/mindspore-lite/BUILD.gn
@@ -37,3 +52,6 @@ index 9a9b28fd..1e65b8cc 100644
    not_needed(avx512_fp32_kernel_sources)
    not_needed(gemm_avx512_kernel_sources)
    not_needed(gemm_mask_avx512_kernel_sources)
+-- 
+2.43.0
+

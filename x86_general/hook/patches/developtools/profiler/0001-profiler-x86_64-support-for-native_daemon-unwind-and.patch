@@ -1,3 +1,19 @@
+From 7919f4ce7895287157d09a0e75150097b38316c5 Mon Sep 17 00:00:00 2001
+From: Francesco Pham <francesco.pham1@h-partners.com>
+Date: Thu, 28 May 2026 11:59:42 +0200
+Subject: [PATCH] profiler: x86_64 support for native_daemon unwind and
+ native_hook regs
+
+native_daemon CallStack picks DfxRegsX86_64 on x86_64 builds (was always DfxRegsArm64); native_hook source set adds the x86_64 getcontext assembly; socket_context.h declares the FULL_PATH constants the x86_64 build path expects.
+
+Change-Id: I058c2953056b4af937adb6ce85b940d0cf4cc6e4
+Signed-off-by: Francesco Pham <francesco.pham1@h-partners.com>
+---
+ device/plugins/native_daemon/src/call_stack.cpp | 4 ++++
+ device/plugins/native_hook/BUILD.gn             | 5 +++++
+ device/services/ipc/include/socket_context.h    | 2 ++
+ 3 files changed, 11 insertions(+)
+
 diff --git a/device/plugins/native_daemon/src/call_stack.cpp b/device/plugins/native_daemon/src/call_stack.cpp
 index d10868e88..e1940a651 100644
 --- a/device/plugins/native_daemon/src/call_stack.cpp
@@ -44,3 +60,6 @@ index d16cd4ae6..4e68548a1 100644
  const static char FFRT_PROFILER_UNIX_SOCKET_PATH[] = "ffrt_profiler_unix_socket";
  const static char FFRT_PROFILER_UNIX_SOCKET_FULL_PATH[] = "/dev/unix/socket/ffrt_profiler_unix_socket";
  const static char NETWORK_PROFILER_UNIX_SOCKET_PATH[] = "network_profiler_unix_socket";
+-- 
+2.43.0
+

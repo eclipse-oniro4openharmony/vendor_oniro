@@ -1,3 +1,17 @@
+From 11e4f595d2ec6332cf1b6e605eb1aa57111278e1 Mon Sep 17 00:00:00 2001
+From: Francesco Pham <francesco.pham1@h-partners.com>
+Date: Thu, 28 May 2026 12:00:00 +0200
+Subject: [PATCH] lzma: add lzma_source_x86 source set for x86_64 device
+ targets
+
+Mirrors the existing arm64 source set: includes Asm/x86 headers, adds -march=x86-64, builds common_c_source. lzma_shared selects it when target_cpu == x86_64 so the x86_64 device build links the same way as arm64.
+
+Change-Id: Ifbb91b168e579dec0f797c6bf081d9ccce0ffd5b
+Signed-off-by: Francesco Pham <francesco.pham1@h-partners.com>
+---
+ BUILD.gn | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
 diff --git a/BUILD.gn b/BUILD.gn
 index 6c471c7..e032da6 100644
 --- a/BUILD.gn
@@ -31,3 +45,6 @@ index 6c471c7..e032da6 100644
    innerapi_tags = [
      "chipsetsdk_sp_indirect",
      "platformsdk_indirect",
+-- 
+2.43.0
+

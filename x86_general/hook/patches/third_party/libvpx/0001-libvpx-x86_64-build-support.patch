@@ -1,3 +1,32 @@
+From e251b0fab21cc30530ae3daf6094274f1553384e Mon Sep 17 00:00:00 2001
+From: Francesco Pham <francesco.pham1@h-partners.com>
+Date: Thu, 28 May 2026 12:00:49 +0200
+Subject: [PATCH] libvpx: x86_64 build support
+
+Three pieces:
+1. BUILD.gn: pick CONFIG_ARCH=X86_64 vs ARM64, only pass -mfloat-abi=hard and the neon sources on arm/arm64, switch armv8_config/armv7_config -> x86_64_config for headers, and select aarch64_cpudetect vs aarch32_cpudetect vs (none) based on target_cpu.
+2. build.sh: on x86_64 run 'configure --target=generic-gnu' (configure has no x86_64-linux-gcc preset) and then synthesize vpx_dsp/vp8/vp9/vpx_scale rtcd headers via build/make/rtcd.pl --arch=generic, since generic-gnu does not emit them. arm64/arm continue to use the pre-baked armv8_config/armv7_config headers.
+3. Delete the docs.mk / examples.mk / libs.mk / solution.mk / tools.mk / vpx_scale_rtcd.h tracked snapshots: they were stale outputs from a previous build and shadowed build.sh's generated copies.
+
+Change-Id: I18e0fdb282e65082d5477b70d2e3fdf18ed3e892
+Signed-off-by: Francesco Pham <francesco.pham1@h-partners.com>
+---
+ BUILD.gn         |  46 ++-
+ build.sh         |  32 ++
+ docs.mk          |  48 ---
+ examples.mk      | 405 ------------------------
+ libs.mk          | 801 -----------------------------------------------
+ solution.mk      |  31 --
+ tools.mk         | 116 -------
+ vpx_scale_rtcd.h |  84 -----
+ 8 files changed, 66 insertions(+), 1497 deletions(-)
+ delete mode 100644 docs.mk
+ delete mode 100644 examples.mk
+ delete mode 100644 libs.mk
+ delete mode 100644 solution.mk
+ delete mode 100644 tools.mk
+ delete mode 100644 vpx_scale_rtcd.h
+
 diff --git a/BUILD.gn b/BUILD.gn
 index c9e15cb9b..bd36ba6b7 100644
 --- a/BUILD.gn
@@ -83,7 +112,7 @@ index c9e15cb9b..bd36ba6b7 100644
        "./vpx_dsp/arm/idct16x16_1_add_neon.c",
        "./vpx_dsp/arm/idct16x16_add_neon.c",
 diff --git a/build.sh b/build.sh
-index 442163704..b4bcceb9a 100755
+index 442163704..1c04d859a 100755
 --- a/build.sh
 +++ b/build.sh
 @@ -52,6 +52,18 @@ if [ "$CPU" == "arm" ]; then
@@ -105,21 +134,32 @@ index 442163704..b4bcceb9a 100755
  sed -i 's/#define HAVE_NEON[[:space:]]*0/#define HAVE_NEON 1/' vpx_config.h
  sed -i 's/#define CONFIG_INSTALL_DOCS[[:space:]]*1/#define CONFIG_INSTALL_DOCS 0/' vpx_config.h
  sed -i 's/#define HAVE_NEON_DOTPROD[[:space:]]*1/#define HAVE_NEON_DOTPROD 0/' vpx_config.h
-@@ -64,3 +76,14 @@ sed -i 's/#define CONFIG_RUNTIME_CPU_DETECT[[:space:]]*1/#define CONFIG_RUNTIME_
+@@ -62,5 +74,25 @@ sed -i 's/#define CONFIG_POSTPROC[[:space:]]*1/#define CONFIG_POSTPROC 0/' vpx_c
+ sed -i 's/#define CONFIG_MULTITHREAD[[:space:]]*0/#define CONFIG_MULTITHREAD 1/' vpx_config.h
+ sed -i 's/#define CONFIG_RUNTIME_CPU_DETECT[[:space:]]*1/#define CONFIG_RUNTIME_CPU_DETECT 0/' vpx_config.h
  
++# For x86_64, generate rtcd headers via rtcd.pl (configure --target=generic-gnu
++# does not produce them) and write them to OUTPUT_DIR.
++# For arm64/arm, pre-generated headers in armv8_config/armv7_config are used instead.
++#
++# rtcd.pl reads only lines matching ^(CONFIG_|HAVE_)KEY=VALUE, so convert
++# vpx_config.h's "#define KEY N" lines into "KEY=yes/no" form first.
++if [ "$CPU" == "x86_64" ]; then
++  RTCD_CFG="$(mktemp)"
++  awk '/^#define (CONFIG_|HAVE_)/ {print $2"="($3==1?"yes":"no")}' vpx_config.h > "$RTCD_CFG"
++  perl build/make/rtcd.pl --arch=generic --sym=vpx_dsp_rtcd \
++      --config="$RTCD_CFG" vpx_dsp/vpx_dsp_rtcd_defs.pl > "$OUTPUT_DIR/vpx_dsp_rtcd.h"
++  perl build/make/rtcd.pl --arch=generic --sym=vp8_rtcd \
++      --config="$RTCD_CFG" vp8/common/rtcd_defs.pl > "$OUTPUT_DIR/vp8_rtcd.h"
++  perl build/make/rtcd.pl --arch=generic --sym=vp9_rtcd \
++      --config="$RTCD_CFG" vp9/common/vp9_rtcd_defs.pl > "$OUTPUT_DIR/vp9_rtcd.h"
++  perl build/make/rtcd.pl --arch=generic --sym=vpx_scale_rtcd \
++      --config="$RTCD_CFG" vpx_scale/vpx_scale_rtcd.pl > "$OUTPUT_DIR/vpx_scale_rtcd.h"
++  rm -f "$RTCD_CFG"
++fi
++
  cp vpx_config.h "$OUTPUT_DIR/"
  rm -f vpx_config.h
-+
-+# For x86_64, copy the configure-generated rtcd headers to output dir.
-+# For arm64/arm, pre-generated headers in armv8_config/armv7_config are used instead.
-+if [ "$CPU" == "x86_64" ]; then
-+  for rtcd_header in vp8_rtcd.h vp9_rtcd.h vpx_dsp_rtcd.h vpx_scale_rtcd.h; do
-+    if [ -f "$rtcd_header" ]; then
-+      cp "$rtcd_header" "$OUTPUT_DIR/"
-+      rm -f "$rtcd_header"
-+    fi
-+  done
-+fi
 diff --git a/docs.mk b/docs.mk
 deleted file mode 100644
 index 889d18251..000000000
@@ -1552,26 +1592,95 @@ index dd2ebeb3d..000000000
 -tools.doxy: tools.dox $(TOOLS:.c=.dox)
 -	@echo "INPUT += $^" > $@
 diff --git a/vpx_scale_rtcd.h b/vpx_scale_rtcd.h
-index 5a5657b70..58485cb00 100644
+deleted file mode 100644
+index 5a5657b70..000000000
 --- a/vpx_scale_rtcd.h
-+++ b/vpx_scale_rtcd.h
-@@ -1,5 +1,5 @@
- /*
++++ /dev/null
+@@ -1,84 +0,0 @@
+-/*
 - *  Copyright (c) 2025 The WebM project authors. All Rights Reserved.
-+ *  Copyright (c) 2026 The WebM project authors. All Rights Reserved.
-  *
-  *  Use of this source code is governed by a BSD-style license
-  *  that can be found in the LICENSE file in the root of the source
-@@ -68,12 +68,8 @@ void vpx_scale_rtcd(void);
- #include "vpx_config.h"
- 
- #ifdef RTCD_C
+- *
+- *  Use of this source code is governed by a BSD-style license
+- *  that can be found in the LICENSE file in the root of the source
+- *  tree. An additional intellectual property rights grant can be found
+- *  in the file PATENTS.  All contributing project authors may
+- *  be found in the AUTHORS file in the root of the source tree.
+- */
+-
+-// This file is generated. Do not edit.
+-#ifndef VPX_SCALE_RTCD_H_
+-#define VPX_SCALE_RTCD_H_
+-
+-#ifdef RTCD_C
+-#define RTCD_EXTERN
+-#else
+-#define RTCD_EXTERN extern
+-#endif
+-
+-struct yv12_buffer_config;
+-
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+-void vp8_horizontal_line_2_1_scale_c(const unsigned char *source, unsigned int source_width, unsigned char *dest, unsigned int dest_width);
+-#define vp8_horizontal_line_2_1_scale vp8_horizontal_line_2_1_scale_c
+-
+-void vp8_horizontal_line_5_3_scale_c(const unsigned char *source, unsigned int source_width, unsigned char *dest, unsigned int dest_width);
+-#define vp8_horizontal_line_5_3_scale vp8_horizontal_line_5_3_scale_c
+-
+-void vp8_horizontal_line_5_4_scale_c(const unsigned char *source, unsigned int source_width, unsigned char *dest, unsigned int dest_width);
+-#define vp8_horizontal_line_5_4_scale vp8_horizontal_line_5_4_scale_c
+-
+-void vp8_vertical_band_2_1_scale_c(unsigned char *source, unsigned int src_pitch, unsigned char *dest, unsigned int dest_pitch, unsigned int dest_width);
+-#define vp8_vertical_band_2_1_scale vp8_vertical_band_2_1_scale_c
+-
+-void vp8_vertical_band_2_1_scale_i_c(unsigned char *source, unsigned int src_pitch, unsigned char *dest, unsigned int dest_pitch, unsigned int dest_width);
+-#define vp8_vertical_band_2_1_scale_i vp8_vertical_band_2_1_scale_i_c
+-
+-void vp8_vertical_band_5_3_scale_c(unsigned char *source, unsigned int src_pitch, unsigned char *dest, unsigned int dest_pitch, unsigned int dest_width);
+-#define vp8_vertical_band_5_3_scale vp8_vertical_band_5_3_scale_c
+-
+-void vp8_vertical_band_5_4_scale_c(unsigned char *source, unsigned int src_pitch, unsigned char *dest, unsigned int dest_pitch, unsigned int dest_width);
+-#define vp8_vertical_band_5_4_scale vp8_vertical_band_5_4_scale_c
+-
+-void vp8_yv12_copy_frame_c(const struct yv12_buffer_config *src_ybc, struct yv12_buffer_config *dst_ybc);
+-#define vp8_yv12_copy_frame vp8_yv12_copy_frame_c
+-
+-void vp8_yv12_extend_frame_borders_c(struct yv12_buffer_config *ybf);
+-#define vp8_yv12_extend_frame_borders vp8_yv12_extend_frame_borders_c
+-
+-void vpx_extend_frame_borders_c(struct yv12_buffer_config *ybf);
+-#define vpx_extend_frame_borders vpx_extend_frame_borders_c
+-
+-void vpx_extend_frame_inner_borders_c(struct yv12_buffer_config *ybf);
+-#define vpx_extend_frame_inner_borders vpx_extend_frame_inner_borders_c
+-
+-void vpx_yv12_copy_frame_c(const struct yv12_buffer_config *src_ybc, struct yv12_buffer_config *dst_ybc);
+-#define vpx_yv12_copy_frame vpx_yv12_copy_frame_c
+-
+-void vpx_yv12_copy_y_c(const struct yv12_buffer_config *src_ybc, struct yv12_buffer_config *dst_ybc);
+-#define vpx_yv12_copy_y vpx_yv12_copy_y_c
+-
+-void vpx_scale_rtcd(void);
+-
+-#include "vpx_config.h"
+-
+-#ifdef RTCD_C
 -#include "vpx_ports/arm.h"
- static void setup_rtcd_internal(void)
- {
+-static void setup_rtcd_internal(void)
+-{
 -    int flags = arm_cpu_caps();
 -
 -    (void)flags;
- }
- #endif
- 
+-}
+-#endif
+-
+-#ifdef __cplusplus
+-}  // extern "C"
+-#endif
+-
+-#endif  // VPX_SCALE_RTCD_H_
+-- 
+2.43.0
+

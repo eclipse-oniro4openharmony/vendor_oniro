@@ -1,9 +1,12 @@
-From 37edd248da3320f5fe397f267050dc4dc2bc075e Mon Sep 17 00:00:00 2001
+From dc51b96d776bc96861d0c48b511cc4245ae02e57 Mon Sep 17 00:00:00 2001
 From: Francesco Pham <francesco.pham1@h-partners.com>
-Date: Tue, 7 Apr 2026 10:05:15 +0000
-Subject: [PATCH] disable screen timeout
+Date: Thu, 28 May 2026 11:59:23 +0200
+Subject: [PATCH] power_manager: disable screen timeout
 
-Change-Id: I74e9c06ef0181cea58d2ff7ddd29f2e5da24d982
+Keep the screen on indefinitely on dev/emulator builds. Avoids surprise lock-screen during interactive testing where the device sees no input for tens of seconds.
+
+Change-Id: I86fe5447402336223106bc39fc7f121ed3c76742
+Signed-off-by: Francesco Pham <francesco.pham1@h-partners.com>
 ---
  services/native/include/power_state_machine.h | 2 +-
  services/native/profile/power_mode_config.xml | 2 +-
@@ -36,5 +39,5 @@ index f4fcfcbc..9d507121 100644
          <switch id="103" value="-1" recover_flag="0"/>
          <switch id="107" value="1" recover_flag="0"/>
 -- 
-2.50.1
+2.43.0
 

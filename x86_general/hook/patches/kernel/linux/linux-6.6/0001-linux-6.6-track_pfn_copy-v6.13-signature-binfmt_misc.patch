@@ -1,3 +1,20 @@
+From dd5280a5ab0b5b5aa651c8fab22c72995477fc79 Mon Sep 17 00:00:00 2001
+From: Francesco Pham <francesco.pham1@h-partners.com>
+Date: Thu, 28 May 2026 11:59:58 +0200
+Subject: [PATCH] linux-6.6: track_pfn_copy v6.13 signature; binfmt_misc
+ allow_write_access
+
+Two kernel-API drift fixes:
+- track_pfn_copy() in v6.13+ takes (dst_vma, src_vma, *pfn) instead of just (vma); also add the corresponding untrack_pfn_copy() entry point that frees the reserved pfn range when the dup_mmap path errors out
+- bm_register_write() should call allow_write_access() not exe_file_allow_write_access() on the format-handler file in this kernel revision.
+
+Change-Id: I44a78de9591585b91e778df4791fd558db3ee9fc
+Signed-off-by: Francesco Pham <francesco.pham1@h-partners.com>
+---
+ arch/x86/mm/pat/memtype.c | 23 +++++++++++++++++++----
+ fs/binfmt_misc.c          |  2 +-
+ 2 files changed, 20 insertions(+), 5 deletions(-)
+
 diff --git a/arch/x86/mm/pat/memtype.c b/arch/x86/mm/pat/memtype.c
 index 36b603d0c..b2f6abec0 100644
 --- a/arch/x86/mm/pat/memtype.c
@@ -57,3 +74,6 @@ index afb50f41a..a45b5ba12 100644
  			filp_close(f, NULL);
  		}
  		kfree(e);
+-- 
+2.43.0
+
