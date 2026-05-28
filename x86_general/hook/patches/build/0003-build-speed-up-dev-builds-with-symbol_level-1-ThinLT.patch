@@ -1,0 +1,48 @@
+From 9eaf6020431fde9f461bf5d00b3ab49c2760fa63 Mon Sep 17 00:00:00 2001
+From: Francesco Pham <francesco.pham1@h-partners.com>
+Date: Thu, 28 May 2026 12:01:13 +0200
+Subject: [PATCH 3/7] build: speed up dev builds with symbol_level=1, ThinLTO
+ off by default
+
+Two dev-build defaults:
+- symbol_level lowered from -1 (auto-resolves to 2 on ohos arm64) to 1. Line-numbered backtraces preserved; .o files shrink; links speed up. Override with --gn-args symbol_level=-1 for release/perf.
+- use_thin_lto default switched from (is_cfi || is_ohos_or_android) to is_cfi only. ThinLTO adds 300-580 s of codegen per shared library link on this tree; turning it off cuts a warm full build from ~40 min to ~15 min. CFI builds still force it on. Override with --gn-args use_thin_lto=true.
+
+Change-Id: Ie650afd1949721fde0f4c9a99ee078116763b37a
+Signed-off-by: Francesco Pham <francesco.pham1@h-partners.com>
+---
+ config/compiler/compiler.gni | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/config/compiler/compiler.gni b/config/compiler/compiler.gni
+index 4cdc956d..09921896 100755
+--- a/config/compiler/compiler.gni
++++ b/config/compiler/compiler.gni
+@@ -28,7 +28,10 @@ declare_args() {
+   # appear when using this level.
+   #   0 means no symbols.
+   #   -1 means auto-set according to debug/release and platform.
+-  symbol_level = -1
++  # Default lowered from -1 (which auto-resolves to 2 on ohos arm64) to 1 for
++  # faster dev builds: line-numbered backtraces are kept, .o files shrink and
++  # links speed up. Override with `--gn-args symbol_level=-1` for release.
++  symbol_level = 1
+ 
+   # ohos-only: Strip the debug info of libraries within lib.unstripped to
+   # reduce size. As long as symbol_level > 0, this will still allow stacks to be
+@@ -56,7 +59,11 @@ declare_args() {
+   if (use_libfuzzer) {
+     use_thin_lto = is_cfi || (is_ohos_or_android && is_official_build)
+   } else {
+-    use_thin_lto = is_cfi || is_ohos_or_android
++    # ThinLTO defers optimization to link time; on this dev tree it turned
++    # single .so links into 300-580 s of codegen. Default off (was
++    # `is_cfi || is_ohos_or_android`). Override with `--gn-args
++    # use_thin_lto=true` for a release/perf build. CFI still forces it on.
++    use_thin_lto = is_cfi
+   }
+ 
+   # Tell VS to create a PDB that references information in .obj files rather
+-- 
+2.43.0
+

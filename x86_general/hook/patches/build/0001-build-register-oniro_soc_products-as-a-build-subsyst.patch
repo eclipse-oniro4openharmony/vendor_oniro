@@ -1,0 +1,30 @@
+From 9b17b8a48364cc8b15a92c40fffe9bb85ce3afb9 Mon Sep 17 00:00:00 2001
+From: Francesco Pham <francesco.pham1@h-partners.com>
+Date: Thu, 28 May 2026 12:01:04 +0200
+Subject: [PATCH 1/7] build: register oniro_soc_products as a build subsystem
+
+Adds the 'oniro_soc_products' subsystem entry pointing at device/soc/oniro, so SoC-level oniro components (display VDI, kernel, etc.) participate in the build graph.
+
+Change-Id: Iee3b9e3292721243b39810719ce87d96e7baa91c
+Signed-off-by: Francesco Pham <francesco.pham1@h-partners.com>
+---
+ subsystem_config.json | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/subsystem_config.json b/subsystem_config.json
+index 578ac460..cb2f4a8b 100644
+--- a/subsystem_config.json
++++ b/subsystem_config.json
+@@ -230,5 +230,9 @@
+   "game": {
+     "path": "domains/game",
+     "name": "game"
++  },
++  "oniro_soc_products": {
++    "path": "device/soc/oniro",
++    "name": "oniro_soc_products"
+   }
+ }
+-- 
+2.43.0
+

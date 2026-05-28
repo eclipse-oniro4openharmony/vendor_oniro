@@ -1,3 +1,16 @@
+From a9bc827f38c2597af2b95a1598f747d1c79f9907 Mon Sep 17 00:00:00 2001
+From: Francesco Pham <francesco.pham1@h-partners.com>
+Date: Thu, 28 May 2026 11:59:21 +0200
+Subject: [PATCH] appspawn: guard SELinux-only code with WITH_SELINUX
+
+Builds without SELinux (e.g. x86_general dev image) drop policycoreutils and HapContext, so wrap LoadSeLinuxConfig / CheckSpecialSpawnMode in WITH_SELINUX and stub LoadSeLinuxConfig with 'return 0' when off.
+
+Change-Id: I3fc8f205312016d0f44aeffcfb776b95c9487ba7
+Signed-off-by: Francesco Pham <francesco.pham1@h-partners.com>
+---
+ modules/common/appspawn_adapter.cpp | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
 diff --git a/modules/common/appspawn_adapter.cpp b/modules/common/appspawn_adapter.cpp
 index aa5504c8..f602d7f5 100644
 --- a/modules/common/appspawn_adapter.cpp
@@ -38,3 +51,6 @@ index aa5504c8..f602d7f5 100644
      }
  }
 +#endif
+-- 
+2.43.0
+

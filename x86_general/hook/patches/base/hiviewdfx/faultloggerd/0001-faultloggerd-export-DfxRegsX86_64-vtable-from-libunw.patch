@@ -1,3 +1,16 @@
+From 83512c78e5e5761d22f30d82e92261f9a2edd74e Mon Sep 17 00:00:00 2001
+From: Francesco Pham <francesco.pham1@h-partners.com>
+Date: Thu, 28 May 2026 11:59:10 +0200
+Subject: [PATCH] faultloggerd: export DfxRegsX86_64 vtable from libunwinder
+
+Downstream consumers (developtools/profiler native_daemon) instantiate DfxRegsX86_64 on x86_64 builds and cannot link without the vtable in the libunwinder version script.
+
+Change-Id: I617e8d0bc95be039ca9b83b581042f7d6e388006
+Signed-off-by: Francesco Pham <francesco.pham1@h-partners.com>
+---
+ interfaces/innerkits/unwinder/libunwinder.map | 1 +
+ 1 file changed, 1 insertion(+)
+
 diff --git a/interfaces/innerkits/unwinder/libunwinder.map b/interfaces/innerkits/unwinder/libunwinder.map
 index 6d956088..48365047 100644
 --- a/interfaces/innerkits/unwinder/libunwinder.map
@@ -10,3 +23,6 @@ index 6d956088..48365047 100644
        "vtable for OHOS::HiviewDFX::DfxRegsLoongArch64";
        "vtable for OHOS::HiviewDFX::RegularElfFactory";
        "vtable for OHOS::HiviewDFX::CompressHapElfFactory";
+-- 
+2.43.0
+

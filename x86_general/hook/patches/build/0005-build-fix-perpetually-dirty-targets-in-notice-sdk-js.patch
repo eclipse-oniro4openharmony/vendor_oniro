@@ -1,0 +1,85 @@
+From 7ba3c9d4b592ff67c361e41e98ce0541c359e460 Mon Sep 17 00:00:00 2001
+From: Francesco Pham <francesco.pham1@h-partners.com>
+Date: Thu, 28 May 2026 12:01:22 +0200
+Subject: [PATCH 5/7] build: fix perpetually-dirty targets in notice / sdk /
+ js_assets actions
+
+Three independent dirty-target fixes that each forced a full rebuild every build:
+- collect_module_notice_file.py: when a module has no NOTICE/license, still touch the declared output files so ninja sees the action as up-to-date.
+- parse_interface_sdk.py: accept --output-timestamp and write it, so the ohos_base_split GN action's declared timestamp output actually exists (ohos_base_split was rebuilding the SDK interface and every downstream ArkTS .abc every build).
+- build_js_assets.py: filter node_modules/.cache/ paths out of the loader-emitted depfile; the cache directory is rewritten on every loader invocation and made every HAP's js_assets.zip perpetually stale.
+
+Change-Id: Id1e99259ea72a14223553a4ffe78b85f4d1993a2
+Signed-off-by: Francesco Pham <francesco.pham1@h-partners.com>
+---
+ ohos/notice/collect_module_notice_file.py |  9 +++++++++
+ ohos/sdk/parse_interface_sdk.py           | 11 +++++++++++
+ scripts/build_js_assets.py                |  5 +++++
+ 3 files changed, 25 insertions(+)
+
+diff --git a/ohos/notice/collect_module_notice_file.py b/ohos/notice/collect_module_notice_file.py
+index af841a5f..157a3c6f 100755
+--- a/ohos/notice/collect_module_notice_file.py
++++ b/ohos/notice/collect_module_notice_file.py
+@@ -203,6 +203,15 @@ def do_collect_notice_files(options, depfiles: list):
+             notice_files = [file for file in notice_file.split(",") if file]
+ 
+             write_file_content(notice_files, options, output, notice_info_json, module_notice_info_list, depfiles)
++    elif options.output:
++        # No license/NOTICE found for this module. Still create the declared
++        # output files (empty) so ninja sees the action as up-to-date; without
++        # them the notice target is perpetually dirty and cascades a rebuild
++        # of every dependent module on every build.
++        for output in options.output:
++            os.makedirs(os.path.dirname(output), exist_ok=True)
++            build_utils.touch(output)
++            build_utils.touch('{}.json'.format(output))
+ 
+ 
+ def write_file_content(notice_files, options, output, notice_info_json, module_notice_info_list, depfiles):
+diff --git a/ohos/sdk/parse_interface_sdk.py b/ohos/sdk/parse_interface_sdk.py
+index 36785126..fb8a6cae 100755
+--- a/ohos/sdk/parse_interface_sdk.py
++++ b/ohos/sdk/parse_interface_sdk.py
+@@ -190,11 +190,22 @@ def main():
+     parser.add_argument('--build-sdk-path', required=True)
+     parser.add_argument('--sdk-check-level', required=True)
+     parser.add_argument('--sdk-api-version', required=True)
++    parser.add_argument('--output-timestamp', required=False)
+ 
+     options = parser.parse_args()
+ 
+     parse_step(options)
+ 
++    # Create the GN-declared timestamp output. Without it the ohos_base_split
++    # action is perpetually dirty and rebuilds the SDK interface (and every
++    # downstream ArkTS .abc) on every build.
++    if options.output_timestamp:
++        timestamp_dir = os.path.dirname(options.output_timestamp)
++        if timestamp_dir:
++            os.makedirs(timestamp_dir, exist_ok=True)
++        with open(options.output_timestamp, 'w'):
++            pass
++
+ 
+ if __name__ == '__main__':
+     sys.exit(main())
+diff --git a/scripts/build_js_assets.py b/scripts/build_js_assets.py
+index 075e77f9..04a337f2 100755
+--- a/scripts/build_js_assets.py
++++ b/scripts/build_js_assets.py
+@@ -253,6 +253,11 @@ def main(args):
+         else:
+             cmd.extend(['--env', 'compilerType=ark',
+                         'arkFrontendDir={}'.format(ark_es2abc_dir), 'nodeJs={}'.format(node_js)])
++        # The ace/ets loaders rewrite their node_modules/.cache directory on
++        # every run; sweeping those cache files into the depfile makes every
++        # HAP's js_assets.zip perpetually stale and forces a HAP rebuild each
++        # build. Drop cache paths -- they are build artifacts, not sources.
++        depfiles = [f for f in depfiles if "/.cache/" not in f]
+         build_utils.call_and_write_depfile_if_stale(
+             lambda: build_ace(cmd, options, js2abc, loader_home, assets_dir, assets_name),
+             options,
+-- 
+2.43.0
+

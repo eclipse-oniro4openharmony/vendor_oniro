@@ -1,18 +1,22 @@
-diff --git a/compile_standard_whitelist.json b/compile_standard_whitelist.json
-index 008ad010..521d86ae 100644
---- a/compile_standard_whitelist.json
-+++ b/compile_standard_whitelist.json
-@@ -311,7 +311,9 @@
-         "//third_party/flutter/build/skia:skia_shared",
-         "//third_party/vk-gl-cts/framework/platform/ohos/rosen_context:rosen_context",
-         "//third_party/vk-gl-cts/framework/platform:libdeqp_ohos_platform",
--        "//ide/tools/previewer:lite_previewer"
-+        "//ide/tools/previewer:lite_previewer",
-+        "//third_party/asmjit:libasmjit",
-+        "//third_party/asmjit:libasmjit_frontend_static"
-     ],
-     "external_deps_added_self_part_module": [
-         "//build/rust/tests/test_bin_crate:test_bin_crate",
+From 4b27ca46b1c3bdd973c9f29f5b6894caf6a342e5 Mon Sep 17 00:00:00 2001
+From: Francesco Pham <francesco.pham1@h-partners.com>
+Date: Thu, 28 May 2026 12:01:09 +0200
+Subject: [PATCH 2/7] build: x86_64 product support (drop is_emulator default,
+ link unwind, image dirs)
+
+Three x86_64-specific build fixes:
+- BUILDCONFIG.gn no longer auto-sets is_emulator when target_cpu == x86_64. x86_general is a real product, not an emulator profile; the auto-set was forcing emulator-only branches across the tree.
+- config/ohos/BUILD.gn links libunwind on x86_64 (same as arm/arm64/riscv64); without it C++ exception unwinding fails to link.
+- build_image.py creates /run, /var, /opt, /usr top-level dirs and adds /system/lib64 -> /lib64 symlink for x86_64 root layouts.
+
+Change-Id: I1c893fc9dc1ba60c187f67817f5cc552ef6601b7
+Signed-off-by: Francesco Pham <francesco.pham1@h-partners.com>
+---
+ config/BUILDCONFIG.gn      | 3 +--
+ config/ohos/BUILD.gn       | 2 +-
+ ohos/images/build_image.py | 5 +++--
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
 diff --git a/config/BUILDCONFIG.gn b/config/BUILDCONFIG.gn
 index 5930ced3..c87bc75f 100755
 --- a/config/BUILDCONFIG.gn
@@ -63,30 +67,6 @@ index d0ebca52..c2f16962 100755
          os.symlink('/system/lib64', os.path.join(root_dir, 'lib64'))
      os.symlink('/system/lib', os.path.join(root_dir, 'lib'))
  
-diff --git a/subsystem_config.json b/subsystem_config.json
-index 578ac460..cb2f4a8b 100644
---- a/subsystem_config.json
-+++ b/subsystem_config.json
-@@ -230,5 +230,9 @@
-   "game": {
-     "path": "domains/game",
-     "name": "game"
-+  },
-+  "oniro_soc_products": {
-+    "path": "device/soc/oniro",
-+    "name": "oniro_soc_products"
-   }
- }
-diff --git a/toolchain/mini_debug_info.py b/toolchain/mini_debug_info.py
-index 964ab1f1..9eafdd53 100755
---- a/toolchain/mini_debug_info.py
-+++ b/toolchain/mini_debug_info.py
-@@ -88,7 +88,7 @@ def create_mini_debug_info(binary_path, stripped_binary_path, root_path, clang_b
-         " --only-keep-debug " + binary_path + " " + debug_path
-     gen_mini_debug_cmd = llvm_objcopy_path + " -S --remove-section .gdb_index --remove-section .comment --keep-symbols=" + \
-         keep_path + " " + debug_path + " " + mini_debug_path
--    compress_debuginfo = "xz " + mini_debug_path
-+    compress_debuginfo = "xz -f " + mini_debug_path
-     gen_stripped_binary = llvm_objcopy_path + " --add-section .gnu_debugdata=" + \
-         mini_debug_path + ".xz " + stripped_binary_path
- 
+-- 
+2.43.0
+

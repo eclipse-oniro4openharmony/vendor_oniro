@@ -1,3 +1,16 @@
+From 285fd9152f798ab3e51f5b81276565f741b629fa Mon Sep 17 00:00:00 2001
+From: Francesco Pham <francesco.pham1@h-partners.com>
+Date: Thu, 28 May 2026 11:59:45 +0200
+Subject: [PATCH] usb_ddk: null-guard listener callback, lazy-init listener mgr
+
+Two robustness fixes in DdkListenerMgr: guard listener->callBack with NULL check before invocation (raced into a null on Bind/Init reorder), and lazy-init the listener list in DdkListenerMgrAdd so Bind can run before DdkListenerMgrInit without crashing.
+
+Change-Id: I2dcda8ed66d19af03c34afc69a4a772690887422
+Signed-off-by: Francesco Pham <francesco.pham1@h-partners.com>
+---
+ usb/ddk/host/src/ddk_pnp_listener_mgr.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
 diff --git a/usb/ddk/host/src/ddk_pnp_listener_mgr.c b/usb/ddk/host/src/ddk_pnp_listener_mgr.c
 index 0b3c9c6af..c877230af 100644
 --- a/usb/ddk/host/src/ddk_pnp_listener_mgr.c
@@ -41,3 +54,6 @@ index 0b3c9c6af..c877230af 100644
      // notify all device to listener
      struct UsbDdkDeviceHanldePriv handlePriv = {.listener = listener, .cmd = USB_PNP_NOTIFY_ADD_DEVICE};
      struct UsbDdkDeviceHanldePriv handlePriv1 = {.listener = listener, .cmd = USB_PNP_DRIVER_GADGET_ADD};
+-- 
+2.43.0
+

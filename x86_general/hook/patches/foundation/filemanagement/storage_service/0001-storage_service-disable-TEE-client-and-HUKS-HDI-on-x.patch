@@ -1,3 +1,17 @@
+From a0f20a197ea78a9e3dbb19be57b2fdf4da8b9f1a Mon Sep 17 00:00:00 2001
+From: Francesco Pham <francesco.pham1@h-partners.com>
+Date: Thu, 28 May 2026 11:59:04 +0200
+Subject: [PATCH] storage_service: disable TEE client and HUKS HDI on
+ x86_general
+
+x86_general has no secure-element / TEE hardware; mirror the existing is_emulator gate so the build does not try to link against TEE/HUKS HDIs that have no implementation.
+
+Change-Id: Ic21f7bd3704ad0a82f5c16a88427a86e9bb9172c
+Signed-off-by: Francesco Pham <francesco.pham1@h-partners.com>
+---
+ storage_service_aafwk.gni | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
 diff --git a/storage_service_aafwk.gni b/storage_service_aafwk.gni
 index 30b7f49e..a7ce28ad 100644
 --- a/storage_service_aafwk.gni
@@ -13,3 +27,6 @@ index 30b7f49e..a7ce28ad 100644
  }
  
  storage_manager_path =
+-- 
+2.43.0
+

@@ -1,3 +1,17 @@
+From fd2c15a19e734b720e4f0bc8de9202e30935055d Mon Sep 17 00:00:00 2001
+From: Francesco Pham <francesco.pham1@h-partners.com>
+Date: Thu, 28 May 2026 11:59:08 +0200
+Subject: [PATCH] usb_manager: cast UTF-16 BOM bytes to unsigned char before
+ comparing
+
+char is signed on most ABIs, so 0xFF/0xFE compare against signed char as -1/-2 and the BOM-skip branch never fires. Cast to unsigned char so the BOM is actually detected.
+
+Change-Id: Ic0545e321b39eefae4b8a54780526d9cbcf434a1
+Signed-off-by: Francesco Pham <francesco.pham1@h-partners.com>
+---
+ services/native/src/usb_host_manager.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
 diff --git a/services/native/src/usb_host_manager.cpp b/services/native/src/usb_host_manager.cpp
 index bd995fc9..08fceab0 100644
 --- a/services/native/src/usb_host_manager.cpp
@@ -11,3 +25,6 @@ index bd995fc9..08fceab0 100644
          charCount--;
          utf16leBytes += BOM_BYTE_COUNT;
          length -= BOM_BYTE_COUNT;
+-- 
+2.43.0
+

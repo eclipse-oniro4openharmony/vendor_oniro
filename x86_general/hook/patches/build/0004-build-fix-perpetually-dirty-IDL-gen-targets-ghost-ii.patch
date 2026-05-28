@@ -1,0 +1,55 @@
+From c59cc2d640d195826765daafffeda2071f33a4ef Mon Sep 17 00:00:00 2001
+From: Francesco Pham <francesco.pham1@h-partners.com>
+Date: Thu, 28 May 2026 12:01:17 +0200
+Subject: [PATCH 4/7] build: fix perpetually-dirty IDL gen targets (ghost
+ ii<name>.h output)
+
+idl_gen_interface used to track an extra 'i' + name header (the 'init_with_i' branch) as a declared sources_common output, but the actual generated file already keeps the leading 'i' from the _i_-to-i collapse so no ii<name>.h file is ever produced. ninja saw the declared output missing and re-ran the IDL action every build, cascading into a rebuild of every consumer. Drop the phantom output.
+
+Change-Id: I51857fc58d2e5c7043d05e99bae0c69ebeb0b9fb
+Signed-off-by: Francesco Pham <francesco.pham1@h-partners.com>
+---
+ config/components/idl_tool/idl.gni | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
+
+diff --git a/config/components/idl_tool/idl.gni b/config/components/idl_tool/idl.gni
+index 72427f95..61c2105c 100644
+--- a/config/components/idl_tool/idl.gni
++++ b/config/components/idl_tool/idl.gni
+@@ -213,12 +213,11 @@ template("idl_gen_interface") {
+       i = i + 1
+     }
+ 
+-    # first letter 'i'
++    # first letter 'i': collapse a leading "_i_" back into "i" so `name`
++    # keeps the interface prefix exactly once.
+     name_split = []
+     name_split = string_split(name, "_i_")
+-    init_with_i = false
+     if (name_split[0] == "") {
+-      init_with_i = true
+       name = string_replace(name, "_i_", "i", 1)
+     }
+     name_split = []
+@@ -236,12 +235,12 @@ template("idl_gen_interface") {
+ 
+     out_full_name = string_replace(idl_full_name, idl_name, name)
+ 
+-    if (init_with_i) {
+-      out_full_name_i = string_replace(idl_full_name, idl_name, "i" + name)
+-      sources_all += [ "${target_gen_dir}/" + out_full_name_i + ".h" ]
+-    } else {
+-      sources_all += [ "${target_gen_dir}/" + out_full_name + ".h" ]
+-    }
++    # For sources_common, the "_i_" -> "i" replacement above already keeps the
++    # leading interface "i" in `name`, so out_full_name is the correct header
++    # stem (matching the generated .cpp). The old init_with_i branch prepended
++    # another "i", declaring a phantom "ii<name>.h" output that never matched
++    # the generated file -- leaving every common-IDL target perpetually dirty.
++    sources_all += [ "${target_gen_dir}/" + out_full_name + ".h" ]
+     sources_all += [ "${target_gen_dir}/" + out_full_name + ".cpp" ]
+     sources_proxy += [ "${target_gen_dir}/" + out_full_name + ".cpp" ]
+     sources_stub += [ "${target_gen_dir}/" + out_full_name + ".cpp" ]
+-- 
+2.43.0
+
