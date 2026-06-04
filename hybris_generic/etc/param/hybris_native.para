@@ -15,3 +15,16 @@ persist.hdc.mode.tcp = "enable"
 # Developer mode (Phase N7.2). On unset, hdcd accepts the FFS endpoint binding
 # but rejects all inbound shell connections — see project memory hdc_connection.
 const.security.developermode.state = "true"
+
+# Enable the phone launcher's windowAnimationManager controller, which claims
+# the WMS remote-animation slot: it renders the appearing app via a RemoteWindow
+# proxy (so apps still open) and no-ops minimize/close, so the legacy default
+# app-close zoom (window_manager_config.xml <windowAnimation>) never plays —
+# leaving the systemui swipe-up gesture as the sole home animation (no duplicate
+# zoom). Gated by EntryView so it stays a kill-switch; requires the graphic_2d
+# rs_window_animation_controller thread-safety fix to be present (it is, in
+# tree) or the launcher crash-loops in libace_napi. NB: while this controller is
+# registered, reopening a backgrounded app blanks the status bar ~1.2s (the
+# remote-animation path hits the build's RS/vsync stall) — accepted limitation.
+# See project memory winanim_controller_native_boot.
+persist.oniro.winanim_controller = "1"
