@@ -215,6 +215,10 @@
         {
             "app_dir": "/system/app/com.ohos.security.privacycenter",
             "removable": true
+        },
+        {
+            "app_dir": "/system/app/org.oniroproject.oniro_appstore",
+            "removable": true
         }
     ]
 }
