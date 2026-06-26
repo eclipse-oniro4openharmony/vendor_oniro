@@ -1,0 +1,141 @@
+# Copyright (c) 2026 Eclipse Oniro for OpenHarmony contributors.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Oniro distribution-flavor HAP set (the "oniro_ui_flavor == oniro" content).
+#
+# These prebuilt_etc targets install the Oniro-customized system HAPs that the
+# stock applications/standard/hap targets are swapped out for when the Oniro UI
+# flavor is selected (see applications/standard/hap/BUILD.gn). The HAP binaries
+# under haps/ are NOT committed — they are produced on demand by the colocated
+# build-oniro-haps.sh (which clones each app from its pinned remote in
+# oniro-haps.json). part_name/subsystem deliberately stay
+# "prebuilt_hap"/"applications" so these targets belong to the same part as the
+# stock HAPs they replace.
+
+import("//build/ohos.gni")
+
+declare_args() {
+  # Include the FlorisBoard IME in the Oniro custom HAP set. Requires
+  # haps/FlorisBoard.hap to have been produced by build-oniro-haps.sh
+  # (set to false, or pass --no-floris to the driver, to omit it).
+  oniro_include_florisboard = true
+}
+
+# NOTE: the HAP binaries under haps/ are produced on demand by the colocated
+# build-oniro-haps.sh and are NOT committed. If they are missing when the Oniro
+# flavor is selected, gn/ninja fails on the missing prebuilt_etc `source` input
+# below — run vendor/oniro/oniro-haps/build-oniro-haps.sh first (see README.md).
+# (A gn-gen exec_script preflight was intentionally dropped: OHOS restricts
+# exec_script to the //.gn allowlist, which we don't want to modify here.)
+
+# --- SystemUI ----------------------------------------------------------------
+ohos_prebuilt_etc("systemui_hap") {
+  source = "haps/SystemUI.hap"
+  module_install_dir = "app/com.ohos.systemui"
+  part_name = "prebuilt_hap"
+  subsystem_name = "applications"
+}
+ohos_prebuilt_etc("dropdownPanel_hap") {
+  source = "haps/SystemUI-DropdownPanel.hap"
+  module_install_dir = "app/com.ohos.systemui"
+  part_name = "prebuilt_hap"
+  subsystem_name = "applications"
+}
+ohos_prebuilt_etc("statusBar_hap") {
+  source = "haps/SystemUI-StatusBar.hap"
+  module_install_dir = "app/com.ohos.systemui"
+  part_name = "prebuilt_hap"
+  subsystem_name = "applications"
+}
+ohos_prebuilt_etc("gestureNavigation_hap") {
+  source = "haps/SystemUI-GestureNavigation.hap"
+  module_install_dir = "app/com.ohos.systemui"
+  part_name = "prebuilt_hap"
+  subsystem_name = "applications"
+}
+ohos_prebuilt_etc("navigationBar_hap") {
+  source = "haps/SystemUI-NavigationBar.hap"
+  module_install_dir = "app/com.ohos.systemui"
+  part_name = "prebuilt_hap"
+  subsystem_name = "applications"
+}
+ohos_prebuilt_etc("notificationManagement_hap") {
+  source = "haps/SystemUI-NotificationManagement.hap"
+  module_install_dir = "app/com.ohos.systemui"
+  part_name = "prebuilt_hap"
+  subsystem_name = "applications"
+}
+ohos_prebuilt_etc("volumePanel_hap") {
+  source = "haps/SystemUI-VolumePanel.hap"
+  module_install_dir = "app/com.ohos.systemui"
+  part_name = "prebuilt_hap"
+  subsystem_name = "applications"
+}
+ohos_prebuilt_etc("systemDialog_hap") {
+  source = "haps/SystemUI-SystemDialog.hap"
+  module_install_dir = "app/com.ohos.systemui"
+  part_name = "prebuilt_hap"
+  subsystem_name = "applications"
+}
+
+# --- Launcher ----------------------------------------------------------------
+ohos_prebuilt_etc("launcher_hap") {
+  source = "haps/Launcher.hap"
+  module_install_dir = "app/com.ohos.launcher"
+  part_name = "prebuilt_hap"
+  subsystem_name = "applications"
+}
+ohos_prebuilt_etc("launcher_settings_hap") {
+  source = "haps/Launcher_Settings.hap"
+  module_install_dir = "app/com.ohos.launcher"
+  part_name = "prebuilt_hap"
+  subsystem_name = "applications"
+}
+
+# --- Settings ----------------------------------------------------------------
+ohos_prebuilt_etc("settings_hap") {
+  source = "haps/Settings.hap"
+  module_install_dir = "app/com.ohos.settings"
+  part_name = "prebuilt_hap"
+  subsystem_name = "applications"
+}
+
+# --- Oniro app store (f-oh) --------------------------------------------------
+# Preinstalled into /system/app/<bundle>/; BMS picks it up at first boot via the
+# matching entry in vendor/oniro/hybris_generic/preinstall-config/install_list.json.
+ohos_prebuilt_etc("oniro_appstore_hap") {
+  source = "haps/oniro-appstore.hap"
+  module_install_dir = "app/org.oniroproject.oniro_appstore"
+  part_name = "prebuilt_hap"
+  subsystem_name = "applications"
+}
+
+# --- FlorisBoard IME (optional) ----------------------------------------------
+if (oniro_include_florisboard) {
+  ohos_prebuilt_etc("florisboard_hap") {
+    source = "haps/FlorisBoard.hap"
+    module_install_dir = "app/dev.patrickgold.florisboard"
+    part_name = "prebuilt_hap"
+    subsystem_name = "applications"
+  }
+}
+
+group("oniro_custom_haps") {
+  deps = [
+    ":dropdownPanel_hap",
+    ":gestureNavigation_hap",
+    ":launcher_hap",
+    ":launcher_settings_hap",
+    ":navigationBar_hap",
+    ":notificationManagement_hap",
+    ":oniro_appstore_hap",
+    ":settings_hap",
+    ":statusBar_hap",
+    ":systemDialog_hap",
+    ":systemui_hap",
+    ":volumePanel_hap",
+  ]
+  if (oniro_include_florisboard) {
+    deps += [ ":florisboard_hap" ]
+  }
+}

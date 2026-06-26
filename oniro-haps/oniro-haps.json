@@ -1,0 +1,95 @@
+{
+  "_comment": [
+    "Pinned descriptor AND provenance for the Oniro distribution-flavor HAP set.",
+    "This single committed file is the Eclipse Bucket-4a provenance: per app it",
+    "pins git + branch + sha (source-repo / source-sha), the global build_cmd, and",
+    "the license. build-oniro-haps.sh consumes it to CLONE each app from its pinned",
+    "remote into out/oniro-haps/src/<app> and build that, so the release is",
+    "reproducible from upstream (not from local working-tree state).",
+    "",
+    "The built HAP binaries are NOT committed (see haps/.gitignore); only this file",
+    "is. A signed HAP is not bit-reproducible (hapsigner nonce) and Eclipse does not",
+    "redistribute it, so no per-HAP sha256 is pinned here; the driver writes",
+    "haps/SHA256SUMS (gitignored) for local verification.",
+    "",
+    "'output' is the EXACT signed-HAP filename hvigor emits for that module. The",
+    "-phone_entry-/-pad_launcher- infix disambiguates the wanted variant from the",
+    "co-built ones. Signing is deterministic and host-independent: the driver nulls",
+    "each app's embedded signingConfig (encrypted passwords tied to per-machine",
+    "DevEco material fail off-host), builds the UNSIGNED hap, then signs with the",
+    "public OpenHarmony test keys (developtools/hapsigner, password 123456) at the",
+    "app's 'apl'; bundle name comes from each module's install_dir.",
+    "",
+    "RELEASE TODO: systemui/launcher/settings/florisboard 'git' point at personal",
+    "frankplus forks; re-point to eclipse-oniro4openharmony/* and re-pin 'sha'."
+  ],
+  "haps_dir": "vendor/oniro/oniro-haps/haps",
+  "build_cmd": "hvigorw assembleHap --mode module -p product=default -p debuggable=false --no-daemon",
+  "apps": [
+    {
+      "name": "systemui",
+      "git": "https://github.com/frankplus/applications_systemui.git",
+      "branch": "oniro",
+      "sha": "ede8181ef46ce76a34a633fa1e2ea09f46d67e82",
+      "apl": "system_core",
+      "license": "Apache-2.0",
+      "modules": [
+        { "srcPath": "./entry/phone",                           "output": "phone_entry-default-signed.hap",                              "dest": "SystemUI.hap",                        "install_dir": "app/com.ohos.systemui" },
+        { "srcPath": "./product/phone/dropdownpanel",            "output": "phone_dropdownpanel-phone_entry-default-signed.hap",           "dest": "SystemUI-DropdownPanel.hap",          "install_dir": "app/com.ohos.systemui" },
+        { "srcPath": "./product/phone/statusbar",               "output": "phone_statusbar-phone_entry-default-signed.hap",               "dest": "SystemUI-StatusBar.hap",              "install_dir": "app/com.ohos.systemui" },
+        { "srcPath": "./product/phone/gestureNavigation",       "output": "phone_gestureNavigation-phone_entry-default-signed.hap",       "dest": "SystemUI-GestureNavigation.hap",      "install_dir": "app/com.ohos.systemui" },
+        { "srcPath": "./product/default/navigationBar",         "output": "default_navigationBar-phone_entry-default-signed.hap",         "dest": "SystemUI-NavigationBar.hap",          "install_dir": "app/com.ohos.systemui" },
+        { "srcPath": "./product/default/notificationmanagement","output": "default_notificationmanagement-phone_entry-default-signed.hap", "dest": "SystemUI-NotificationManagement.hap", "install_dir": "app/com.ohos.systemui" },
+        { "srcPath": "./product/default/volumepanel",           "output": "default_volumepanel-phone_entry-default-signed.hap",           "dest": "SystemUI-VolumePanel.hap",            "install_dir": "app/com.ohos.systemui" },
+        { "srcPath": "./product/default/dialog",                "output": "default_dialog-phone_entry-default-signed.hap",                "dest": "SystemUI-SystemDialog.hap",           "install_dir": "app/com.ohos.systemui" }
+      ]
+    },
+    {
+      "name": "launcher",
+      "git": "https://github.com/frankplus/applications_launcher.git",
+      "branch": "oniro",
+      "sha": "c93a727530d62b2fa18540643ba0df34a2b56bc2",
+      "apl": "system_core",
+      "license": "Apache-2.0",
+      "modules": [
+        { "srcPath": "./product/phone",    "output": "phone_launcher-default-signed.hap",                "dest": "Launcher.hap",          "install_dir": "app/com.ohos.launcher" },
+        { "srcPath": "./feature/settings", "output": "launcher_settings-pad_launcher-default-signed.hap", "dest": "Launcher_Settings.hap", "install_dir": "app/com.ohos.launcher" }
+      ]
+    },
+    {
+      "name": "settings",
+      "git": "https://github.com/frankplus/applications_settings.git",
+      "branch": "oniro",
+      "sha": "54bb1f020f898f4cdfc8a88f2ac12d1aaa3b467f",
+      "apl": "system_core",
+      "license": "Apache-2.0",
+      "modules": [
+        { "srcPath": "./product/phone", "output": "phone-default-signed.hap", "dest": "Settings.hap", "install_dir": "app/com.ohos.settings" }
+      ]
+    },
+    {
+      "name": "appstore",
+      "git": "https://github.com/eclipse-oniro4openharmony/f-oh.git",
+      "branch": "oniro",
+      "sha": "6c1b97437170dd95ae62a80198c21cbb42b2e008",
+      "apl": "normal",
+      "license": "Apache-2.0",
+      "modules": [
+        { "srcPath": "./entry", "output": "entry-default-signed.hap", "dest": "oniro-appstore.hap", "install_dir": "app/org.oniroproject.oniro_appstore" }
+      ]
+    },
+    {
+      "name": "florisboard",
+      "git": "https://github.com/frankplus/Floris-OH.git",
+      "branch": "main",
+      "sha": "b347c32c37f89b34af0daf99881fd57f2f64c961",
+      "apl": "normal",
+      "license": "Apache-2.0",
+      "optional": true,
+      "_note": "Optional IME. Gated in BUILD.gn by oniro_include_florisboard; the gn-gen preflight does not require it.",
+      "modules": [
+        { "srcPath": "./entry", "output": "entry-default-signed.hap", "dest": "FlorisBoard.hap", "install_dir": "app/dev.patrickgold.florisboard" }
+      ]
+    }
+  ]
+}
