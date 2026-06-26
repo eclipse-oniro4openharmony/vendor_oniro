@@ -37,20 +37,11 @@ ohos_prebuilt_etc("install_list_permissions_config") {
   part_name = "product_hybris_generic"
 }
 
-# Prebuilt Oniro app store HAP, preinstalled into /system/app/<bundleName>/.
-# BMS picks it up at first boot via the matching entry in install_list.json.
-ohos_prebuilt_etc("oniro_appstore_hap") {
-  source = "./haps/oniro-appstore.hap"
-  module_install_dir = "app/org.oniroproject.oniro_appstore"
-  part_name = "product_hybris_generic"
-}
-
 group("preinstall-config") {
   deps = [
     ":install_list_capability_config",
     ":install_list_config",
     ":install_list_permissions_config",
-    ":oniro_appstore_hap",
     ":uninstall_list_config",
   ]
 }

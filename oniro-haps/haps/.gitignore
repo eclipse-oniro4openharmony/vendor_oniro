@@ -1,0 +1,6 @@
+# The Oniro flavor HAPs are built on demand by build-oniro-haps.sh (cloned from
+# the pinned remotes in oniro-haps.json) and are intentionally NOT committed.
+# Eclipse release model: no published binaries; the consumer reproduces locally.
+# Provenance lives in ../oniro-haps.json (committed); checksums in SHA256SUMS.
+*.hap
+SHA256SUMS
