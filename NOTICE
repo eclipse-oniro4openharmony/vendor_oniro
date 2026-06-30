@@ -1,0 +1,39 @@
+# Notices for Eclipse Oniro for OpenHarmony
+
+This content is produced and maintained by the Eclipse Oniro for OpenHarmony
+project (product / vendor configuration).
+
+## Source Code
+
+The project maintains the following source code repository for this content:
+
+* https://github.com/eclipse-oniro4openharmony/vendor_oniro
+
+## Copyright
+
+All content is the property of the respective authors or their employers. For
+more information regarding authorship of content, please consult the listed
+source code repository logs.
+
+## Declared Project License
+
+This program and the accompanying materials are made available under the terms
+of the Apache License, Version 2.0, which is available at
+https://www.apache.org/licenses/LICENSE-2.0.
+
+    SPDX-License-Identifier: Apache-2.0
+
+## Third-party Content
+
+OpenHarmony default boot animation assets
+* Files: hybris_generic/custom_conf/bootanimation/bootpic.zip (OH_bootAni frames)
+* License: Apache-2.0
+* Project: https://gitee.com/openharmony
+
+Oniro distribution-flavor HAP set
+* The Oniro-customized system apps (SystemUI, Launcher, Settings, the Oniro app
+  store, and the FlorisBoard IME port) are NOT committed as binaries. They are
+  cloned and built from source at the git revisions pinned in
+  oniro-haps/oniro-haps.json, which records the source repository, commit, build
+  command, and license for each. All are licensed Apache-2.0.
+* See: oniro-haps/oniro-haps.json, oniro-haps/README.md

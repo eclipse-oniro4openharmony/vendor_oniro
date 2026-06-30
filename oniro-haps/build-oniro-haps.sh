@@ -36,7 +36,7 @@ SHASUMS="${OUT_DIR}/SHA256SUMS"
 SRC_CACHE="${ROOT}/out/oniro-haps/src"   # cloned sources (gitignored out/)
 
 # --- defaults / flags --------------------------------------------------------
-SDK="${OHOS_SDK_HOME:-/home/mrfrank/setup-ohos-sdk/linux}"
+SDK="${OHOS_SDK_HOME:-$HOME/setup-ohos-sdk/linux}"
 ONLY_APPS=()
 NO_APPSTORE=0
 NO_FLORIS=0
@@ -53,7 +53,7 @@ Usage: $(basename "$0") [options]
   --force-deps    Always run 'ohpm install' even if oh_modules/ exists
   --skip-deps     Never run 'ohpm install' (only for a warm cached clone)
   --sdk PATH      OpenHarmony SDK base dir (default: \$OHOS_SDK_HOME or
-                  /home/mrfrank/setup-ohos-sdk/linux)
+                  \$HOME/setup-ohos-sdk/linux)
   -h, --help      This help
 EOF
 }

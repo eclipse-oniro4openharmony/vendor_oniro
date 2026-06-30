@@ -24,9 +24,10 @@ binaries; the consumer reproduces locally). Build them from the pinned remotes:
 # 1. Clone each app from its pinned remote (oniro-haps.json) and build (writes haps/*.hap):
 bash vendor/oniro/oniro-haps/build-oniro-haps.sh
 
-# 2. Build the image — it copies the just-built HAPs into system.img:
-sudo docker exec -u root -w /home/openharmony/workdir 0bb7ce2c1ccc \
-    ./build.sh --product-name hybris_generic --ccache
+# 2. Build the image — it copies the just-built HAPs into system.img.
+#    (Run from your OHOS build environment; if you build inside a container,
+#    exec into it first, e.g. `docker exec -u root -w /home/openharmony/workdir <container> ...`.)
+./build.sh --product-name hybris_generic --ccache
 ```
 
 The driver clones each app's pinned `git`+`branch`+`sha` into
