@@ -20,8 +20,9 @@
     "public OpenHarmony test keys (developtools/hapsigner, password 123456) at the",
     "app's 'apl'; bundle name comes from each module's install_dir.",
     "",
-    "RELEASE TODO: systemui/launcher/settings/florisboard 'git' point at personal",
-    "frankplus forks; re-point to eclipse-oniro4openharmony/* and re-pin 'sha'."
+    "NOTE: The Oniro UI flavor is opt-in (oniro_ui_flavor=oniro) and is NOT built",
+    "by the default 'stock' release build, so the app 'git' sources pinned below",
+    "are outside the release IP scope."
   ],
   "haps_dir": "vendor/oniro/oniro-haps/haps",
   "build_cmd": "hvigorw assembleHap --mode module -p product=default -p debuggable=false --no-daemon",

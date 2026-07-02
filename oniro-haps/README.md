@@ -24,10 +24,11 @@ binaries; the consumer reproduces locally). Build them from the pinned remotes:
 # 1. Clone each app from its pinned remote (oniro-haps.json) and build (writes haps/*.hap):
 bash vendor/oniro/oniro-haps/build-oniro-haps.sh
 
-# 2. Build the image — it copies the just-built HAPs into system.img.
+# 2. Build the image with the Oniro flavor selected — it copies the just-built
+#    HAPs into system.img. (stock is the default, so the flavor must be requested.)
 #    (Run from your OHOS build environment; if you build inside a container,
 #    exec into it first, e.g. `docker exec -u root -w /home/openharmony/workdir <container> ...`.)
-./build.sh --product-name hybris_generic --ccache
+./build.sh --product-name hybris_generic --ccache --gn-args 'oniro_ui_flavor="oniro"'
 ```
 
 The driver clones each app's pinned `git`+`branch`+`sha` into
@@ -45,12 +46,15 @@ A `gn` arg, declared in `applications/standard/hap/BUILD.gn`, selects the UI:
 
 | `oniro_ui_flavor` | Result |
 |---|---|
-| `oniro` (default for `hybris_generic` / `x86_general`) | Oniro custom HAPs from this dir |
-| `stock` | Upstream OpenHarmony HAPs in `applications/standard/hap` (no step 1 needed) |
-| `default` (other products) | Resolves to `stock` |
+| `stock` (default, all products) | Upstream OpenHarmony HAPs in `applications/standard/hap` (no step 1 needed) |
+| `oniro` | Oniro custom HAPs from this dir (requires step 1) |
+| `default` | Back-compat alias for `stock` |
+
+`stock` is the default for **every** product, so the release build never depends
+on the Oniro custom HAP sources. Opt into the Oniro custom UI explicitly:
 
 ```bash
-./build.sh --product-name hybris_generic --ccache --gn-args 'oniro_ui_flavor="stock"'
+./build.sh --product-name hybris_generic --ccache --gn-args 'oniro_ui_flavor="oniro"'
 ```
 
 FlorisBoard is gated by `oniro_include_florisboard` (default `true`); pass
@@ -71,10 +75,12 @@ nonce and is not bit-reproducible, and Eclipse does not redistribute it); the
 reproducible invariant is *pinned source sha + build-cmd*. `haps/SHA256SUMS`
 (gitignored) records the checksums of a given local build for verification.
 
-> **Release note:** the `git` for systemui/launcher/settings/florisboard currently
-> points at personal `frankplus/*` forks. Re-point to
-> `eclipse-oniro4openharmony/*` and re-pin `sha` before tagging. (`f-oh` is already
-> on the Eclipse org.)
+> **Release note:** the Oniro UI flavor is an **opt-in developer flavor**, not part
+> of the default release build (which is `stock`, per
+> `applications/standard/hap/BUILD.gn`). Its `git` sources for
+> systemui/launcher/settings/florisboard (pinned in `oniro-haps.json`) are built
+> only on explicit opt-in; because the default release does not build or
+> redistribute them, they are outside the release IP scope.
 
 > `SystemUI-ScreenLock.hap` is **not** part of this set — it stays stock (from
 > `applications/standard/screenlock`) and remains in `applications/standard/hap`.
