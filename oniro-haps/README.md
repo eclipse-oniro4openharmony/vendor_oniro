@@ -8,11 +8,24 @@ flavor** at build time swaps the stock OpenHarmony HAPs in
 
 ```
 oniro-haps/
-  oniro-haps.json        descriptor + Bucket-4a provenance (committed)
+  oniro-haps.json        SINGLE SOURCE OF TRUTH: descriptor + Bucket-4a provenance
   build-oniro-haps.sh    clones each app from its pinned remote and builds it
-  BUILD.gn               group("oniro_custom_haps") prebuilt_etc targets
+  BUILD.gn               generates one prebuilt_etc per descriptor module
+                         (read_file of oniro-haps.json) + group("oniro_custom_haps")
+  patches/               the oniro_ui_flavor gn switch for applications/standard/hap
   haps/                  built HAPs + SHA256SUMS (gitignored — not committed)
 ```
+
+The HAP set is defined **once**, in `oniro-haps.json`: both the driver script
+and `BUILD.gn` read it, so adding/removing an app or module is a
+descriptor-only change.
+
+**All Oniro distribution modifications are constrained to this directory.**
+`applications/standard/hap` stays a **pristine OpenHarmony mirror** in the
+manifest; the gn switch it needs is carried here as
+`patches/0001-hap-add-oniro_ui_flavor-switch.patch` and applied to the *local
+checkout only* by `build-oniro-haps.sh` (step 1 below). A consumer who never
+opts in never touches the mirror.
 
 ## No committed binaries — clone & build
 
@@ -21,7 +34,10 @@ source + provenance live in git, matching the Eclipse release model (no publishe
 binaries; the consumer reproduces locally). Build them from the pinned remotes:
 
 ```bash
-# 1. Clone each app from its pinned remote (oniro-haps.json) and build (writes haps/*.hap):
+# 1. Clone each app from its pinned remote (oniro-haps.json) and build (writes haps/*.hap).
+#    Also applies patches/0001-hap-add-oniro_ui_flavor-switch.patch to the local
+#    applications/standard/hap checkout (no-op if already applied; revert with
+#    `git -C applications/standard/hap checkout -- BUILD.gn`).
 bash vendor/oniro/oniro-haps/build-oniro-haps.sh
 
 # 2. Build the image with the Oniro flavor selected — it copies the just-built
@@ -34,15 +50,17 @@ bash vendor/oniro/oniro-haps/build-oniro-haps.sh
 The driver clones each app's pinned `git`+`branch`+`sha` into
 `out/oniro-haps/src/<app>` (cached, reused when already at the pinned sha), so the
 build never depends on local working-tree state. This needs network (git clone +
-`ohpm install` on a fresh clone). Flags: `--app <name>`, `--no-appstore`,
-`--no-floris`, `--force-deps`, `--skip-deps`, `--sdk PATH`.
+`ohpm install` on a fresh clone). Flags: `--app <name>`, `--skip <name>`
+(both repeatable), `--force-deps`, `--skip-deps`, `--sdk PATH`.
 
 If you skip step 1, the build fails when ninja cannot find a HAP `source` under
 `haps/` (an `ohos_prebuilt_etc` missing-input error) — re-run step 1 to fix it.
 
 ## Choosing the flavor
 
-A `gn` arg, declared in `applications/standard/hap/BUILD.gn`, selects the UI:
+A `gn` arg selects the UI. It is **not** part of the upstream
+`applications/standard/hap` mirror — it is added to the local checkout's
+`BUILD.gn` by the patch this directory carries (applied by step 1):
 
 | `oniro_ui_flavor` | Result |
 |---|---|
@@ -57,10 +75,10 @@ on the Oniro custom HAP sources. Opt into the Oniro custom UI explicitly:
 ./build.sh --product-name hybris_generic --ccache --gn-args 'oniro_ui_flavor="oniro"'
 ```
 
-FlorisBoard is gated by `oniro_include_florisboard` (default `true`); pass
-`--gn-args 'oniro_include_florisboard=false'` (and the driver's `--no-floris`) to
-omit it. It is marked `optional` in the descriptor so the driver does not abort
-when it is skipped.
+Apps marked `"optional": true` in the descriptor (currently only FlorisBoard)
+are gated by the `oniro_include_florisboard` gn arg (default `true`); pass
+`--gn-args 'oniro_include_florisboard=false'` (and the driver's
+`--skip florisboard`) to omit them.
 
 ## Provenance (Eclipse Bucket 4a)
 
@@ -76,8 +94,9 @@ reproducible invariant is *pinned source sha + build-cmd*. `haps/SHA256SUMS`
 (gitignored) records the checksums of a given local build for verification.
 
 > **Release note:** the Oniro UI flavor is an **opt-in developer flavor**, not part
-> of the default release build (which is `stock`, per
-> `applications/standard/hap/BUILD.gn`). Its `git` sources for
+> of the default release build (which is `stock`). The flavor switch does not
+> exist in the pristine `applications/standard/hap` mirror the manifest pins — it
+> is applied locally from `patches/` only when opting in. Its `git` sources for
 > systemui/launcher/settings/florisboard (pinned in `oniro-haps.json`) are built
 > only on explicit opt-in; because the default release does not build or
 > redistribute them, they are outside the release IP scope.

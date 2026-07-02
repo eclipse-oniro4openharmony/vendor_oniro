@@ -7,6 +7,12 @@
     "remote into out/oniro-haps/src/<app> and build that, so the release is",
     "reproducible from upstream (not from local working-tree state).",
     "",
+    "SINGLE SOURCE OF TRUTH: the colocated BUILD.gn also reads this file",
+    "(read_file at gn-gen time) and generates one ohos_prebuilt_etc per module",
+    "from 'dest' + 'install_dir' (target name = dest with .hap -> _hap); apps",
+    "with 'optional': true are gated by the oniro_include_florisboard gn arg.",
+    "Renaming these keys is a BUILD.gn interface change.",
+    "",
     "The built HAP binaries are NOT committed (see haps/.gitignore); only this file",
     "is. A signed HAP is not bit-reproducible (hapsigner nonce) and Eclipse does not",
     "redistribute it, so no per-HAP sha256 is pinned here; the driver writes",
@@ -22,7 +28,9 @@
     "",
     "NOTE: The Oniro UI flavor is opt-in (oniro_ui_flavor=oniro) and is NOT built",
     "by the default 'stock' release build, so the app 'git' sources pinned below",
-    "are outside the release IP scope."
+    "are outside the release IP scope. The flavor gn switch is NOT in the pristine",
+    "applications/standard/hap mirror; build-oniro-haps.sh applies it to the local",
+    "checkout from patches/0001-hap-add-oniro_ui_flavor-switch.patch."
   ],
   "haps_dir": "vendor/oniro/oniro-haps/haps",
   "build_cmd": "hvigorw assembleHap --mode module -p product=default -p debuggable=false --no-daemon",
@@ -87,7 +95,7 @@
       "apl": "normal",
       "license": "Apache-2.0",
       "optional": true,
-      "_note": "Optional IME. Gated in BUILD.gn by oniro_include_florisboard; the gn-gen preflight does not require it.",
+      "_note": "Optional IME. 'optional': true makes BUILD.gn gate it behind the oniro_include_florisboard gn arg; skip building it with --skip florisboard.",
       "modules": [
         { "srcPath": "./entry", "output": "entry-default-signed.hap", "dest": "FlorisBoard.hap", "install_dir": "app/dev.patrickgold.florisboard" }
       ]

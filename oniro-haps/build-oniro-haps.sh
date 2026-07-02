@@ -19,6 +19,12 @@
 # The stock flavor needs no step 1 (it uses the upstream applications/standard/hap
 # prebuilts) — see README.md.
 #
+# applications/standard/hap stays a PRISTINE OpenHarmony mirror in the manifest:
+# the oniro_ui_flavor gn switch it needs is carried here as
+# patches/0001-hap-add-oniro_ui_flavor-switch.patch and applied by this script to
+# the LOCAL checkout only (step 1). Revert with:
+#   git -C applications/standard/hap checkout -- BUILD.gn
+#
 # Signing is deterministic and host-independent: the driver nulls each app's
 # embedded signingConfig (whose encrypted passwords are tied to per-machine DevEco
 # material and fail off-host), builds the UNSIGNED hap, then signs with the public
@@ -38,8 +44,7 @@ SRC_CACHE="${ROOT}/out/oniro-haps/src"   # cloned sources (gitignored out/)
 # --- defaults / flags --------------------------------------------------------
 SDK="${OHOS_SDK_HOME:-$HOME/setup-ohos-sdk/linux}"
 ONLY_APPS=()
-NO_APPSTORE=0
-NO_FLORIS=0
+SKIP_APPS=()
 FORCE_DEPS=0
 SKIP_DEPS=0
 
@@ -48,8 +53,8 @@ usage() {
 Usage: $(basename "$0") [options]
 
   --app NAME      Build only this app (repeatable). Default: all in oniro-haps.json
-  --no-appstore   Skip the Oniro app store (f-oh)
-  --no-floris     Skip FlorisBoard
+  --skip NAME     Skip this app (repeatable), e.g. --skip florisboard
+                  (pair with the matching gn arg, see README.md)
   --force-deps    Always run 'ohpm install' even if oh_modules/ exists
   --skip-deps     Never run 'ohpm install' (only for a warm cached clone)
   --sdk PATH      OpenHarmony SDK base dir (default: \$OHOS_SDK_HOME or
@@ -61,8 +66,7 @@ EOF
 while [ $# -gt 0 ]; do
   case "$1" in
     --app)         ONLY_APPS+=("$2"); shift 2 ;;
-    --no-appstore) NO_APPSTORE=1; shift ;;
-    --no-floris)   NO_FLORIS=1; shift ;;
+    --skip)        SKIP_APPS+=("$2"); shift 2 ;;
     --force-deps)  FORCE_DEPS=1; shift ;;
     --skip-deps)   SKIP_DEPS=1; shift ;;
     --sdk)         SDK="$2"; shift 2 ;;
@@ -89,14 +93,32 @@ SIGN_DIST="${ROOT}/developtools/hapsigner/dist"
 BUILD_CMD="$(jq -r '.build_cmd' "$DESC")"
 
 want_app() {
-  local name="$1"
+  local name="$1" a
   if [ "${#ONLY_APPS[@]}" -gt 0 ]; then
-    local a; for a in "${ONLY_APPS[@]}"; do [ "$a" = "$name" ] && return 0; done
+    for a in "${ONLY_APPS[@]}"; do [ "$a" = "$name" ] && return 0; done
     return 1
   fi
-  [ "$name" = "appstore" ] && [ "$NO_APPSTORE" -eq 1 ] && return 1
-  [ "$name" = "florisboard" ] && [ "$NO_FLORIS" -eq 1 ] && return 1
+  for a in "${SKIP_APPS[@]+"${SKIP_APPS[@]}"}"; do [ "$a" = "$name" ] && return 1; done
   return 0
+}
+
+# Apply the oniro_ui_flavor gn switch to the local applications/standard/hap
+# checkout. The mirror repo is pristine upstream OpenHarmony; the switch that
+# consumes group("oniro_custom_haps") lives here as a patch so all Oniro
+# distribution modifications stay constrained to vendor/oniro/oniro-haps.
+apply_flavor_switch() {
+  local hap_dir="${ROOT}/applications/standard/hap"
+  local patch="${SCRIPT_DIR}/patches/0001-hap-add-oniro_ui_flavor-switch.patch"
+  [ -f "${hap_dir}/BUILD.gn" ] || die "applications/standard/hap not found in the tree (repo sync?)"
+  [ -f "$patch" ] || die "flavor-switch patch missing: $patch"
+  if grep -q 'oniro_ui_flavor' "${hap_dir}/BUILD.gn"; then
+    log "flavor switch already present in applications/standard/hap/BUILD.gn"
+    return 0
+  fi
+  git -C "$hap_dir" apply --check "$patch" 2>/dev/null \
+    || die "flavor-switch patch no longer applies (upstream BUILD.gn changed?) — refresh ${patch#$ROOT/}"
+  git -C "$hap_dir" apply "$patch"
+  log "applied ${patch#$ROOT/} to applications/standard/hap/BUILD.gn (local checkout only)"
 }
 
 # Clone (or reuse) the pinned source for app $idx -> sets SRCDIR.
@@ -207,6 +229,7 @@ process_app() {
 
 # --- main --------------------------------------------------------------------
 [ -f "$DESC" ] || die "descriptor not found: $DESC"
+apply_flavor_switch
 mkdir -p "$OUT_DIR"
 
 NAPPS="$(jq -r '.apps | length' "$DESC")"
