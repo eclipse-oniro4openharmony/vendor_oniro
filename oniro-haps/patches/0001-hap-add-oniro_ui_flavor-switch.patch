@@ -1,0 +1,87 @@
+From 9169f2aa794ef6deff56336eabe1a401e48969fd Mon Sep 17 00:00:00 2001
+From: Francesco Pham <francesco.pham1@h-partners.com>
+Date: Thu, 2 Jul 2026 10:02:21 +0000
+Subject: [PATCH] hap: add oniro_ui_flavor switch (stock vs Oniro custom UI)
+
+Add a gn arg oniro_ui_flavor ("oniro" | "stock") to group("hap"). When
+"oniro", swap the stock SystemUI / Launcher / Settings HAPs for the Oniro
+custom set built from source into //vendor/oniro/oniro-haps (ScreenLock stays
+stock; the Oniro app store and FlorisBoard come in via that group). "stock"
+keeps the upstream prebuilts.
+
+The default resolves to "stock" for every product, including hybris_generic
+and x86_general, so the release build uses only the upstream OpenHarmony
+SystemUI / Launcher / Settings prebuilts from //applications/standard/hap and
+has no dependency on the Oniro custom HAP sources. Opt into the
+Oniro-customized UI with:
+    --gn-args 'oniro_ui_flavor="oniro"'
+"default" is kept as a back-compat alias that resolves to "stock".
+
+Change-Id: Ifb41ab73fddc33e7bd322ac934fdd70368c2d397
+Signed-off-by: Francesco Pham <francesco.pham1@h-partners.com>
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_017LTqnKk2v6PxkKakHmA41C
+---
+ BUILD.gn | 41 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
+
+diff --git a/BUILD.gn b/BUILD.gn
+index 462e3d9..ad6f57f 100755
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -13,6 +13,26 @@
+ 
+ import("//build/ohos.gni")
+ 
++declare_args() {
++  # Distribution UI flavor.
++  #   "stock" (default) - upstream OpenHarmony SystemUI / Launcher / Settings
++  #       prebuilts from //applications/standard/hap. Self-contained: no HAP
++  #       sources are cloned or built.
++  #   "oniro" - Oniro-customized SystemUI / Launcher / Settings / app-store HAPs
++  #       built from source into //vendor/oniro/oniro-haps (cloned from the
++  #       source repos pinned in oniro-haps.json). Opt in with:
++  #           --gn-args 'oniro_ui_flavor="oniro"'
++  # Every product - including hybris_generic and x86_general - defaults to
++  # "stock" so the release build has no dependency on the Oniro HAP sources.
++  oniro_ui_flavor = "stock"
++}
++
++_flavor = oniro_ui_flavor
++if (_flavor == "default") {
++  # Back-compat: "default" is an accepted alias that resolves to "stock".
++  _flavor = "stock"
++}
++
+ ohos_prebuilt_etc("launcher_hap") {
+   source = "Launcher.hap"
+   module_install_dir = "app/com.ohos.launcher"
+@@ -344,4 +364,25 @@ group("hap") {
+     deps +=
+         [ "//applications/standard/admin_provisioning:adminprovisioning_hap" ]
+   }
++
++  # Oniro UI flavor: swap the stock SystemUI / Launcher / Settings HAPs for the
++  # Oniro custom set built from source into //vendor/oniro/oniro-haps.
++  # ScreenLock stays stock. The Oniro app store and FlorisBoard come in via the
++  # oniro_custom_haps group (they have no stock counterpart here). See
++  # vendor/oniro/oniro-haps/README.md.
++  if (_flavor == "oniro") {
++    deps -= [
++      ":systemDialog_hap",
++      "//applications/standard/hap:dropdownPanel_hap",
++      "//applications/standard/hap:launcher_hap",
++      "//applications/standard/hap:launcher_settings_hap",
++      "//applications/standard/hap:navigationBar_hap",
++      "//applications/standard/hap:notificationManagement_hap",
++      "//applications/standard/hap:settings_hap",
++      "//applications/standard/hap:statusBar_hap",
++      "//applications/standard/hap:systemui_hap",
++      "//applications/standard/hap:volumePanel_hap",
++    ]
++    deps += [ "//vendor/oniro/oniro-haps:oniro_custom_haps" ]
++  }
+ }
+-- 
+2.50.1
+
