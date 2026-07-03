@@ -357,10 +357,10 @@
         },
         {
             "bundleName": "com.ohos.sceneboard",
-            "singleton": true,
-            "keepAlive": false,
             "allowAppUsePrivilegeExtension": true,
+            "allowAppRunWhenDeviceFirstLocked": true,
             "app_signature": [
+                "8E93863FC32EE238060BF69A9B37E2608FFFB21F93C862DD511CBAC9F30024B5",
                 "0716E4E8C9B8CEEF6A974CD2289D5C4C668A5B41FA5DF8C0542DCB72602371F5",
                 "EEB00E63401C85853F677A73C6F12CCB7C53692D44CAF459994BB2CE5A47A94D",
                 "BF9771B891CF2DF55B50BDC7F1D583D842DC8CC68E99C381680BD6D25E7FFF20",

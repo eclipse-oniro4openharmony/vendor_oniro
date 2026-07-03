@@ -28,3 +28,25 @@ const.security.developermode.state = "true"
 # remote-animation path hits the build's RS/vsync stall) — accepted limitation.
 # See project memory winanim_controller_native_boot.
 persist.oniro.winanim_controller = "1"
+
+# Disable GWP-ASan globally. appspawn always loads libappspawn_asan.z.so, whose
+# AsanSpawnInitSpawningEnv hook unconditionally calls musl's may_init_gwp_asan()
+# on every process spawn (the call sits outside the ASAN_DETECTOR guard). On this
+# arm64 build (musl_use_gwp_asan=true) that sampling/telemetry path intermittently
+# SIGSEGVs in strcmp during spawn — it flaky-killed com.ohos.sceneboard on launch,
+# leaving the home dead and bootanimation frozen. Setting this makes
+# is_gwp_asan_disable() short-circuit may_init_gwp_asan() before the fault, so the
+# ASAN spawn hook becomes a no-op. Leaves the (asan_detector-gated) ASAN cold-start
+# machinery untouched. See project memory hybris-lts-rebase (SceneBoard trial).
+gwp_asan.disable.all = "true"
+
+# SceneBoard/phone form-factor params (mirrors vendor/revoview/wukong100 etc/param/phone.para).
+# const.window.multiWindowUIType selects the device form factor consumed by AMS + window_manager
+# (scene_session_manager) + SceneBoard; without it they fall back to a non-phone default. The
+# enable_uiservice=false pair keeps the legacy UIService off. Needed for the SceneBoard phone
+# keyguard/desktop scene to initialize correctly. See project memory hybris-lts-rebase.
+const.window.multiWindowUIType = "HandsetSmartWindow"
+const.abilityms.enable_uiservice = "false"
+const.product.preview.enable_uiservice = "false"
+const.product.preview.device_config = "2"
+persist.systemui.live2 = "true"

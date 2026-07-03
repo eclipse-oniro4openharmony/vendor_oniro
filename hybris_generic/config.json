@@ -366,6 +366,7 @@
           "component": "graphic_2d",
           "features": [
             "graphic_2d_feature_rs_enable_eglimage = true",
+            "graphic_2d_feature_rs_enable_uni_render = true",
             "graphic_2d_feature_use_texgine = true",
             "graphic_2d_feature_upgrade_skia = true"
           ]
@@ -453,6 +454,20 @@
         {
           "component": "ace_ets2bundle",
           "features": []
+        }
+      ]
+    },
+    {
+      "subsystem": "window",
+      "components": [
+        {
+          "component": "window_manager",
+          "features": [
+            "window_manager_use_sceneboard = true"
+          ],
+          "syscap": [
+            "SystemCapability.Window.SessionManager = true"
+          ]
         }
       ]
     }
