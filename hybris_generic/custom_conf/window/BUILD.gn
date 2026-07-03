@@ -14,10 +14,23 @@
 import("//build/ohos.gni")
 import("//vendor/${product_company}/${device_name}/product.gni")
 
+# NB: install to /sys_prod, NOT /vendor. SceneSessionManager (which parses this
+# file via config_policy GetOneCfgFile) runs inside the com.ohos.sceneboard app
+# sandbox, and that sandbox does NOT mount /vendor/etc/window/resources (nor the
+# /chipset symlink). It does mount /system and /sys_prod, both of which are
+# config_policy layers. Installed under /vendor the file is invisible to
+# sceneboard, LoadConfigXml() falls back to the non-existent
+# /system/etc/window/resources/window_manager_config.xml, and SystemSessionConfig
+# keeps its compiled default isSystemDecorEnable_=true — which draws the PC/tablet
+# window decoration bar (minimize/split/close) on top of every app on this phone
+# form factor. /sys_prod is visible in the sandbox and outranks /system, so the
+# decor enable="false" override actually loads. (display_manager_config below is
+# read by the native ScreenSessionManager SA, which is not sandboxed, so it can
+# stay on /vendor.)
 ohos_prebuilt_etc("window_manager_config") {
     source = "window_manager_config.xml"
     install_enable = true
-    install_images = [ vendor_base_dir ]
+    install_images = [ sys_prod_base_dir ]
     part_name = "product_hybris_generic"
     relative_install_dir = "window/resources"
 }
