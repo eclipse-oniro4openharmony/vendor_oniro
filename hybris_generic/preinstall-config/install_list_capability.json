@@ -43,12 +43,27 @@
             ]
         },
         {
+            "bundleName": "com.ohos.settings",
+            "app_signature": [
+                "EB5DBE52EE8DD7206DDE612E7484E88CE264E74958704D0712BFA774C87F4DA1"
+            ],
+            "allowAppUsePrivilegeExtension": true
+        },
+        {
+            "bundleName": "com.ohos.camera",
+            "app_signature": [
+                "62C298EE70BEEB3D58082FFEFFEAD4F26BE83350B46B75C393281BA6AAED2A91"
+            ],
+            "allowAppUsePrivilegeExtension": true
+        },
+        {
             "bundleName": "com.ohos.mms",
             "app_signature": [
                 "04AC9C3F045EAB7DB992B7C4E38B59468CA3EABB7D654AE47641471B9785EA04"
             ],
             "singleton": true,
             "keepAlive": false,
+            "allowAppUsePrivilegeExtension": true,
             "allowCommonEvent": [
                 "usual.event.SMS_RECEIVE_COMPLETED"
             ]
@@ -197,7 +212,7 @@
         {
             "bundleName": "com.ohos.photos",
             "app_signature": [
-                "9AED2A79925ECA050CD2BB9D2A7F694E49E5E135D28EBDCE53836DE76B5080ED"
+                "38DD4F043FB164BB5402D7FA48FF7D6FEF1A46BD705F491CE039E2B7D626A3F6"
             ],
             "allowAppUsePrivilegeExtension": true,
             "allowFormVisibleNotify": true
