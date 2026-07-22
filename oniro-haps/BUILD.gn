@@ -1,26 +1,38 @@
 # Copyright (c) 2026 Eclipse Oniro for OpenHarmony contributors.
 # SPDX-License-Identifier: Apache-2.0
 #
-# Oniro distribution-flavor HAP set (the "oniro_ui_flavor == oniro" content).
+# Oniro distribution HAP set (the Oniro app store + FlorisBoard IME).
 #
 # oniro-haps.json is the single source of truth for the HAP set: one
 # ohos_prebuilt_etc target is generated below for every module of every app in
 # the descriptor (read_file is gn-gen-time and, unlike exec_script, not gated
-# by the //.gn allowlist). These targets install the Oniro-customized system
-# HAPs that the stock applications/standard/hap targets are swapped out for
-# when the Oniro UI flavor is selected. part_name/subsystem deliberately stay
-# "prebuilt_hap"/"applications" so these targets belong to the same part as
-# the stock HAPs they replace.
+# by the //.gn allowlist). These targets install the Oniro-customized HAPs on
+# top of the stock applications/standard/hap set (SceneBoard provides the
+# SystemUI / Launcher / Settings shell, so nothing stock is swapped out).
+#
+# This group is pulled into the image the vendor-owned way: the product
+# component lists group("oniro_custom_haps") in its bundle.json `sub_component`
+# (see vendor/oniro/hybris_generic/bundle.json), exactly like preinstall-config.
+# That is why each generated target carries the PRODUCT's part_name
+# (oniro_haps_part_name) — a leaf's part_name must match the part of the
+# component that gathers it. No patch to applications/standard/hap and no gn
+# flavor arg are needed; the HAPs install unconditionally for any product whose
+# component depends on this group.
 #
 # The HAP binaries under haps/ are NOT committed — they are produced on demand
 # by the colocated build-oniro-haps.sh (which clones each app from its pinned
-# remote in oniro-haps.json). If they are missing when the Oniro flavor is
-# selected, ninja fails on the missing prebuilt_etc `source` input — run
-# vendor/oniro/oniro-haps/build-oniro-haps.sh first (see README.md).
+# remote in oniro-haps.json). Because the product now always depends on this
+# group, ninja fails on the missing prebuilt_etc `source` input if they have not
+# been built — run vendor/oniro/oniro-haps/build-oniro-haps.sh first (README.md).
 
 import("//build/ohos.gni")
 
 declare_args() {
+  # The product part these HAPs install under. Every leaf ohos_prebuilt_etc must
+  # carry the part_name of the component that gathers group("oniro_custom_haps")
+  # via its bundle.json `sub_component`. Override per product if reused elsewhere.
+  oniro_haps_part_name = "product_hybris_generic"
+
   # Include the descriptor's `optional` apps (currently only the FlorisBoard
   # IME) in the Oniro custom HAP set. Requires their HAPs to have been produced
   # by build-oniro-haps.sh (set to false, and pass `--skip florisboard` to the
@@ -42,8 +54,7 @@ foreach(app, _desc.apps) {
       ohos_prebuilt_etc(_name) {
         source = "haps/" + mod.dest
         module_install_dir = mod.install_dir
-        part_name = "prebuilt_hap"
-        subsystem_name = "applications"
+        part_name = oniro_haps_part_name
       }
       _hap_targets += [ ":" + _name ]
     }

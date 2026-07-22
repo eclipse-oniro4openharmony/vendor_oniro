@@ -1,10 +1,16 @@
-# Oniro distribution-flavor HAPs
+# Oniro distribution HAPs
 
-This directory is the self-contained home of the **Oniro-customized** system
-applications — SystemUI (+ its sub-module HAPs), Launcher, Settings, the Oniro
-app store, and (optionally) the FlorisBoard IME. Selecting the **Oniro UI
-flavor** at build time swaps the stock OpenHarmony HAPs in
-`applications/standard/hap` for the ones installed here.
+This directory is the self-contained home of the **Oniro-customized** apps that
+ship on top of the stock OpenHarmony HAP set — the Oniro app store and
+(optionally) the FlorisBoard IME. They are installed into the product image
+**unconditionally**; there is no flavor switch to select.
+
+> The system shell (SystemUI / Launcher / Settings) is provided by **SceneBoard**
+> (`window_manager_use_sceneboard`), so this set only *adds* the app store and
+> FlorisBoard — nothing stock is swapped out. Earlier revisions carried
+> Oniro-customized SystemUI / Launcher / Settings HAPs and reached into
+> `applications/standard/hap` via a gn `oniro_ui_flavor` switch; both were dropped
+> once the tree moved to SceneBoard.
 
 ```
 oniro-haps/
@@ -12,7 +18,6 @@ oniro-haps/
   build-oniro-haps.sh    clones each app from its pinned remote and builds it
   BUILD.gn               generates one prebuilt_etc per descriptor module
                          (read_file of oniro-haps.json) + group("oniro_custom_haps")
-  patches/               the oniro_ui_flavor gn switch for applications/standard/hap
   haps/                  built HAPs + SHA256SUMS (gitignored — not committed)
 ```
 
@@ -20,12 +25,26 @@ The HAP set is defined **once**, in `oniro-haps.json`: both the driver script
 and `BUILD.gn` read it, so adding/removing an app or module is a
 descriptor-only change.
 
-**All Oniro distribution modifications are constrained to this directory.**
-`applications/standard/hap` stays a **pristine OpenHarmony mirror** in the
-manifest; the gn switch it needs is carried here as
-`patches/0001-hap-add-oniro_ui_flavor-switch.patch` and applied to the *local
-checkout only* by `build-oniro-haps.sh` (step 1 below). A consumer who never
-opts in never touches the mirror.
+## How they reach the image (no mirror patch, no flavor arg)
+
+`BUILD.gn` here exposes `group("oniro_custom_haps")`, and the product component
+lists it in its `bundle.json` `sub_component` — exactly like `preinstall-config`:
+
+```jsonc
+// vendor/oniro/hybris_generic/bundle.json
+"sub_component": [
+  "//vendor/oniro/hybris_generic/preinstall-config:preinstall-config",
+  "//vendor/oniro/oniro-haps:oniro_custom_haps",
+  ...
+]
+```
+
+Each generated `ohos_prebuilt_etc` therefore carries the product's
+`part_name` (`oniro_haps_part_name`, default `product_hybris_generic`) so it is
+gathered by that component. `applications/standard/hap` stays a **pristine
+OpenHarmony mirror** — it is not patched, and no `gn` arg selects these HAPs.
+Adding the set to another product is a one-line `sub_component` addition (set
+`oniro_haps_part_name` to that product's part if it differs).
 
 ## No committed binaries — clone & build
 
@@ -34,17 +53,15 @@ source + provenance live in git, matching the Eclipse release model (no publishe
 binaries; the consumer reproduces locally). Build them from the pinned remotes:
 
 ```bash
-# 1. Clone each app from its pinned remote (oniro-haps.json) and build (writes haps/*.hap).
-#    Also applies patches/0001-hap-add-oniro_ui_flavor-switch.patch to the local
-#    applications/standard/hap checkout (no-op if already applied; revert with
-#    `git -C applications/standard/hap checkout -- BUILD.gn`).
+# 1. Clone each app from its pinned remote (oniro-haps.json) and build it
+#    (writes haps/*.hap). REQUIRED before every product build below — the
+#    product always depends on group("oniro_custom_haps").
 bash vendor/oniro/oniro-haps/build-oniro-haps.sh
 
-# 2. Build the image with the Oniro flavor selected — it copies the just-built
-#    HAPs into system.img. (stock is the default, so the flavor must be requested.)
+# 2. Build the image — it copies the just-built HAPs into system.img.
 #    (Run from your OHOS build environment; if you build inside a container,
 #    exec into it first, e.g. `docker exec -u root -w /home/openharmony/workdir <container> ...`.)
-./build.sh --product-name hybris_generic --ccache --gn-args 'oniro_ui_flavor="oniro"'
+./build.sh --product-name hybris_generic --ccache
 ```
 
 The driver clones each app's pinned `git`+`branch`+`sha` into
@@ -53,32 +70,23 @@ build never depends on local working-tree state. This needs network (git clone +
 `ohpm install` on a fresh clone). Flags: `--app <name>`, `--skip <name>`
 (both repeatable), `--force-deps`, `--skip-deps`, `--sdk PATH`.
 
-If you skip step 1, the build fails when ninja cannot find a HAP `source` under
-`haps/` (an `ohos_prebuilt_etc` missing-input error) — re-run step 1 to fix it.
-
-## Choosing the flavor
-
-A `gn` arg selects the UI. It is **not** part of the upstream
-`applications/standard/hap` mirror — it is added to the local checkout's
-`BUILD.gn` by the patch this directory carries (applied by step 1):
-
-| `oniro_ui_flavor` | Result |
-|---|---|
-| `stock` (default, all products) | Upstream OpenHarmony HAPs in `applications/standard/hap` (no step 1 needed) |
-| `oniro` | Oniro custom HAPs from this dir (requires step 1) |
-| `default` | Back-compat alias for `stock` |
-
-`stock` is the default for **every** product, so the release build never depends
-on the Oniro custom HAP sources. Opt into the Oniro custom UI explicitly:
-
-```bash
-./build.sh --product-name hybris_generic --ccache --gn-args 'oniro_ui_flavor="oniro"'
-```
+Because the product now **always** depends on this set, if you skip step 1 the
+image build fails when ninja cannot find a HAP `source` under `haps/` (an
+`ohos_prebuilt_etc` missing-input error) — re-run step 1 to fix it.
 
 Apps marked `"optional": true` in the descriptor (currently only FlorisBoard)
 are gated by the `oniro_include_florisboard` gn arg (default `true`); pass
 `--gn-args 'oniro_include_florisboard=false'` (and the driver's
 `--skip florisboard`) to omit them.
+
+## Signing note
+
+The app store requests privileged permissions (`INSTALL_BUNDLE`, etc.) and calls
+system APIs, so `oniro-haps.json` pins its `apl` to `system_core`. The driver
+signs any `system_basic`/`system_core` app with an `hos_system_app` provision
+profile (promoted from the stock `hos_normal_app` template) — without that the
+HAP installs but is flagged non-system and its system-API calls are rejected with
+*"non-system app calling system api"*. See `build-oniro-haps.sh::sign_hap`.
 
 ## Provenance (Eclipse Bucket 4a)
 
@@ -93,13 +101,7 @@ nonce and is not bit-reproducible, and Eclipse does not redistribute it); the
 reproducible invariant is *pinned source sha + build-cmd*. `haps/SHA256SUMS`
 (gitignored) records the checksums of a given local build for verification.
 
-> **Release note:** the Oniro UI flavor is an **opt-in developer flavor**, not part
-> of the default release build (which is `stock`). The flavor switch does not
-> exist in the pristine `applications/standard/hap` mirror the manifest pins — it
-> is applied locally from `patches/` only when opting in. Its `git` sources for
-> systemui/launcher/settings/florisboard (pinned in `oniro-haps.json`) are built
-> only on explicit opt-in; because the default release does not build or
-> redistribute them, they are outside the release IP scope.
-
-> `SystemUI-ScreenLock.hap` is **not** part of this set — it stays stock (from
-> `applications/standard/screenlock`) and remains in `applications/standard/hap`.
+> **Release note:** these HAPs are now built into every `hybris_generic` image
+> (no opt-in flavor). Their `git` sources for the app store and FlorisBoard are
+> pinned in `oniro-haps.json`; the built binaries are not redistributed by
+> Eclipse (the consumer reproduces them locally from the pinned source).

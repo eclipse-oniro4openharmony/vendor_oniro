@@ -1,29 +1,26 @@
 #!/usr/bin/env bash
 #
-# build-oniro-haps.sh — build the Oniro distribution-flavor HAP set from pinned source.
+# build-oniro-haps.sh — build the Oniro distribution HAP set from pinned source.
 #
 # Copyright (c) 2026 Eclipse Oniro for OpenHarmony contributors.
 # SPDX-License-Identifier: Apache-2.0
 #
-# The Oniro-customized system HAPs (SystemUI*, Launcher*, Settings, the Oniro app
-# store, FlorisBoard) are NOT committed as binaries. This script CLONES each app
-# from its pinned remote git repo (git+branch+sha in oniro-haps.json) into
-# out/oniro-haps/src/<app> (cached, reused at the pinned sha) and builds it, so the
-# release is reproducible from upstream. The committed oniro-haps.json IS the
-# Bucket-4a provenance (source-repo / source-sha / build-cmd / license); this
-# script additionally writes haps/SHA256SUMS (gitignored) for local verification.
+# The Oniro-customized HAPs (the Oniro app store and FlorisBoard IME) are NOT
+# committed as binaries. This script CLONES each app from its pinned remote git
+# repo (git+branch+sha in oniro-haps.json) into out/oniro-haps/src/<app> (cached,
+# reused at the pinned sha) and builds it, so the release is reproducible from
+# upstream. The committed oniro-haps.json IS the Bucket-4a provenance (source-repo
+# / source-sha / build-cmd / license); this script additionally writes
+# haps/SHA256SUMS (gitignored) for local verification.
 #
-# Two-step flow (oniro flavor):
+# Two-step flow:
 #   1. bash vendor/oniro/oniro-haps/build-oniro-haps.sh
 #   2. ./build.sh --product-name hybris_generic --ccache     (copies the HAPs)
-# The stock flavor needs no step 1 (it uses the upstream applications/standard/hap
-# prebuilts) — see README.md.
-#
-# applications/standard/hap stays a PRISTINE OpenHarmony mirror in the manifest:
-# the oniro_ui_flavor gn switch it needs is carried here as
-# patches/0001-hap-add-oniro_ui_flavor-switch.patch and applied by this script to
-# the LOCAL checkout only (step 1). Revert with:
-#   git -C applications/standard/hap checkout -- BUILD.gn
+# Step 1 is always required: the hybris_generic product component always depends
+# on group("oniro_custom_haps") (via vendor/oniro/hybris_generic/bundle.json), so
+# the image build fails on the missing prebuilt_etc source if the HAPs were not
+# built first. No patch to applications/standard/hap and no gn flavor arg are
+# involved — the mirror stays pristine. See README.md.
 #
 # Signing is deterministic and host-independent: the driver nulls each app's
 # embedded signingConfig (whose encrypted passwords are tied to per-machine DevEco
@@ -102,25 +99,6 @@ want_app() {
   return 0
 }
 
-# Apply the oniro_ui_flavor gn switch to the local applications/standard/hap
-# checkout. The mirror repo is pristine upstream OpenHarmony; the switch that
-# consumes group("oniro_custom_haps") lives here as a patch so all Oniro
-# distribution modifications stay constrained to vendor/oniro/oniro-haps.
-apply_flavor_switch() {
-  local hap_dir="${ROOT}/applications/standard/hap"
-  local patch="${SCRIPT_DIR}/patches/0001-hap-add-oniro_ui_flavor-switch.patch"
-  [ -f "${hap_dir}/BUILD.gn" ] || die "applications/standard/hap not found in the tree (repo sync?)"
-  [ -f "$patch" ] || die "flavor-switch patch missing: $patch"
-  if grep -q 'oniro_ui_flavor' "${hap_dir}/BUILD.gn"; then
-    log "flavor switch already present in applications/standard/hap/BUILD.gn"
-    return 0
-  fi
-  git -C "$hap_dir" apply --check "$patch" 2>/dev/null \
-    || die "flavor-switch patch no longer applies (upstream BUILD.gn changed?) — refresh ${patch#$ROOT/}"
-  git -C "$hap_dir" apply "$patch"
-  log "applied ${patch#$ROOT/} to applications/standard/hap/BUILD.gn (local checkout only)"
-}
-
 # Clone (or reuse) the pinned source for app $idx -> sets SRCDIR.
 prepare_clone() {  # idx
   local idx="$1" name git_url branch sha dir
@@ -182,6 +160,15 @@ sign_hap() {  # unsigned_hap  out_hap  bundle  apl
      "${SIGN_DIST}/UnsgnedReleasedProfileTemplate.json" "$w/"
   sed -e "s/com.OpenHarmony.app.test/${bundle}/g" -e "s/\"normal\"/\"${apl}\"/g" \
       "$w/UnsgnedReleasedProfileTemplate.json" > "$w/profile.json"
+  # A system app (system_basic/system_core apl) must carry app-feature
+  # "hos_system_app" in its provision profile. Without it the app is not flagged
+  # isSystemApp even when preinstalled, and its system-API calls (e.g. the app
+  # store's bundle install) are rejected with "non-system app calling system
+  # api". The template ships "hos_normal_app"; promote it for system apls.
+  case "$apl" in
+    system_basic|system_core)
+      sed -i 's/"hos_normal_app"/"hos_system_app"/' "$w/profile.json" ;;
+  esac
   ( cd "$w"
     java -jar hap-sign-tool.jar sign-profile \
       -keyAlias "openharmony application profile release" -signAlg SHA256withECDSA \
@@ -229,7 +216,6 @@ process_app() {
 
 # --- main --------------------------------------------------------------------
 [ -f "$DESC" ] || die "descriptor not found: $DESC"
-apply_flavor_switch
 mkdir -p "$OUT_DIR"
 
 NAPPS="$(jq -r '.apps | length' "$DESC")"
