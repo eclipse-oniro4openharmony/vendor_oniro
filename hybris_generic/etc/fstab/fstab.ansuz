@@ -1,0 +1,30 @@
+# Volla Phone Plinius (ansuz) fstab — native-boot second-stage mounts.
+# Derived from fstab.x23 (see its comments for the full rationale);
+# deltas: UFS controller path is 112b0000.ufshci (MT6878).
+#
+# Read by mount_fstab_sp (init.cfg pre-init) via
+# /vendor/etc/fstab.${ohos.boot.hardware}; ohos.boot.hardware=ansuz is
+# injected by the vendor_boot-ohos cmdline
+# (kernel/ansuz/build_init_boot_chainload.sh).
+#
+# REQUIRED mounts (system/vendor) happen in the chainload; sys_prod /
+# chip_prod are mounted there too (param files must be visible before
+# InitLoadParamFiles). This file covers the rest.
+#
+#<src>                                  <mnt>           <type>  <mnt_flags>            <fs_mgr_flags>
+
+# Misc partition (bootloader command messages) — optional
+/dev/block/platform/soc/112b0000.ufshci/by-name/misc             /misc           none    none                   wait,nofail
+
+# Persist (factory calibration, BT pairing keys) — optional, read-only
+/dev/block/platform/soc/112b0000.ufshci/by-name/persist          /persist        ext4    ro,nosuid,nodev        wait,nofail
+
+# Userdata — OHOS-writable /data. Same constraints as the X23:
+#  - must mount before pre-init's load_access_token_id (nativetoken.json
+#    lives here; a failed write leaves every native service with
+#    tokenId=0 and samgr rejects all SA registrations);
+#  - WITHOUT noexec: app native libs under /data need PROT_EXEC and this
+#    kernel has no XPM to grant per-file exec.
+# The partition is reformatted ext4 for OHOS (stock FBE state must not
+# survive — see plan P4.2).
+/dev/block/platform/soc/112b0000.ufshci/by-name/userdata         /data           ext4    nosuid,nodev           wait,nofail

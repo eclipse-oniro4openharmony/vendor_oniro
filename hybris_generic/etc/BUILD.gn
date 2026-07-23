@@ -72,6 +72,28 @@ ohos_prebuilt_etc("hybris_native_para") {
   part_name = "product_hybris_generic"
 }
 
+# Volla Phone Plinius (ansuz) per-device configs. Selected at RUNTIME via
+# /vendor/etc/{fstab,init}.${ohos.boot.hardware}* (ohos.boot.hardware is
+# injected by the ansuz vendor_boot cmdline), so both device sets install
+# unconditionally — one image serves the X23 and the Plinius for these.
+ohos_prebuilt_etc("fstab_ansuz") {
+  source = "./fstab/fstab.ansuz"
+  install_images = [ vendor_base_dir ]
+  part_name = "product_hybris_generic"
+}
+
+ohos_prebuilt_etc("init_ansuz_cfg") {
+  source = "./init/init.ansuz.cfg"
+  install_images = [ vendor_base_dir ]
+  part_name = "product_hybris_generic"
+}
+
+ohos_prebuilt_etc("init_ansuz_usb_cfg") {
+  source = "./init/init.ansuz.usb.cfg"
+  install_images = [ vendor_base_dir ]
+  part_name = "product_hybris_generic"
+}
+
 group("product_etc_conf") {
   deps = [
     ":para_for_chip_prod",
@@ -80,6 +102,9 @@ group("product_etc_conf") {
     ":fstab_x23",
     ":init_x23_cfg",
     ":init_x23_usb_cfg",
+    ":fstab_ansuz",
+    ":init_ansuz_cfg",
+    ":init_ansuz_usb_cfg",
     ":hybris_native_para",
   ]
 }
