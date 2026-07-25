@@ -51,6 +51,15 @@ const.product.preview.enable_uiservice = "false"
 const.product.preview.device_config = "2"
 persist.systemui.live2 = "true"
 
+# Disable RS "uifirst" parallel rendering (P6, ansuz bring-up). The uifirst
+# sub-threads create shared EGL contexts off the main render thread; under
+# libhybris + the Mali G615 Android-14 EGL that share-context never becomes
+# current on the sub-thread, so the first GL call goes through the Android EGL
+# "no context" dispatch stubs (bionic TLS vs musl) and render_service SIGSEGVs
+# (RSSubThread::CreateShareGrContext -> GrGLInterfaces::MakeEGL). Main-thread
+# rendering is unaffected. Re-evaluate when the share-context path is fixed.
+rosen.ui.first.enabled = "0"
+
 # Disable RS unified-render partial rendering (dirty regions). RS redraws only
 # the damaged region of the client-target swapchain buffer and relies on EGL
 # buffer-age semantics for the rest; under libhybris (Android EGL on both the
