@@ -35,18 +35,39 @@ ohos_prebuilt_etc("window_manager_config") {
     relative_install_dir = "window/resources"
 }
 
-ohos_prebuilt_etc("display_manager_config") {
-    source = "display_manager_config.xml"
-    output = "display_manager_config.xml"
+# display_manager_config is per device, because one hybris_generic image serves
+# panels of different densities and the density lives in this file.
+#
+# config_policy resolves a config by trying each layer of
+# `const.cust.config_dir_layer` (default "/system:/chipset:/sys_prod:/chip_prod")
+# last-to-first and returning the first hit, so a device only has to append its
+# own directory to that parameter from init.<device>.cfg to outrank every stock
+# layer.  Installing here under <part>/devices/<device>/etc/window/resources
+# makes the layer prefix /sys_prod/devices/<device>.
+#
+# Note config_policy returns ONE file and never merges layers, so each device
+# needs a complete config rather than just its overrides — keep the copies in
+# sync; only <dpi> differs.  A device that forgets its init.<device>.cfg line
+# resolves no file at all and falls back to ScreenSessionManager's compiled
+# default density, which is visibly wrong (1.5) rather than subtly wrong.
+foreach(dev, [
+      "x23",
+      "ansuz",
+    ]) {
+  ohos_prebuilt_etc("display_manager_config_$dev") {
+    source = "devices/$dev/display_manager_config.xml"
     install_enable = true
-    install_images = [ vendor_base_dir ]
+    install_images = [ sys_prod_base_dir ]
     part_name = "product_hybris_generic"
-    relative_install_dir = "window/resources"
+    # Relative to the partition root, i.e. /sys_prod/devices/<dev>/etc/...
+    module_install_dir = "devices/$dev/etc/window/resources"
+  }
 }
 
 group("window_config") {
   deps = [
-    ":display_manager_config",
+    ":display_manager_config_ansuz",
+    ":display_manager_config_x23",
     ":window_manager_config",
   ]
 }

@@ -13,9 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  -->
+<!--
+ * Volla Phone Plinius (ansuz) display config.
+ *
+ * One hybris_generic image serves several devices, so this file is selected at
+ * runtime rather than at build time: init.ansuz.cfg appends
+ * /sys_prod/devices/ansuz to `const.cust.config_dir_layer`, and config_policy
+ * searches the layers last-to-first, so this copy outranks every other layer.
+ *
+ * config_policy returns exactly ONE file — it does not merge layers — so each
+ * device needs a complete config, not just its overrides.  The sibling copies
+ * under ../<device>/ must therefore stay in sync; **the only value that differs
+ * between them is <dpi>**.
+ -->
  <Configs>
     <!--Window display dpi, valid range is 80~640, use 0 if no configuration is requeired-->
-    <dpi>320</dpi>
+    <!-- 1080x2400 panel: 480 -> density 3.0 -> a 360x800 vp layout.  Matches the
+         vendor stack's own ro.sf.lcd_density; 320 here gave 540x1200 vp and
+         visibly tiny content. -->
+    <dpi>480</dpi>
     <!-- Indicate the deviation between the default device display direction and the direction -->
     <!-- of the sensor. Use 0 in default, available values are {0, 90, 180, 270} -->
     <defaultDeviceRotationOffset>0</defaultDeviceRotationOffset>
