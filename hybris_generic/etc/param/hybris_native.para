@@ -50,3 +50,14 @@ const.abilityms.enable_uiservice = "false"
 const.product.preview.enable_uiservice = "false"
 const.product.preview.device_config = "2"
 persist.systemui.live2 = "true"
+
+# Disable RS unified-render partial rendering (dirty regions). RS redraws only
+# the damaged region of the client-target swapchain buffer and relies on EGL
+# buffer-age semantics for the rest; under libhybris (Android EGL on both the
+# Mali-G57 X23 and Mali-G615 ansuz) the un-redrawn region comes back stale
+# (a frame from N swaps ago), visible as half-screen ghosting/flicker under
+# sustained motion — clearest in bootanimation's spinning logo, present on both
+# devices since the SceneBoard (uniRender) switch. Full redraw per frame costs
+# some GPU/power but composes correctly. Re-evaluate if the hybris EGL
+# buffer-age path (EGL_EXT_buffer_age on the client target surface) gets fixed.
+rosen.uni.partialrender.enabled = "0"
