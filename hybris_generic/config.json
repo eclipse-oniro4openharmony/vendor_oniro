@@ -125,6 +125,18 @@
           ]
         },
         {
+          "component": "drivers_peripheral_sensor",
+          "features": [
+            "drivers_peripheral_sensor_feature_community = false"
+          ]
+        },
+        {
+          "component": "drivers_peripheral_vibrator",
+          "features": [
+            "drivers_peripheral_vibrator_feature_community = false"
+          ]
+        },
+        {
           "component": "drivers_peripheral_wlan",
           "features": [
             "drivers_peripheral_wlan_feature_enable_HDF_NL80211 = true",
