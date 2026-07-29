@@ -210,7 +210,9 @@
         audio :: host {
             hostName = "audio_host";
             priority = 50;
-            caps = ["DAC_OVERRIDE", "SYS_NICE"];
+            // BLOCK_SUSPEND matches what Android's rc grants its audio HAL
+            // service; the MTK HAL takes wakelocks around stream transitions.
+            caps = ["DAC_OVERRIDE", "SYS_NICE", "BLOCK_SUSPEND"];
             gid = ["audio_host", "uhdf_driver", "root", "audio"];
             audio_device :: device {
                 device0 :: deviceNode {

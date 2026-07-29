@@ -70,3 +70,12 @@ rosen.ui.first.enabled = "0"
 # some GPU/power but composes correctly. Re-evaluate if the hybris EGL
 # buffer-age path (EGL_EXT_buffer_age on the client target surface) gets fixed.
 rosen.uni.partialrender.enabled = "0"
+
+# Which library backs the primary audio HDI adapter. Empty (the default) keeps
+# the in-tree community implementation with the direct-ALSA backend, which is
+# what the X23 runs. "vdi" selects libaudio_primary_impl_vdi.z.so — upstream's
+# VDI dispatcher, under which libaudio_primary_impl.z.so wraps the Android
+# audio HAL from the Halium vendor partition. Set per device from
+# init.<device>.cfg, never here, since one image serves both boards.
+# See docs/hybris_generic/audio_hal_switch_plan.md.
+ohos.audio.hdi_impl = ""
