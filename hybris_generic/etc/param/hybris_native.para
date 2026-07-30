@@ -79,3 +79,12 @@ rosen.uni.partialrender.enabled = "0"
 # init.<device>.cfg, never here, since one image serves both boards.
 # See docs/hybris_generic/audio_hal_switch_plan.md.
 ohos.audio.hdi_impl = ""
+
+# Which library backs the camera HDI. Empty (the default) leaves the hybris
+# camera VDI dormant: camera_host still binds and loads it, but it reports no
+# cameras, which is the pre-bridge behaviour. "vdi" turns it into a camera2-NDK
+# client of the Halium container's CameraService. Set per device from
+# init.<device>.cfg, never here, since one image serves both boards; the X23
+# stays dormant until its (Halium-12) camera stack has been tested.
+# See docs/hybris_generic/camera_enablement_plan.md.
+ohos.camera.hdi_impl = ""
