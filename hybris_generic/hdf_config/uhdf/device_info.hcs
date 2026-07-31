@@ -579,6 +579,37 @@
                 }
             }
         }
+        ril :: host {
+            /*
+             * Cellular.  libril_driver.z.so and the whole RIL HDI stack
+             * already ship in /vendor/lib64; without this block hdf_devmgr
+             * never forks riladapter_host, so `ril_service` is never
+             * registered and core_service's TelRilManager idles.
+             *
+             * The host starts on every device.  Which backend it loads is
+             * decided later, by hril_hdf's `const.sys.radio.vendorlib.path`
+             * parameter: set to libril_vendor_hybris.z.so from
+             * init.ansuz.cfg, unset elsewhere (then LoadVendor() logs "no
+             * vendor lib" and the host idles — the X23's behaviour today).
+             *
+             * serviceName must stay "ril_service": that is the name
+             * TelRilManager::ConnectRilInterface() asks IRil::Get() for.
+             * NET_ADMIN is for the data path (plan phase R5).
+             */
+            hostName = "riladapter_host";
+            priority = 100;
+            uid = "riladapter_host";
+            gid = ["riladapter_host", "radio", "system", "log"];
+            caps = ["NET_ADMIN"];
+            ril_device :: device {
+                device0 :: deviceNode {
+                    policy = 2;
+                    priority = 100;
+                    moduleName = "libril_driver.z.so";
+                    serviceName = "ril_service";
+                }
+            }
+        }
         intell_voice :: host {
             hostName = "intell_voice_host";
             priority = 100;

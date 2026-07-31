@@ -88,3 +88,20 @@ ohos.audio.hdi_impl = ""
 # stays dormant until its (Halium-12) camera stack has been tested.
 # See docs/hybris_generic/camera_enablement_plan.md.
 ohos.camera.hdi_impl = ""
+
+# NOTE — const.sys.radio.vendorlib.path is deliberately NOT declared here.
+#
+# It names the library riladapter_host loads as the vendor RIL: hril_hdf's
+# LoadVendor() dlopens it and resolves RilInitOps() from it. init.ansuz.cfg
+# sets it to libril_vendor_hybris.z.so, the bridge from HRil's vendor ABI to
+# the Halium container's AIDL android.hardware.radio v2 HAL; on the X23 it
+# stays unset, LoadVendor() logs "no vendor lib" and the host idles — that
+# board's behaviour today.
+#
+# Declaring it here with an empty default does NOT work, and the failure is
+# silent: `const.*` parameters are write-once, this file is loaded before the
+# pre-init job runs, so the empty value wins and init.ansuz.cfg's setparam is
+# dropped. GetVendorLibPath() then sees a zero-length string and reports "no
+# vendor lib" — riladapter_host starts, loads nothing, and there is no
+# cellular. Leave it undeclared so the per-device setparam is the first
+# writer. See docs/hybris_generic/cellular_enablement_plan.md §D1.
