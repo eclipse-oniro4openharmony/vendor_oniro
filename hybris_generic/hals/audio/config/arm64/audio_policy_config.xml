@@ -19,7 +19,7 @@
                 <pipe name="primary_output" role="output">
                     <paProp lib="libmodule-hdi-sink.z.so" role="sink" fixed_latency="1" render_in_idle_state="1" moduleName="Speaker"/>
                     <streamProps>
-                        <streamProp format="s16le" sampleRates="44100" channelLayout="CH_LAYOUT_STEREO" bufferSize="4096" supportDevices="Speaker_Out, Wired_Headset_Out, Wired_Headphones_Out"/>
+                        <streamProp format="s16le" sampleRates="44100" channelLayout="CH_LAYOUT_STEREO" bufferSize="4096" supportDevices="Earpiece_Out, Speaker_Out, Wired_Headset_Out, Wired_Headphones_Out"/>
                     </streamProps>
                     <attributes>
                         <attribute name="preload" value="true"/>
@@ -37,6 +37,11 @@
                 </pipe>
             </pipes>
             <devices>
+                <!-- The earpiece exists only for calls, and nothing can route to
+                     a device the policy does not know about: without this entry
+                     AudioProxy::SetEarpieceDevActive has nothing to select and
+                     every call comes out of the loudspeaker. -->
+                <device name="Earpiece_Out" type="DEVICE_TYPE_EARPIECE" pin="PIN_OUT_EARPIECE" role="output" supportPipes="primary_output"/>
                 <device name="Speaker_Out" type="DEVICE_TYPE_SPEAKER" pin="PIN_OUT_SPEAKER" role="output" supportPipes="primary_output"/>
                 <device name="Wired_Headset_Out" type="DEVICE_TYPE_WIRED_HEADSET" pin="PIN_OUT_HEADSET" role="output" supportPipes="primary_output"/>
                 <device name="Wired_Headphones_Out" type="DEVICE_TYPE_WIRED_HEADPHONES" pin="PIN_OUT_HEADPHONE" role="output" supportPipes="primary_output"/>
@@ -106,7 +111,15 @@
     <globalConfigs>
         <defaultOutput adapter="primary" pipe="primary_output" device="Speaker"/>
         <commonConfigs>
-            <attribute name="updateRouteSupport" value="false"/>
+            <!-- Must be true for calls.  This one flag decides openMicSpeaker
+                 for every module the policy loads (AudioPipeSelector), and
+                 AudioRenderSink::SetAudioScene returns success *without doing
+                 anything* when openSpeaker_ is false — so with it false the
+                 audio scene never reaches the HDI, the HAL never leaves
+                 AUDIO_MODE_NORMAL, and a connected call is silent with no
+                 error anywhere.  It also gates the device-routing path our
+                 HAL needs (it does its own routing through set_parameters). -->
+            <attribute name="updateRouteSupport" value="true"/>
             <attribute name="maxRendereres" value="128"/>
             <attribute name="maxCapturers" value="16"/>
         </commonConfigs>
