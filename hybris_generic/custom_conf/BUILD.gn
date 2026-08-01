@@ -18,5 +18,6 @@ group("custom_config") {
     "window:window_config",
     "bootanimation:bootanimation_config",
     "power_config:power_mode_config_vendor",
+    "telephony:telephony_config",
   ]
 }

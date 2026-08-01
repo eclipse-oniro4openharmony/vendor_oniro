@@ -1,0 +1,54 @@
+# Copyright (c) 2026 Eclipse Oniro for OpenHarmony contributors.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/ohos.gni")
+import("//vendor/${product_company}/${device_name}/product.gni")
+
+# The carrier APN database.
+#
+# cellular_data cannot start a data connection without a pdp_profile row
+# whose mcc+mnc equals the SIM's exactly — CellularDataRdbHelper::QueryApns
+# matches with EqualTo, and there is no wildcard, no MCC-only fallback and
+# no built-in default.  Nor is there anything to fall back *to*: the network
+# rejects a blank-APN activation with 3GPP cause 27 MISSING_UNKNOWN_APN
+# (tested on ansuz), and the Halium container's own APN data is IMS and
+# initial-attach entries only.  So the database has to be comprehensive, or
+# the image only works on the SIMs somebody remembered to add.
+#
+# Upstream's copy at /system/etc/telephony/pdp_profile.json carries 35
+# entries, all MCC 460.  This one is AOSP's apns-full-conf.xml converted by
+# convert_apns.py — 3391 entries over 1248 operators.  See README.md for
+# provenance and how to refresh it.
+#
+# NB: install to /sys_prod, and note that this *replaces* rather than
+# extends the upstream file.  config_policy's GetOneCfgFile returns exactly
+# one file and never merges layers — it walks
+# `const.cust.config_dir_layer` (default "/system:/chipset:/sys_prod:
+# /chip_prod") last-to-first and returns the first hit — so /sys_prod
+# outranks /system and the 35 upstream rows are not consulted at all.  They
+# are a subset of what AOSP ships, so nothing is lost; but a partial file
+# here would *hide* them rather than add to them, which is why this is a
+# whole database and not the handful of rows the port actually needs.
+ohos_prebuilt_etc("pdp_profile") {
+  source = "pdp_profile.json"
+  install_enable = true
+  install_images = [ sys_prod_base_dir ]
+  part_name = "product_hybris_generic"
+  relative_install_dir = "telephony"
+}
+
+group("telephony_config") {
+  deps = [ ":pdp_profile" ]
+}
