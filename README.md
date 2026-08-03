@@ -21,7 +21,7 @@ under `device/board/oniro/docs/hybris_generic/README.md`.
 ### `x86_general` — QEMU / x86 emulator
 
 Product configuration for the Oniro emulator target, including the source-patch
-hooks (`x86_general/hook/`) applied before building. See the board repository's
+series (`device/board/oniro/system_patch/`) applied before building. See the board repository's
 README for the emulator build flow.
 
 ## `oniro-haps` — reproducible Oniro distribution flavor
