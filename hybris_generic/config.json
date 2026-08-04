@@ -125,6 +125,12 @@
           ]
         },
         {
+          "component": "drivers_peripheral_light",
+          "features": [
+            "drivers_peripheral_light_feature_community = false"
+          ]
+        },
+        {
           "component": "drivers_peripheral_sensor",
           "features": [
             "drivers_peripheral_sensor_feature_community = false"
