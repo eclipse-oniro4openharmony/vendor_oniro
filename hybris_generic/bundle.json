@@ -19,6 +19,7 @@
         "//vendor/oniro/hybris_generic/hdf_config/uhdf:hdf_config",
         "//vendor/oniro/hybris_generic/preinstall-config:preinstall-config",
         "//vendor/oniro/oniro-haps:oniro_custom_haps",
+        "//vendor/oniro/wallpaper:oniro_wallpaper",
         "//vendor/oniro/hybris_generic/etc:product_etc_conf",
         "//vendor/oniro/hybris_generic/hals/audio:hdf_audio_config",
         "//vendor/oniro/hybris_generic/hals/codec:hdf_codec_config",

@@ -22,7 +22,8 @@
         "//vendor/oniro/x86_general/hals/audio:hdf_audio_config",
         "//vendor/oniro/x86_general/hdf_config/uhdf:hdf_config",
         "//vendor/oniro/x86_general/custom_conf:custom_config",
-        "//vendor/oniro/x86_general/image_conf:custom_image_conf"
+        "//vendor/oniro/x86_general/image_conf:custom_image_conf",
+        "//vendor/oniro/wallpaper:oniro_wallpaper"
       ]
     }
   }

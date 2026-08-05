@@ -1,0 +1,87 @@
+# Copyright (c) 2026 Eclipse Oniro for OpenHarmony contributors.
+# SPDX-License-Identifier: Apache-2.0
+#
+# The Oniro default wallpaper (home screen + lock screen), shipped the
+# vendor-owned way instead of by patching base/theme/wallpaper_mgr.
+#
+# This replaces the two former system patches that overwrote the stock
+# wallpaperdefault.jpeg / wallpaperlockdefault.jpeg blobs in the wallpaper_mgr
+# repo. Those patches carried a 90 KB binary each and were ~1/3 of the whole
+# system_patch series by size, purely to swap an image the framework already
+# lets a product override at runtime.
+#
+# The seam: WallpaperService::GetWallpaperDefaultPath() resolves the default
+# wallpaper through config_policy first, and only falls back to the hardcoded
+# /system/etc/wallpaperdefault.jpeg when that lookup comes up empty. It calls
+# GetCfgFiles("resource/themes/theme/"), appends "default/", and then reads
+#
+#     <resPath>/home/manifest.json   ->  {"image": {"src": "<file>"}}
+#     <resPath>/home/base/resources/<file>
+#
+# and the same pair under lock/. Only the portrait `wallpaperFile` has to
+# resolve; the land/unfolded/unfolded2 variants are optional and stay empty on
+# a non-foldable phone, exactly as they do for a user-set wallpaper.
+#
+# Why the system image and not sys_prod: config_policy layers are
+# /system:/chipset:/sys_prod:/chip_prod, and GetCfgFiles() returns the existing
+# ones in *that* order — lowest first. The wallpaper service takes paths[0] and
+# breaks, so the LOWEST layer wins here, the opposite of GetOneCfgFile() (which
+# scans from the top and is why custom_conf/window installs its override to
+# /sys_prod). Installing to /system therefore wins deterministically. It also
+# keeps this usable on any Oniro product regardless of whether it builds a
+# sys_prod partition. Ownership is still vendor/oniro — only the install
+# destination is in the system image.
+#
+# module_install_dir (not relative_install_dir) because the config suffix is
+# "resource/themes/theme/", which is NOT under etc/; relative_install_dir would
+# nest it below <image>/etc/ and the lookup would miss it.
+#
+# Pulled into the image the vendor-owned way: the product component lists
+# group("oniro_wallpaper") in its bundle.json `sub_component`, like
+# preinstall-config and oniro-haps do. Every leaf ohos_prebuilt_etc must carry
+# the part_name of the component that gathers it, hence product_${device_name}
+# — which resolves to product_hybris_generic / product_x86_general, matching
+# the component names in the two products' bundle.json.
+
+import("//build/ohos.gni")
+
+_wallpaper_part_name = "product_${device_name}"
+_wallpaper_res_dir = "resource/themes/theme/default"
+
+ohos_prebuilt_etc("wallpaper_home_manifest") {
+  source = "home/manifest.json"
+  module_install_dir = "${_wallpaper_res_dir}/home"
+  part_name = _wallpaper_part_name
+}
+
+# One image serves both screens, so the two copy targets share a source. They
+# need distinct `output` paths or ninja sees two rules writing the same file;
+# the installed name is the basename, so both still land as oniro_wallpaper.jpeg.
+ohos_prebuilt_etc("wallpaper_home_image") {
+  source = "oniro_wallpaper.jpeg"
+  output = "home/oniro_wallpaper.jpeg"
+  module_install_dir = "${_wallpaper_res_dir}/home/base/resources"
+  part_name = _wallpaper_part_name
+}
+
+ohos_prebuilt_etc("wallpaper_lock_manifest") {
+  source = "lock/manifest.json"
+  module_install_dir = "${_wallpaper_res_dir}/lock"
+  part_name = _wallpaper_part_name
+}
+
+ohos_prebuilt_etc("wallpaper_lock_image") {
+  source = "oniro_wallpaper.jpeg"
+  output = "lock/oniro_wallpaper.jpeg"
+  module_install_dir = "${_wallpaper_res_dir}/lock/base/resources"
+  part_name = _wallpaper_part_name
+}
+
+group("oniro_wallpaper") {
+  deps = [
+    ":wallpaper_home_image",
+    ":wallpaper_home_manifest",
+    ":wallpaper_lock_image",
+    ":wallpaper_lock_manifest",
+  ]
+}
