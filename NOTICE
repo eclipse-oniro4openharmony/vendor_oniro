@@ -30,10 +30,17 @@ OpenHarmony default boot animation assets
 * License: Apache-2.0
 * Project: https://gitee.com/openharmony
 
-Oniro distribution-flavor HAP set
-* The Oniro-customized system apps (SystemUI, Launcher, Settings, the Oniro app
-  store, and the FlorisBoard IME port) are NOT committed as binaries. They are
-  cloned and built from source at the git revisions pinned in
-  oniro-haps/oniro-haps.json, which records the source repository, commit, build
-  command, and license for each. All are licensed Apache-2.0.
-* See: oniro-haps/oniro-haps.json, oniro-haps/README.md
+Oniro distribution HAP set (opt-in; NOT part of the default build)
+* The Oniro-customized applications — the Oniro app store and the FlorisBoard
+  IME port — are NOT committed as binaries and are NOT installed by the default
+  product build. They are cloned and built from source at the git revisions
+  pinned in oniro-haps/oniro-haps.json only when a build opts in with
+  `oniro_install_custom_haps=true`.
+* Licenses of those sources, which apply to opted-in builds only:
+  - Oniro app store (f-oh): GPL-3.0-or-later
+  - FlorisBoard IME port: intended Apache-2.0; the pinned source tree carries no
+    LICENSE file, so this is unconfirmed (see `license_evidence` in the
+    descriptor).
+* Because the default image contains none of these HAPs, the content
+  distributed by this project remains Apache-2.0.
+* See: oniro-haps/oniro-haps.json, oniro-haps/README.md, oniro-haps/oniro_haps.gni

@@ -1,0 +1,34 @@
+# Copyright (c) 2026 Eclipse Oniro for OpenHarmony contributors.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Build arguments for the Oniro distribution HAP set. Kept in a .gni rather
+# than in BUILD.gn so that preinstall-config can gate its preinstall entries on
+# the same switch.
+
+declare_args() {
+  # Install the Oniro distribution HAP set (the Oniro app store, and optionally
+  # the FlorisBoard IME) into the product image.
+  #
+  # OFF by default, and deliberately so. These HAPs are built from application
+  # sources that live outside this repository, under licences that differ from
+  # the product's own (the app store is GPL-3.0-or-later) — see the `apps` list
+  # in oniro-haps.json. The default product build therefore ships the stock
+  # OpenHarmony HAP set only and redistributes no Oniro-built HAP.
+  #
+  # Opting in is a two-step, because the binaries are not committed:
+  #
+  #     bash vendor/oniro/oniro-haps/build-oniro-haps.sh
+  #     ./build.sh --product-name hybris_generic \
+  #                --gn-args "oniro_install_custom_haps=true"
+  oniro_install_custom_haps = false
+
+  # Include the descriptor's `optional` apps (currently only the FlorisBoard
+  # IME). Only has an effect when oniro_install_custom_haps is true; pass
+  # `--skip florisboard` to build-oniro-haps.sh to match.
+  oniro_include_florisboard = true
+
+  # The product part these HAPs install under. Every leaf ohos_prebuilt_etc must
+  # carry the part_name of the component that gathers group("oniro_custom_haps")
+  # via its bundle.json `sub_component`. Override per product if reused elsewhere.
+  oniro_haps_part_name = "product_hybris_generic"
+}

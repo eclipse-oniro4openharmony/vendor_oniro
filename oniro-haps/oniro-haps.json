@@ -27,10 +27,18 @@
     "app's 'apl'; bundle name comes from each module's install_dir.",
     "",
     "WIRING: BUILD.gn's group('oniro_custom_haps') is listed in the product's",
-    "bundle.json sub_component (vendor/oniro/hybris_generic), so these HAPs install",
-    "unconditionally - no applications/standard/hap patch and no gn flavor arg. The",
-    "app 'git' sources pinned below are built into every hybris_generic image; the",
-    "built binaries are not redistributed (reproduced locally from pinned source)."
+    "bundle.json sub_component (vendor/oniro/hybris_generic) - no",
+    "applications/standard/hap patch is needed. The set is OPT-IN: BUILD.gn",
+    "generates no targets unless oniro_install_custom_haps=true (oniro_haps.gni),",
+    "and preinstall-config only adds the matching BMS entries in that case.",
+    "",
+    "LICENSING / RELEASE SCOPE: the default product build installs none of the",
+    "apps below, so the release redistributes no Oniro-built HAP and their",
+    "licences are not the product's to satisfy. The app store is",
+    "GPL-3.0-or-later, which is why shipping it by default was withdrawn: it is",
+    "incompatible with the Apache-2.0 posture of the product image. Anyone who",
+    "opts in with oniro_install_custom_haps=true becomes the distributor of the",
+    "resulting image and takes on the obligations of every licence listed here."
   ],
   "haps_dir": "vendor/oniro/oniro-haps/haps",
   "build_cmd": "hvigorw assembleHap --mode module -p product=default -p debuggable=false --no-daemon",
@@ -41,7 +49,8 @@
       "branch": "oniro",
       "sha": "6c1b97437170dd95ae62a80198c21cbb42b2e008",
       "apl": "system_core",
-      "license": "Apache-2.0",
+      "license": "GPL-3.0-or-later",
+      "license_evidence": "LICENSE at the pinned sha is the GPLv3 text; source headers carry the FSF 'either version 3 of the License, or (at your option) any later version' grant. Upstream copyright: westinyang (https://gitee.com/ohos-dev).",
       "modules": [
         { "srcPath": "./entry", "output": "entry-default-signed.hap", "dest": "oniro-appstore.hap", "install_dir": "app/org.oniroproject.oniro_appstore" }
       ]
@@ -53,6 +62,7 @@
       "sha": "b347c32c37f89b34af0daf99881fd57f2f64c961",
       "apl": "normal",
       "license": "Apache-2.0",
+      "license_evidence": "UNCONFIRMED. The pinned tree carries NO LICENSE file; its README states only that upstream FlorisBoard is Apache-2.0 and that the port 'keeps the same license for the reused data'. A LICENSE file must be added to the source repository before this app can be treated as Apache-2.0 licensed.",
       "optional": true,
       "_note": "Optional IME. 'optional': true makes BUILD.gn gate it behind the oniro_include_florisboard gn arg; skip building it with --skip florisboard.",
       "modules": [

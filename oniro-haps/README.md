@@ -2,8 +2,9 @@
 
 This directory is the self-contained home of the **Oniro-customized** apps that
 ship on top of the stock OpenHarmony HAP set — the Oniro app store and
-(optionally) the FlorisBoard IME. They are installed into the product image
-**unconditionally**; there is no flavor switch to select.
+(optionally) the FlorisBoard IME. They are **opt-in**: the default product
+build installs none of them, and `oniro_install_custom_haps=true` turns the set
+on.
 
 > The system shell (SystemUI / Launcher / Settings) is provided by **SceneBoard**
 > (`window_manager_use_sceneboard`), so this set only *adds* the app store and
@@ -25,7 +26,7 @@ The HAP set is defined **once**, in `oniro-haps.json`: both the driver script
 and `BUILD.gn` read it, so adding/removing an app or module is a
 descriptor-only change.
 
-## How they reach the image (no mirror patch, no flavor arg)
+## How they reach the image (no mirror patch)
 
 `BUILD.gn` here exposes `group("oniro_custom_haps")`, and the product component
 lists it in its `bundle.json` `sub_component` — exactly like `preinstall-config`:
@@ -42,9 +43,21 @@ lists it in its `bundle.json` `sub_component` — exactly like `preinstall-confi
 Each generated `ohos_prebuilt_etc` therefore carries the product's
 `part_name` (`oniro_haps_part_name`, default `product_hybris_generic`) so it is
 gathered by that component. `applications/standard/hap` stays a **pristine
-OpenHarmony mirror** — it is not patched, and no `gn` arg selects these HAPs.
-Adding the set to another product is a one-line `sub_component` addition (set
-`oniro_haps_part_name` to that product's part if it differs).
+OpenHarmony mirror** — it is not patched. Adding the set to another product is a
+one-line `sub_component` addition (set `oniro_haps_part_name` to that product's
+part if it differs).
+
+`BUILD.gn` generates those targets only when `oniro_install_custom_haps` is
+true, so with the default `false` the group is empty and the image gets no
+Oniro-built HAP. The switch also drives `preinstall-config`, which regenerates
+`install_list.json` from `oniro-haps.json` so BMS actually preinstalls the
+bundles when you opt in (see `gen_preinstall_list.py`).
+
+Why off by default: these apps are built from sources outside this repository
+under licences that differ from the product's own — the app store is
+**GPL-3.0-or-later**. Shipping them in the default image would put that
+obligation on every consumer of the image, so the release ships the stock HAP
+set and leaves the choice to whoever builds.
 
 ## No committed binaries — clone & build
 
@@ -54,13 +67,18 @@ binaries; the consumer reproduces locally). Build them from the pinned remotes:
 
 ```bash
 # 1. Clone each app from its pinned remote (oniro-haps.json) and build it
-#    (writes haps/*.hap). REQUIRED before every product build below — the
-#    product always depends on group("oniro_custom_haps").
+#    (writes haps/*.hap). REQUIRED whenever you opt in below — with the HAPs
+#    missing, ninja fails on the prebuilt_etc `source` input.
 bash vendor/oniro/oniro-haps/build-oniro-haps.sh
 
-# 2. Build the image — it copies the just-built HAPs into system.img.
+# 2. Build the image WITH the set — it copies the just-built HAPs into
+#    system.img and adds their preinstall entries.
 #    (Run from your OHOS build environment; if you build inside a container,
 #    exec into it first, e.g. `docker exec -u root -w /home/openharmony/workdir <container> ...`.)
+./build.sh --product-name hybris_generic --ccache \
+    --gn-args "oniro_install_custom_haps=true"
+
+# A plain build omits the set entirely and needs neither step 1 nor the arg:
 ./build.sh --product-name hybris_generic --ccache
 ```
 
@@ -101,7 +119,9 @@ nonce and is not bit-reproducible, and Eclipse does not redistribute it); the
 reproducible invariant is *pinned source sha + build-cmd*. `haps/SHA256SUMS`
 (gitignored) records the checksums of a given local build for verification.
 
-> **Release note:** these HAPs are now built into every `hybris_generic` image
-> (no opt-in flavor). Their `git` sources for the app store and FlorisBoard are
-> pinned in `oniro-haps.json`; the built binaries are not redistributed by
-> Eclipse (the consumer reproduces them locally from the pinned source).
+> **Release note:** the default `hybris_generic` image contains none of these
+> HAPs, so the Eclipse release redistributes no Oniro-built HAP and none of the
+> licences below apply to it. Their `git` sources are pinned in
+> `oniro-haps.json` purely as provenance. Opting in with
+> `oniro_install_custom_haps=true` makes *you* the distributor of the resulting
+> image, including the app store's GPL-3.0-or-later obligations.

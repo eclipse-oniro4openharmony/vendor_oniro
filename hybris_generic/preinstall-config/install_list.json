@@ -217,10 +217,6 @@
             "removable": true
         },
         {
-            "app_dir": "/system/app/org.oniroproject.oniro_appstore",
-            "removable": true
-        },
-        {
             "app_dir": "/system/app/SceneBoard",
             "removable": false
         },
