@@ -32,10 +32,11 @@
 import("//build/ohos.gni")
 import("//vendor/oniro/oniro-haps/oniro_haps.gni")
 
-_desc = read_file("oniro-haps.json", "json")
-
 _hap_targets = []
 if (oniro_install_custom_haps) {
+  # Read inside the branch: gn rejects a file-scope variable that goes out of
+  # scope unused, which is what happens on the default (opt-out) path.
+  _desc = read_file("oniro-haps.json", "json")
   foreach(app, _desc.apps) {
     _include = true
     if (defined(app.optional) && app.optional) {
