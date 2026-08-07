@@ -276,6 +276,16 @@
       "components": [
         {
           "component": "libhybris",
+          "features": [
+            "libhybris_enable_wayland = true"
+          ]
+        },
+        {
+          "component": "libffi",
+          "features": []
+        },
+        {
+          "component": "wayland",
           "features": []
         },
         {
