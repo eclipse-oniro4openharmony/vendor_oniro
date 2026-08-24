@@ -26,5 +26,9 @@
 #  - WITHOUT noexec: app native libs under /data need PROT_EXEC and this
 #    kernel has no XPM to grant per-file exec.
 # The partition is reformatted ext4 for OHOS (stock FBE state must not
-# survive — see plan P4.2).
-/dev/block/platform/soc/112b0000.ufshci/by-name/userdata         /data           ext4    nosuid,nodev           wait,nofail
+# survive — see plan P4.2).  `formattable` does that reformat in init:
+# MountOneItem already runs resize2fs + e2fsck on an ext4 /data before
+# mounting, so the format only fires when a repaired mount still fails —
+# i.e. on a first install over stock VollaOS (f2fs + FBE), which would
+# otherwise need a UT install or a manual `fastboot format` first.
+/dev/block/platform/soc/112b0000.ufshci/by-name/userdata         /data           ext4    nosuid,nodev           wait,nofail,formattable

@@ -45,7 +45,11 @@
 # libarkweb_engine.so from ArkWebCore's sandbox dir — with noexec it fails
 # (`mmap fix failed errno=1`), the webview never initialises, and the app
 # shows a blank white screen.  Dropping noexec restores app .so loading.
-/dev/block/platform/soc/11270000.ufshci/by-name/userdata         /data           ext4    nosuid,nodev           wait,nofail
+# `formattable`: reformat ext4 when the mount fails.  MountOneItem runs
+# resize2fs + e2fsck on an ext4 /data first, so this only fires when a
+# repaired mount still fails — i.e. a first install over a stock
+# (f2fs + FBE) userdata, which OHOS cannot mount at all.
+/dev/block/platform/soc/11270000.ufshci/by-name/userdata         /data           ext4    nosuid,nodev           wait,nofail,formattable
 
 # chip_prod / sys_prod logical partitions inside super are mounted in the
 # chainload (init-chainload.sh Stage 3) — NOT here.  sys_prod must be
