@@ -88,9 +88,9 @@ build never depends on local working-tree state. This needs network (git clone +
 `ohpm install` on a fresh clone). Flags: `--app <name>`, `--skip <name>`
 (both repeatable), `--force-deps`, `--skip-deps`, `--sdk PATH`.
 
-Because the product now **always** depends on this set, if you skip step 1 the
-image build fails when ninja cannot find a HAP `source` under `haps/` (an
-`ohos_prebuilt_etc` missing-input error) — re-run step 1 to fix it.
+Skipping step 1 while passing the gn arg fails the image build: ninja cannot
+find a HAP `source` under `haps/` (an `ohos_prebuilt_etc` missing-input error)
+— re-run step 1 to fix it. Step 1 *without* the arg is a no-op for the image.
 
 Apps marked `"optional": true` in the descriptor (currently only FlorisBoard)
 are gated by the `oniro_include_florisboard` gn arg (default `true`); pass

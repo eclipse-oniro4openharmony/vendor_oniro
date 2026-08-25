@@ -13,14 +13,17 @@
 # / source-sha / build-cmd / license); this script additionally writes
 # haps/SHA256SUMS (gitignored) for local verification.
 #
-# Two-step flow:
+# Two-step flow, and BOTH steps are opt-in (oniro_install_custom_haps is false
+# by default — see oniro_haps.gni):
 #   1. bash vendor/oniro/oniro-haps/build-oniro-haps.sh
-#   2. ./build.sh --product-name hybris_generic --ccache     (copies the HAPs)
-# Step 1 is always required: the hybris_generic product component always depends
-# on group("oniro_custom_haps") (via vendor/oniro/hybris_generic/bundle.json), so
-# the image build fails on the missing prebuilt_etc source if the HAPs were not
-# built first. No patch to applications/standard/hap and no gn flavor arg are
-# involved — the mirror stays pristine. See README.md.
+#   2. ./build.sh --product-name hybris_generic --ccache \
+#          --gn-args "oniro_install_custom_haps=true"        (copies the HAPs)
+# With the arg off, group("oniro_custom_haps") generates no targets and haps/ is
+# never read, so running step 1 alone changes nothing about the image. With the
+# arg on, step 1 is mandatory: the binaries are not committed, so ninja fails on
+# the missing prebuilt_etc `source`. The product component pulls the group in via
+# vendor/oniro/hybris_generic/bundle.json; no patch to applications/standard/hap
+# is involved — the mirror stays pristine. See README.md.
 #
 # Signing is deterministic and host-independent: the driver nulls each app's
 # embedded signingConfig (whose encrypted passwords are tied to per-machine DevEco
