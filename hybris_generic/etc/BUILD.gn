@@ -94,6 +94,31 @@ ohos_prebuilt_etc("init_ansuz_usb_cfg") {
   part_name = "product_hybris_generic"
 }
 
+# Per-device "Model name" (deviceInfo.marketName) and any other per-device
+# const params. device_model.para.import expands ${ohos.boot.hardware} at
+# param-load time and pulls in device/<hardware>.para, so one image still
+# serves both phones. See the header of device_model.para.import.
+ohos_prebuilt_etc("device_model_para_import") {
+  source = "./param/device_model.para.import"
+  install_images = [ sys_prod_base_dir ]
+  relative_install_dir = "param"
+  part_name = "product_hybris_generic"
+}
+
+ohos_prebuilt_etc("device_para_ansuz") {
+  source = "./param/device/ansuz.para"
+  install_images = [ sys_prod_base_dir ]
+  relative_install_dir = "param/device"
+  part_name = "product_hybris_generic"
+}
+
+ohos_prebuilt_etc("device_para_x23") {
+  source = "./param/device/x23.para"
+  install_images = [ sys_prod_base_dir ]
+  relative_install_dir = "param/device"
+  part_name = "product_hybris_generic"
+}
+
 group("product_etc_conf") {
   deps = [
     ":para_for_chip_prod",
@@ -106,5 +131,8 @@ group("product_etc_conf") {
     ":init_ansuz_cfg",
     ":init_ansuz_usb_cfg",
     ":hybris_native_para",
+    ":device_model_para_import",
+    ":device_para_ansuz",
+    ":device_para_x23",
   ]
 }
