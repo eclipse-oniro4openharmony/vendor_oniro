@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Eclipse Oniro for OpenHarmony contributors.
+# SPDX-License-Identifier: Apache-2.0
+#
 # Phase N7.2 — Native-boot params for hybris_generic.
 #
 # Loaded into the OHOS param service via ohos_prebuilt_etc → /sys_prod/etc/param/.
