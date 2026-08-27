@@ -1,14 +1,16 @@
 # Oniro distribution HAPs
 
 This directory is the self-contained home of the **Oniro-customized** apps that
-ship on top of the stock OpenHarmony HAP set — the Oniro app store and
-(optionally) the FlorisBoard IME. They are **opt-in**: the default product
-build installs none of them, and `oniro_install_custom_haps=true` turns the set
-on.
+ship on top of the stock OpenHarmony HAP set — the Oniro app store, the
+FlorisBoard IME, and a rebuild of the platform **camera** carrying a rotation
+fix. They are **opt-in** and **all or nothing**: one gn arg,
+`oniro_install_custom_haps`, takes the whole set or none of it. The default
+product build installs none of them.
 
 > The system shell (SystemUI / Launcher / Settings) is provided by **SceneBoard**
-> (`window_manager_use_sceneboard`), so this set only *adds* the app store and
-> FlorisBoard — nothing stock is swapped out. Earlier revisions carried
+> (`window_manager_use_sceneboard`), so the app store and FlorisBoard only *add*
+> bundles — nothing stock is swapped out for those. (The camera is the exception
+> and does replace a stock hap.) Earlier revisions carried
 > Oniro-customized SystemUI / Launcher / Settings HAPs and reached into
 > `applications/standard/hap` via a gn `oniro_ui_flavor` switch; both were dropped
 > once the tree moved to SceneBoard.
@@ -26,7 +28,7 @@ The HAP set is defined **once**, in `oniro-haps.json`: both the driver script
 and `BUILD.gn` read it, so adding/removing an app or module is a
 descriptor-only change.
 
-## How they reach the image (no mirror patch)
+## How they reach the image
 
 `BUILD.gn` here exposes `group("oniro_custom_haps")`, and the product component
 lists it in its `bundle.json` `sub_component` — exactly like `preinstall-config`:
@@ -40,18 +42,19 @@ lists it in its `bundle.json` `sub_component` — exactly like `preinstall-confi
 ]
 ```
 
-Each generated `ohos_prebuilt_etc` therefore carries the product's
-`part_name` (`oniro_haps_part_name`, default `product_hybris_generic`) so it is
-gathered by that component. `applications/standard/hap` stays a **pristine
-OpenHarmony mirror** — it is not patched. Adding the set to another product is a
-one-line `sub_component` addition (set `oniro_haps_part_name` to that product's
-part if it differs).
+Each generated `ohos_prebuilt_etc` therefore carries the product's `part_name`
+(`product_${device_name}` — `product_hybris_generic`, `product_x86_general`),
+so it is gathered by that component. For the app store and FlorisBoard
+`applications/standard/hap` stays a pristine OpenHarmony mirror — they only add
+bundles, so nothing there needs patching. Adding the set to another product is a
+one-line `sub_component` addition.
 
-`BUILD.gn` generates those targets only when `oniro_install_custom_haps` is
-true, so with the default `false` the group is empty and the image gets no
-Oniro-built HAP. The switch also drives `preinstall-config`, which regenerates
-`install_list.json` from `oniro-haps.json` so BMS actually preinstalls the
-bundles when you opt in (see `gen_preinstall_list.py`).
+`BUILD.gn` generates targets only when `oniro_install_custom_haps` is true, so
+with the default `false` the group is empty and the image gets no Oniro-built
+HAP. The same arg drives `preinstall-config`, which regenerates
+`install_list.json` from `oniro-haps.json` so BMS actually preinstalls the added
+bundles (see `gen_preinstall_list.py`). The camera gets no new entry there: it
+takes over a bundle the committed list already carries.
 
 Why off by default: these apps are built from sources outside this repository
 under licences that differ from the product's own — the app store is
@@ -92,10 +95,36 @@ Skipping step 1 while passing the gn arg fails the image build: ninja cannot
 find a HAP `source` under `haps/` (an `ohos_prebuilt_etc` missing-input error)
 — re-run step 1 to fix it. Step 1 *without* the arg is a no-op for the image.
 
-Apps marked `"optional": true` in the descriptor (currently only FlorisBoard)
-are gated by the `oniro_include_florisboard` gn arg (default `true`); pass
-`--gn-args 'oniro_include_florisboard=false'` (and the driver's
-`--skip florisboard`) to omit them.
+## The camera is different
+
+`com.ohos.camera` is not an add-on. It is a rebuild of the platform's **own**
+app from `applications/standard/camera`, pinned to a fork that fixes the
+viewfinder controls and the saved JPEG being 90°/180° out of true. It rides the
+same switch as everything else, but two keys in its descriptor entry are unique
+to it:
+
+* **`"self_signed": true`** — keep the app's own `signingConfig` instead of the
+  driver's null-and-resign path, which would change both the certificate and the
+  provision profile. `com.ohos.camera` has an `app_signature` entry in
+  `install_list_capability.json` granting `allowAppUsePrivilegeExtension`, and
+  its committed `camera.p7b` is an `os_integration` profile carrying a Camera
+  distribution certificate that the generic template cannot reproduce. The app's
+  own material works off-host and yields the chain the stock hap has (leaf
+  *OpenHarmony Application Release*,
+  `0716E4E8C9B8CEEF6A974CD2289D5C4C668A5B41FA5DF8C0542DCB72602371F5`). Re-check
+  that chain after changing anything here: get it wrong and bms refuses the hap
+  at first boot, the way it does the sceneboard `CallUI.hap`.
+
+* **A per-app `build_cmd`** — the app is multi-module (only `phone` ships) and
+  must be built in **release** mode; a debug build carries `ets/sourceMaps.map`
+  and an unoptimised `modules.abc` and comes out ~9 MB larger than the stock hap.
+
+Being a replacement rather than an addition also means it is the one app that
+patches the mirror: it installs `app/com.ohos.camera/Camera.hap`, the same path
+as the stock `camera_hap`, so exactly one of the two must be active or ninja sees
+two rules writing one file. `oniro_install_custom_haps` drops the stock target in
+`applications/standard/hap/BUILD.gn` (a product-scoped one-liner). **With the arg
+off, the stock — rotation-buggy — camera ships.**
 
 ## Signing note
 
@@ -106,12 +135,16 @@ profile (promoted from the stock `hos_normal_app` template) — without that the
 HAP installs but is flagged non-system and its system-API calls are rejected with
 *"non-system app calling system api"*. See `build-oniro-haps.sh::sign_hap`.
 
+Apps with `"self_signed": true` bypass all of this and keep their own
+`signingConfig` — see [The camera is different](#the-camera-is-different).
+
 ## Provenance (Eclipse Bucket 4a)
 
 [`oniro-haps.json`](oniro-haps.json) **is** the provenance: per app it pins the
 `git` repo, `branch`, `sha`, `apl`, `license`, and the module→HAP mapping; the
-top-level `build_cmd` records the build command. Every app embeds its own
-`signingConfig`, but it is **not** used — the driver nulls it, builds the unsigned
+top-level `build_cmd` records the build command (an app may override it with its
+own `build_cmd`). Every app embeds its own `signingConfig`, and for all but the
+`self_signed` ones it is **not** used — the driver nulls it, builds the unsigned
 HAP, and signs deterministically with the public OpenHarmony test keys
 (`developtools/hapsigner`, password `123456`) at the app's `apl`, so the result is
 host-independent. No per-HAP sha256 is committed (a signed HAP carries a hapsigner
@@ -124,4 +157,5 @@ reproducible invariant is *pinned source sha + build-cmd*. `haps/SHA256SUMS`
 > licences below apply to it. Their `git` sources are pinned in
 > `oniro-haps.json` purely as provenance. Opting in with
 > `oniro_install_custom_haps=true` makes *you* the distributor of the resulting
-> image, including the app store's GPL-3.0-or-later obligations.
+> image, including the app store's GPL-3.0-or-later obligations. Since the set is
+> all-or-nothing, that applies even if the camera is the only part you wanted.

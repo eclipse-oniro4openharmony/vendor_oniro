@@ -9,9 +9,9 @@
     "",
     "SINGLE SOURCE OF TRUTH: the colocated BUILD.gn also reads this file",
     "(read_file at gn-gen time) and generates one ohos_prebuilt_etc per module",
-    "from 'dest' + 'install_dir' (target name = dest with .hap -> _hap); apps",
-    "with 'optional': true are gated by the oniro_include_florisboard gn arg.",
-    "Renaming these keys is a BUILD.gn interface change.",
+    "from 'dest' + 'install_dir' (target name = dest with .hap -> _hap). There is",
+    "no per-app gating: oniro_install_custom_haps takes the whole list or none of",
+    "it. Renaming these keys is a BUILD.gn interface change.",
     "",
     "The built HAP binaries are NOT committed (see haps/.gitignore); only this file",
     "is. A signed HAP is not bit-reproducible (hapsigner nonce) and Eclipse does not",
@@ -24,11 +24,17 @@
     "each app's embedded signingConfig (encrypted passwords tied to per-machine",
     "DevEco material fail off-host), builds the UNSIGNED hap, then signs with the",
     "public OpenHarmony test keys (developtools/hapsigner, password 123456) at the",
-    "app's 'apl'; bundle name comes from each module's install_dir.",
+    "app's 'apl'; bundle name comes from each module's install_dir. An app with",
+    "'self_signed': true opts out of all of that and keeps its own signingConfig,",
+    "for apps whose committed signing material works off-host and whose exact",
+    "certificate or provision profile must be preserved.",
     "",
     "WIRING: BUILD.gn's group('oniro_custom_haps') is listed in the product's",
-    "bundle.json sub_component (vendor/oniro/hybris_generic) - no",
-    "applications/standard/hap patch is needed. The set is OPT-IN: BUILD.gn",
+    "bundle.json sub_component (vendor/oniro/hybris_generic). No",
+    "applications/standard/hap patch is needed for the ADD-ON apps. The camera is",
+    "the exception: it replaces a stock hap installing the same path, so a",
+    "one-line product-scoped patch there drops camera_hap under the same gn arg.",
+    "The set is OPT-IN: BUILD.gn",
     "generates no targets unless oniro_install_custom_haps=true (oniro_haps.gni),",
     "and preinstall-config only adds the matching BMS entries in that case.",
     "",
@@ -63,10 +69,22 @@
       "apl": "normal",
       "license": "Apache-2.0",
       "license_evidence": "UNCONFIRMED. The pinned tree carries NO LICENSE file; its README states only that upstream FlorisBoard is Apache-2.0 and that the port 'keeps the same license for the reused data'. A LICENSE file must be added to the source repository before this app can be treated as Apache-2.0 licensed.",
-      "optional": true,
-      "_note": "Optional IME. 'optional': true makes BUILD.gn gate it behind the oniro_include_florisboard gn arg; skip building it with --skip florisboard.",
       "modules": [
         { "srcPath": "./entry", "output": "entry-default-signed.hap", "dest": "FlorisBoard.hap", "install_dir": "app/dev.patrickgold.florisboard" }
+      ]
+    },
+    {
+      "name": "camera",
+      "git": "https://github.com/frankplus/applications_camera.git",
+      "branch": "OpenHarmony-6.1-LTS",
+      "sha": "3c783dd11a5bac7981518a73135e5070ef296531",
+      "license": "Apache-2.0",
+      "license_evidence": "Fork of applications/standard/camera (eclipse-oniro-mirrors/applications_camera); LICENSE at the pinned sha is Apache-2.0, and the fork adds only the rotation fix on top of upstream.",
+      "self_signed": true,
+      "build_cmd": "hvigorw assembleHap --mode module -p module=phone@default -p product=default -p buildMode=release --no-daemon",
+      "_note": "Replaces the STOCK com.ohos.camera instead of adding an app, so applications/standard/hap drops camera_hap under the same gn arg -- both install app/com.ohos.camera/Camera.hap. 'self_signed': true keeps the app's own signingConfig instead of the null-and-resign path: it commits working signing material (signature/OpenHarmony.p12 + camera.p7b) whose profile is an 'os_integration' one carrying a Camera distribution certificate that the generic UnsgnedReleasedProfileTemplate cannot reproduce, and com.ohos.camera has an app_signature entry in install_list_capability.json granting allowAppUsePrivilegeExtension, so the chain must stay byte-identical to the stock hap's (leaf 'OpenHarmony Application Release', SHA256 0716E4E8C9B8CEEF6A974CD2289D5C4C668A5B41FA5DF8C0542DCB72602371F5). The per-app 'build_cmd' targets the one module that ships (phone) and forces release mode; a debug build carries ets/sourceMaps.map and an unoptimised modules.abc and comes out ~9 MB larger.",
+      "modules": [
+        { "srcPath": "./product/phone", "output": "phone-default-signed.hap", "dest": "Camera.hap", "install_dir": "app/com.ohos.camera" }
       ]
     }
   ]

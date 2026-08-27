@@ -37,9 +37,6 @@ if (oniro_install_custom_haps) {
       "--output",
       rebase_path(_generated_install_list, root_build_dir),
     ]
-    if (!oniro_include_florisboard) {
-      args += [ "--skip-optional" ]
-    }
   }
 
   _install_list = _generated_install_list

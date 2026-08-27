@@ -1,34 +1,35 @@
 # Copyright (c) 2026 Eclipse Oniro for OpenHarmony contributors.
 # SPDX-License-Identifier: Apache-2.0
 #
-# Build arguments for the Oniro distribution HAP set. Kept in a .gni rather
-# than in BUILD.gn so that preinstall-config can gate its preinstall entries on
-# the same switch.
+# The one build argument for the Oniro distribution HAP set. Kept in a .gni
+# rather than in BUILD.gn so that preinstall-config, and the patched
+# applications/standard/hap, can gate on the same switch.
 
 declare_args() {
-  # Install the Oniro distribution HAP set (the Oniro app store, and optionally
-  # the FlorisBoard IME) into the product image.
+  # Install the Oniro distribution HAP set into the product image: the Oniro app
+  # store, the FlorisBoard IME, and a rebuild of the platform camera app that
+  # fixes its viewfinder and saved photos being 90/180 degrees out of true.
+  #
+  # All or nothing. There is deliberately no per-app switch: the set is small,
+  # every app in it is listed in oniro-haps.json, and one honest question ("do I
+  # want the Oniro apps?") beats a matrix of gn args that each need pairing with
+  # a driver flag.
   #
   # OFF by default, and deliberately so. These HAPs are built from application
   # sources that live outside this repository, under licences that differ from
   # the product's own (the app store is GPL-3.0-or-later) — see the `apps` list
   # in oniro-haps.json. The default product build therefore ships the stock
-  # OpenHarmony HAP set only and redistributes no Oniro-built HAP.
+  # OpenHarmony HAP set only and redistributes no Oniro-built HAP. The flip side
+  # is that a default image also keeps the stock, rotation-buggy camera.
   #
   # Opting in is a two-step, because the binaries are not committed:
   #
   #     bash vendor/oniro/oniro-haps/build-oniro-haps.sh
   #     ./build.sh --product-name hybris_generic \
   #                --gn-args "oniro_install_custom_haps=true"
+  #
+  # This also drops the stock camera_hap in applications/standard/hap: the
+  # camera entry here installs the same path, so exactly one of the two must be
+  # active or ninja sees two rules writing one file.
   oniro_install_custom_haps = false
-
-  # Include the descriptor's `optional` apps (currently only the FlorisBoard
-  # IME). Only has an effect when oniro_install_custom_haps is true; pass
-  # `--skip florisboard` to build-oniro-haps.sh to match.
-  oniro_include_florisboard = true
-
-  # The product part these HAPs install under. Every leaf ohos_prebuilt_etc must
-  # carry the part_name of the component that gathers group("oniro_custom_haps")
-  # via its bundle.json `sub_component`. Override per product if reused elsewhere.
-  oniro_haps_part_name = "product_hybris_generic"
 }

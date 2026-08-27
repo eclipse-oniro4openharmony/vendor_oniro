@@ -1,24 +1,28 @@
 # Copyright (c) 2026 Eclipse Oniro for OpenHarmony contributors.
 # SPDX-License-Identifier: Apache-2.0
 #
-# Oniro distribution HAP set (the Oniro app store + FlorisBoard IME).
+# Oniro distribution HAP set (the Oniro app store, the FlorisBoard IME, and a
+# rotation-fixed rebuild of the platform camera).
 #
 # oniro-haps.json is the single source of truth for the HAP set: one
 # ohos_prebuilt_etc target is generated below for every module of every app in
 # the descriptor (read_file is gn-gen-time and, unlike exec_script, not gated
-# by the //.gn allowlist). These targets install the Oniro-customized HAPs on
-# top of the stock applications/standard/hap set (SceneBoard provides the
-# SystemUI / Launcher / Settings shell, so nothing stock is swapped out).
+# by the //.gn allowlist). Adding or removing an app is a descriptor-only
+# change — there is nothing per-app in this file.
 #
 # This group is pulled into the image the vendor-owned way: the product
 # component lists group("oniro_custom_haps") in its bundle.json `sub_component`
 # (see vendor/oniro/hybris_generic/bundle.json), exactly like preinstall-config.
-# That is why each generated target carries the PRODUCT's part_name
-# (oniro_haps_part_name) — a leaf's part_name must match the part of the
-# component that gathers it. No patch to applications/standard/hap is needed.
+# That is why each generated target carries the PRODUCT's part_name — a leaf's
+# part_name must match the part of the component that gathers it.
 #
-# The set is OPT-IN: unless oniro_install_custom_haps is true (see
-# oniro_haps.gni) this generates no targets and the group is empty, so the
+# Most of these apps only ADD bundles, so applications/standard/hap stays a
+# pristine mirror for them. The camera is the exception: it replaces the stock
+# com.ohos.camera at the same install path, so the same gn arg drops camera_hap
+# over there.
+#
+# The set is OPT-IN and all-or-nothing: unless oniro_install_custom_haps is true
+# (see oniro_haps.gni) this generates no targets and the group is empty, so the
 # default product build installs no Oniro-built HAP. That keeps the default
 # image free of application content whose licences differ from the product's
 # own, and it means a plain build does not require haps/ to have been
@@ -38,20 +42,17 @@ if (oniro_install_custom_haps) {
   # scope unused, which is what happens on the default (opt-out) path.
   _desc = read_file("oniro-haps.json", "json")
   foreach(app, _desc.apps) {
-    _include = true
-    if (defined(app.optional) && app.optional) {
-      _include = oniro_include_florisboard
-    }
-    if (_include) {
-      foreach(mod, app.modules) {
-        _name = string_replace(mod.dest, ".hap", "_hap")
-        ohos_prebuilt_etc(_name) {
-          source = "haps/" + mod.dest
-          module_install_dir = mod.install_dir
-          part_name = oniro_haps_part_name
-        }
-        _hap_targets += [ ":" + _name ]
+    foreach(mod, app.modules) {
+      _name = string_replace(mod.dest, ".hap", "_hap")
+      ohos_prebuilt_etc(_name) {
+        source = "haps/" + mod.dest
+        module_install_dir = mod.install_dir
+
+        # product_hybris_generic / product_x86_general — the component names in
+        # the products' bundle.json, the same way vendor/oniro/wallpaper does it.
+        part_name = "product_${device_name}"
       }
+      _hap_targets += [ ":" + _name ]
     }
   }
 }

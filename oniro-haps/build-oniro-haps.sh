@@ -5,8 +5,8 @@
 # Copyright (c) 2026 Eclipse Oniro for OpenHarmony contributors.
 # SPDX-License-Identifier: Apache-2.0
 #
-# The Oniro-customized HAPs (the Oniro app store and FlorisBoard IME) are NOT
-# committed as binaries. This script CLONES each app from its pinned remote git
+# The Oniro-customized HAPs (the Oniro app store, the FlorisBoard IME, and a
+# rotation-fixed build of the platform camera) are NOT committed as binaries. This script CLONES each app from its pinned remote git
 # repo (git+branch+sha in oniro-haps.json) into out/oniro-haps/src/<app> (cached,
 # reused at the pinned sha) and builds it, so the release is reproducible from
 # upstream. The committed oniro-haps.json IS the Bucket-4a provenance (source-repo
@@ -14,7 +14,8 @@
 # haps/SHA256SUMS (gitignored) for local verification.
 #
 # Two-step flow, and BOTH steps are opt-in (oniro_install_custom_haps is false
-# by default — see oniro_haps.gni):
+# by default — see oniro_haps.gni). It is all-or-nothing: the arg takes the
+# whole descriptor or none of it, and there is no per-app gn arg to pair with:
 #   1. bash vendor/oniro/oniro-haps/build-oniro-haps.sh
 #   2. ./build.sh --product-name hybris_generic --ccache \
 #          --gn-args "oniro_install_custom_haps=true"        (copies the HAPs)
@@ -22,13 +23,20 @@
 # never read, so running step 1 alone changes nothing about the image. With the
 # arg on, step 1 is mandatory: the binaries are not committed, so ninja fails on
 # the missing prebuilt_etc `source`. The product component pulls the group in via
-# vendor/oniro/hybris_generic/bundle.json; no patch to applications/standard/hap
-# is involved — the mirror stays pristine. See README.md.
+# vendor/oniro/hybris_generic/bundle.json.
+#
+# Most of these apps only add bundles, leaving applications/standard/hap a
+# pristine mirror. The camera is the exception: it replaces the stock Camera.hap
+# at the same install path, so the same gn arg drops camera_hap over there.
+# See README.md.
 #
 # Signing is deterministic and host-independent: the driver nulls each app's
 # embedded signingConfig (whose encrypted passwords are tied to per-machine DevEco
 # material and fail off-host), builds the UNSIGNED hap, then signs with the public
 # OpenHarmony test keys (developtools/hapsigner, password 123456) at the app's apl.
+# Apps marked "self_signed": true skip all of that and keep their own signingConfig
+# (the camera commits working signing material, and its certificate has to stay
+# byte-identical to the stock hap's or bms drops its privileges at first boot).
 # Needs network (git clone + ohpm install on a fresh clone).
 
 set -euo pipefail
@@ -54,7 +62,6 @@ Usage: $(basename "$0") [options]
 
   --app NAME      Build only this app (repeatable). Default: all in oniro-haps.json
   --skip NAME     Skip this app (repeatable), e.g. --skip florisboard
-                  (pair with the matching gn arg, see README.md)
   --force-deps    Always run 'ohpm install' even if oh_modules/ exists
   --skip-deps     Never run 'ohpm install' (only for a warm cached clone)
   --sdk PATH      OpenHarmony SDK base dir (default: \$OHOS_SDK_HOME or
@@ -134,20 +141,32 @@ prepare_clone() {  # idx
 # tied to per-machine DevEco material and fail off-host, so we null the product
 # signingConfig (hvigor then skips SignHap and emits -unsigned.hap for every
 # module) and sign deterministically afterwards.
-build_hvigor_app() {  # src_abs
-  local src="$1"
+#
+# An app with "self_signed": true opts out: its committed signing material works
+# off-host, and its exact certificate/profile has to survive (see the camera's
+# _note in oniro-haps.json). There we leave build-profile.json5 alone and take
+# hvigor's -signed.hap as-is.
+build_hvigor_app() {  # src_abs  self_signed  build_cmd
+  local src="$1" self_signed="$2" cmd="$3"
   local bp="${src}/build-profile.json5" bak rc=0
   bak="$(mktemp)"; cp "$bp" "$bak"
-  sed -i -E 's/("signingConfig"[[:space:]]*:[[:space:]]*)"[^"]*"/\1""/g' "$bp"
+  if [ "$self_signed" != "true" ]; then
+    sed -i -E 's/("signingConfig"[[:space:]]*:[[:space:]]*)"[^"]*"/\1""/g' "$bp"
+  fi
   if ! ( cd "$src"
          printf 'sdk.dir=%s\nnodejs.dir=%s\n' "$SDK" "$NODE_DIR" > local.properties
          if [ "$SKIP_DEPS" -eq 0 ] && { [ "$FORCE_DEPS" -eq 1 ] || [ ! -d "$src/oh_modules" ]; }; then
            log "ohpm install in $(basename "$src") ..."
-           ohpm install >/dev/null 2>&1 || warn "ohpm install reported errors (continuing if oh_modules present)"
+           ohpm install --all >/dev/null 2>&1 || ohpm install >/dev/null 2>&1 \
+             || warn "ohpm install reported errors (continuing if oh_modules present)"
          fi
-         log "hvigor assembleHap (unsigned) in $(basename "$src") ..."
+         if [ "$self_signed" = "true" ]; then
+           log "hvigor assembleHap (app's own signingConfig) in $(basename "$src") ..."
+         else
+           log "hvigor assembleHap (unsigned) in $(basename "$src") ..."
+         fi
          # shellcheck disable=SC2086
-         "$HVIGORW" $BUILD_CMD >/dev/null ); then
+         "$HVIGORW" $cmd >/dev/null ); then
     rc=1
   fi
   cp "$bak" "$bp"; rm -f "$bak"
@@ -190,29 +209,39 @@ OK_COUNT=0
 : > "$SHASUMS.new"
 
 process_app() {
-  local idx="$1" name apl
+  local idx="$1" name apl self_signed cmd
   name="$(jq -r ".apps[$idx].name" "$DESC")"
   want_app "$name" || { log "skip $name"; return 0; }
   apl="$(jq -r ".apps[$idx].apl // \"normal\"" "$DESC")"
+  self_signed="$(jq -r ".apps[$idx].self_signed // false" "$DESC")"
+  cmd="$(jq -r ".apps[$idx].build_cmd // empty" "$DESC")"
+  [ -n "$cmd" ] || cmd="$BUILD_CMD"
 
   prepare_clone "$idx"
   log "=== $name ($(jq -r ".apps[$idx].git" "$DESC") @ $(git -C "$SRCDIR" rev-parse --short HEAD)) ==="
-  build_hvigor_app "$SRCDIR"
+  build_hvigor_app "$SRCDIR" "$self_signed" "$cmd"
 
   local nmod m; nmod="$(jq -r ".apps[$idx].modules | length" "$DESC")"
   for (( m=0; m<nmod; m++ )); do
-    local srcPath output dest install_dir unsigned_name unsigned bundle
+    local srcPath output dest install_dir unsigned_name unsigned bundle signed
     srcPath="$(jq -r ".apps[$idx].modules[$m].srcPath" "$DESC")"
     output="$(jq -r ".apps[$idx].modules[$m].output" "$DESC")"
     dest="$(jq -r ".apps[$idx].modules[$m].dest" "$DESC")"
     install_dir="$(jq -r ".apps[$idx].modules[$m].install_dir" "$DESC")"
-    unsigned_name="${output/-signed.hap/-unsigned.hap}"
-    unsigned="${SRCDIR}/${srcPath}/build/default/outputs/default/${unsigned_name}"
-    [ -f "$unsigned" ] || die "$name: expected build output missing: $unsigned"
-    bundle="${install_dir##*/}"
-    sign_hap "$unsigned" "${OUT_DIR}/${dest}" "$bundle" "$apl"
+    if [ "$self_signed" = "true" ]; then
+      signed="${SRCDIR}/${srcPath}/build/default/outputs/default/${output}"
+      [ -f "$signed" ] || die "$name: expected build output missing: $signed"
+      cp -f "$signed" "${OUT_DIR}/${dest}"
+      log "  + ${dest}  <- ${output} (kept the app's own signature)"
+    else
+      unsigned_name="${output/-signed.hap/-unsigned.hap}"
+      unsigned="${SRCDIR}/${srcPath}/build/default/outputs/default/${unsigned_name}"
+      [ -f "$unsigned" ] || die "$name: expected build output missing: $unsigned"
+      bundle="${install_dir##*/}"
+      sign_hap "$unsigned" "${OUT_DIR}/${dest}" "$bundle" "$apl"
+      log "  + ${dest}  <- ${unsigned_name} (signed apl=${apl})"
+    fi
     ( cd "$OUT_DIR" && sha256sum "$dest" >> "$SHASUMS.new" )
-    log "  + ${dest}  <- ${unsigned_name} (signed apl=${apl})"
     OK_COUNT=$((OK_COUNT+1))
   done
 }

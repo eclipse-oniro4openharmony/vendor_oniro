@@ -22,9 +22,6 @@ def main() -> None:
     ap.add_argument('--descriptor', required=True,
                     help='oniro-haps.json')
     ap.add_argument('--output', required=True)
-    ap.add_argument('--skip-optional', action='store_true',
-                    help="omit apps marked 'optional' (matches "
-                         'oniro_include_florisboard=false)')
     args = ap.parse_args()
 
     with open(args.install_list, encoding='utf-8') as f:
@@ -36,10 +33,13 @@ def main() -> None:
     present = {e.get('app_dir') for e in entries}
 
     for app in descriptor['apps']:
-        if args.skip_optional and app.get('optional'):
-            continue
         for module in app['modules']:
             app_dir = '/system/' + module['install_dir']
+            # Already listed, so leave it alone. This is what keeps an app that
+            # REPLACES a stock hap out of the additions below: the camera takes
+            # over com.ohos.camera, which the committed list already carries as
+            # removable:false, and re-adding it would declare a platform app
+            # removable.
             if app_dir in present:
                 continue
             # Removable: these are add-on applications, not platform services,
