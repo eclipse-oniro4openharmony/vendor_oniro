@@ -19,7 +19,14 @@
                 <pipe name="primary_output" role="output">
                     <paProp lib="libmodule-hdi-sink.z.so" role="sink" fixed_latency="1" render_in_idle_state="1" moduleName="Speaker"/>
                     <streamProps>
-                        <streamProp format="s16le" sampleRates="44100" channelLayout="CH_LAYOUT_STEREO" bufferSize="4096" supportDevices="Earpiece_Out, Speaker_Out, Wired_Headset_Out, Wired_Headphones_Out"/>
+                        <!-- 48000, not the 44100 the sample config ships with:
+                             this rate is handed straight to the HAL's output
+                             stream, and the MT6878 AFE is a 48 kHz part.  Asking
+                             it for 44100 is accepted but then plays back slightly
+                             slow, so buffered audio piles up at ~3% of playing
+                             time - after a few minutes of use, play and pause
+                             lag the button by seconds. -->
+                        <streamProp format="s16le" sampleRates="48000" channelLayout="CH_LAYOUT_STEREO" bufferSize="4096" supportDevices="Earpiece_Out, Speaker_Out, Wired_Headset_Out, Wired_Headphones_Out"/>
                     </streamProps>
                     <attributes>
                         <attribute name="preload" value="true"/>
