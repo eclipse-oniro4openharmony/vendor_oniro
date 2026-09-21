@@ -10,6 +10,10 @@ installed bundle, or the HAPs land in /system/app but are never installed.
 
 Entries are derived from oniro-haps.json so the descriptor stays the single
 source of truth: an app added there needs no change here.
+
+Optional features that ship a front-end HAP of their own (Android app support:
+hybris_generic_soc_feature_waydroid) pass its directory with --app-dir; that
+works with or without the Oniro HAP set.
 """
 import argparse
 import json
@@ -19,15 +23,19 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--install-list', required=True,
                     help='committed stock install_list.json')
-    ap.add_argument('--descriptor', required=True,
-                    help='oniro-haps.json')
+    ap.add_argument('--descriptor',
+                    help='oniro-haps.json (omit when the Oniro HAP set is off)')
+    ap.add_argument('--app-dir', action='append', default=[],
+                    help='extra removable app dir, e.g. /system/app/<bundle>')
     ap.add_argument('--output', required=True)
     args = ap.parse_args()
 
     with open(args.install_list, encoding='utf-8') as f:
         install_list = json.load(f)
-    with open(args.descriptor, encoding='utf-8') as f:
-        descriptor = json.load(f)
+    descriptor = {'apps': []}
+    if args.descriptor:
+        with open(args.descriptor, encoding='utf-8') as f:
+            descriptor = json.load(f)
 
     entries = install_list.setdefault('install_list', [])
     present = {e.get('app_dir') for e in entries}
@@ -44,6 +52,11 @@ def main() -> None:
                 continue
             # Removable: these are add-on applications, not platform services,
             # so the user must be able to uninstall them.
+            entries.append({'app_dir': app_dir, 'removable': True})
+            present.add(app_dir)
+
+    for app_dir in args.app_dir:
+        if app_dir not in present:
             entries.append({'app_dir': app_dir, 'removable': True})
             present.add(app_dir)
 

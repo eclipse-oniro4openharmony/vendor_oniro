@@ -27,7 +27,9 @@
       "components": [
         {
           "component": "hybris_generic_soc",
-          "features": []
+          "features": [
+            "hybris_generic_soc_feature_waydroid = true"
+          ]
         }
       ]
     },
