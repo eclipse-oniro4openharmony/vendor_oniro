@@ -20,7 +20,7 @@ import("//vendor/oniro/oniro-haps/oniro_haps.gni")
 # is never installed — so when the build adds any, regenerate the list:
 #   * the Oniro distribution HAP set (oniro_install_custom_haps), from
 #     oniro-haps.json;
-#   * the "Android Apps" front-end, when the product builds Android app
+#   * the Waydroid front-end, when the product builds Android app
 #     support (hybris_generic_soc_feature_waydroid).
 # Everything added this way is removable: add-on applications, not platform.
 _install_list = "./install_list.json"
