@@ -19,3 +19,14 @@ ohos_prebuilt_etc("power_mode_config_vendor") {
   install_images = [ chipset_base_dir ]
   part_name = "product_hybris_generic"
 }
+
+# Long-press power shows its shutdown dialog from com.ohos.systemui unless
+# this file names another host; that bundle doesn't exist on a sceneboard
+# product, so without it the press just turns the screen off.  Read by
+# power_manager's ShutdownDialog::LoadDialogConfig() via GetOneCfgFile().
+ohos_prebuilt_etc("poweroff_dialog_config") {
+  source = "poweroff_config.json"
+  relative_install_dir = "systemui"
+  install_images = [ chipset_base_dir ]
+  part_name = "product_hybris_generic"
+}

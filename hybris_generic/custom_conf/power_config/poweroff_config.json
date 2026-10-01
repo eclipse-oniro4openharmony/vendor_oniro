@@ -1,0 +1,5 @@
+{
+  "bundleName": "com.ohos.sceneboard",
+  "abilityName": "PoweroffAbility",
+  "uiExtensionType": "sysDialog/common"
+}
