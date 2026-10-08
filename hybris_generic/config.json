@@ -27,9 +27,7 @@
       "components": [
         {
           "component": "hybris_generic_soc",
-          "features": [
-            "hybris_generic_soc_feature_waydroid = true"
-          ]
+          "features": []
         }
       ]
     },
@@ -278,16 +276,6 @@
       "components": [
         {
           "component": "libhybris",
-          "features": [
-            "libhybris_enable_wayland = true"
-          ]
-        },
-        {
-          "component": "libffi",
-          "features": []
-        },
-        {
-          "component": "wayland",
           "features": []
         },
         {
