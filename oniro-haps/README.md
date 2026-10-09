@@ -2,15 +2,16 @@
 
 This directory is the self-contained home of the **Oniro-customized** apps that
 ship on top of the stock OpenHarmony HAP set — the Oniro app store, the
-FlorisBoard IME, and a rebuild of the platform **camera** carrying a rotation
-fix. They are **opt-in** and **all or nothing**: one gn arg,
+FlorisBoard IME, a rebuild of the platform **camera** carrying a rotation
+fix, and a rebuild of the platform **settings data** provider with Oniro
+defaults (lock screen sounds off). They are **opt-in** and **all or nothing**: one gn arg,
 `oniro_install_custom_haps`, takes the whole set or none of it. The default
 product build installs none of them.
 
 > The system shell (SystemUI / Launcher / Settings) is provided by **SceneBoard**
 > (`window_manager_use_sceneboard`), so the app store and FlorisBoard only *add*
-> bundles — nothing stock is swapped out for those. (The camera is the exception
-> and does replace a stock hap.) Earlier revisions carried
+> bundles — nothing stock is swapped out for those. (The camera and settings
+> data are the exception and replace a stock hap.) Earlier revisions carried
 > Oniro-customized SystemUI / Launcher / Settings HAPs and reached into
 > `applications/standard/hap` via a gn `oniro_ui_flavor` switch; both were dropped
 > once the tree moved to SceneBoard.
@@ -53,8 +54,8 @@ one-line `sub_component` addition.
 with the default `false` the group is empty and the image gets no Oniro-built
 HAP. The same arg drives `preinstall-config`, which regenerates
 `install_list.json` from `oniro-haps.json` so BMS actually preinstalls the added
-bundles (see `gen_preinstall_list.py`). The camera gets no new entry there: it
-takes over a bundle the committed list already carries.
+bundles (see `gen_preinstall_list.py`). The camera and settings data get no new
+entry there: they take over bundles the committed list already carries.
 
 Why off by default: these apps are built from sources outside this repository
 under licences that differ from the product's own — the app store is
@@ -126,6 +127,40 @@ two rules writing one file. `oniro_install_custom_haps` drops the stock target i
 `applications/standard/hap/BUILD.gn` (a product-scoped one-liner). **With the arg
 off, the stock — rotation-buggy — camera ships.**
 
+## Settings data: a replacement with Oniro defaults
+
+`com.ohos.settingsdata` is the platform's settings provider. It seeds its
+database on first startup from `resources/rawfile/default_settings.json` inside
+its own hap, and reads defaults from nowhere else, so an Oniro default for a
+setting means rebuilding the hap. It is built from `applications/standard/settings_data`,
+pinned to a fork that
+
+* ports the project to the current hvigor project model (the upstream one is
+  still on hvigor 3.0.9 and no longer builds with the command-line tools), and
+* seeds `lockscreen_sounds_enabled=0` in the per-user table: SceneBoard plays
+  `lock.ogg` / `unlock.ogg` on every lock and unlock, routed as a ring tone,
+  unless this key says otherwise. Add further Oniro defaults to the same file.
+
+Defaults only apply on a fresh userdata; an existing device keeps its database.
+
+It is signed with **`"profile": "signature/settingsdata.p7b"`**: the app's own
+committed provision profile, used as-is with the public OpenHarmony test key,
+instead of one generated from the template. The profile is an `os_integration`
+one carrying ACLs (`MANAGE_SECURE_SETTINGS`, `INSTALL_BUNDLE`,
+`MANAGE_BLUETOOTH`) and `AllowAppUsePrivilegeExtension` that the template cannot
+reproduce, and its distribution certificate is what
+`install_list_capability.json` pins as the bundle's `app_signature`
+(`8E93863F…`). bms derives the app's fingerprint and `appId` from the profile,
+not from the signing leaf, so the hap updates the stock one in place. (The stock
+prebuilt is signed with a different leaf, the camera's `0716E4E8…`, whose key is
+not in the tree; that does not matter for the same reason.)
+
+Like the camera it replaces a stock hap at the same path,
+`app/com.ohos.settingsdata/SettingsData.hap`, so `oniro_install_custom_haps`
+also drops the stock `settingsData_hap` in `applications/standard/hap/BUILD.gn`.
+**With the arg off, the stock settings data ships and the lock screen sounds
+stay on.**
+
 ## Signing note
 
 The app store requests privileged permissions (`INSTALL_BUNDLE`, etc.) and calls
@@ -137,6 +172,9 @@ HAP installs but is flagged non-system and its system-API calls are rejected wit
 
 Apps with `"self_signed": true` bypass all of this and keep their own
 `signingConfig` — see [The camera is different](#the-camera-is-different).
+Apps with a `"profile"` are signed with the public test key under that committed
+profile instead of a generated one — see
+[Settings data](#settings-data-a-replacement-with-oniro-defaults).
 
 ## Provenance (Eclipse Bucket 4a)
 

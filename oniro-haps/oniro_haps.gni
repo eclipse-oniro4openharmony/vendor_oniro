@@ -7,8 +7,10 @@
 
 declare_args() {
   # Install the Oniro distribution HAP set into the product image: the Oniro app
-  # store, the FlorisBoard IME, and a rebuild of the platform camera app that
-  # fixes its viewfinder and saved photos being 90/180 degrees out of true.
+  # store, the FlorisBoard IME, a rebuild of the platform camera app that
+  # fixes its viewfinder and saved photos being 90/180 degrees out of true, and
+  # a rebuild of the settings data provider with Oniro defaults (lock screen
+  # sounds off).
   #
   # All or nothing. There is deliberately no per-app switch: the set is small,
   # every app in it is listed in oniro-haps.json, and one honest question ("do I
@@ -20,7 +22,8 @@ declare_args() {
   # the product's own (the app store is GPL-3.0-or-later) — see the `apps` list
   # in oniro-haps.json. The default product build therefore ships the stock
   # OpenHarmony HAP set only and redistributes no Oniro-built HAP. The flip side
-  # is that a default image also keeps the stock, rotation-buggy camera.
+  # is that a default image also keeps the stock, rotation-buggy camera and
+  # the stock settings defaults.
   #
   # Opting in is a two-step, because the binaries are not committed:
   #
@@ -28,8 +31,9 @@ declare_args() {
   #     ./build.sh --product-name hybris_generic \
   #                --gn-args "oniro_install_custom_haps=true"
   #
-  # This also drops the stock camera_hap in applications/standard/hap: the
-  # camera entry here installs the same path, so exactly one of the two must be
-  # active or ninja sees two rules writing one file.
+  # This also drops the stock camera_hap and settingsData_hap in
+  # applications/standard/hap: the camera and settingsdata entries here install
+  # the same paths, so exactly one of each pair must be active or ninja sees two
+  # rules writing one file.
   oniro_install_custom_haps = false
 }

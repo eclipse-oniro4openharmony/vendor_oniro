@@ -5,8 +5,9 @@
 # Copyright (c) 2026 Eclipse Oniro for OpenHarmony contributors.
 # SPDX-License-Identifier: Apache-2.0
 #
-# The Oniro-customized HAPs (the Oniro app store, the FlorisBoard IME, and a
-# rotation-fixed build of the platform camera) are NOT committed as binaries. This script CLONES each app from its pinned remote git
+# The Oniro-customized HAPs (the Oniro app store, the FlorisBoard IME, a
+# rotation-fixed build of the platform camera, and the settings data provider
+# with Oniro defaults) are NOT committed as binaries. This script CLONES each app from its pinned remote git
 # repo (git+branch+sha in oniro-haps.json) into out/oniro-haps/src/<app> (cached,
 # reused at the pinned sha) and builds it, so the release is reproducible from
 # upstream. The committed oniro-haps.json IS the Bucket-4a provenance (source-repo
@@ -26,8 +27,9 @@
 # vendor/oniro/hybris_generic/bundle.json.
 #
 # Most of these apps only add bundles, leaving applications/standard/hap a
-# pristine mirror. The camera is the exception: it replaces the stock Camera.hap
-# at the same install path, so the same gn arg drops camera_hap over there.
+# pristine mirror. The camera and settings data are the exception: they replace
+# the stock Camera.hap / SettingsData.hap at the same install paths, so the same
+# gn arg drops camera_hap / settingsData_hap over there.
 # See README.md.
 #
 # Signing is deterministic and host-independent: the driver nulls each app's
@@ -37,6 +39,9 @@
 # Apps marked "self_signed": true skip all of that and keep their own signingConfig
 # (the camera commits working signing material, and its certificate has to stay
 # byte-identical to the stock hap's or bms drops its privileges at first boot).
+# Apps with a "profile" are signed with the public test key under that committed
+# provision profile instead of a template-generated one (settings data: its
+# profile carries ACLs and the app_signature the template cannot reproduce).
 # Needs network (git clone + ohpm install on a fresh clone).
 
 set -euo pipefail
@@ -174,12 +179,20 @@ build_hvigor_app() {  # src_abs  self_signed  build_cmd
 }
 
 # Sign an unsigned HAP with the public OpenHarmony test keys at the given apl.
-sign_hap() {  # unsigned_hap  out_hap  bundle  apl
-  local unsigned="$1" out="$2" bundle="$3" apl="$4" w rc=0
+#
+# With a `profile` (an app's committed, already-signed provision profile) the
+# profile is used as-is instead of one generated from the template: its ACLs,
+# distribution type and privilege capabilities survive, and so does the
+# fingerprint bms checks against install_list_capability.json's app_signature.
+sign_hap() {  # unsigned_hap  out_hap  bundle  apl  [profile]
+  local unsigned="$1" out="$2" bundle="$3" apl="$4" profile="${5:-}" w rc=0
   w="$(mktemp -d)"
   cp "${SIGN_DIST}/hap-sign-tool.jar" "${SIGN_DIST}/OpenHarmony.p12" \
      "${SIGN_DIST}/OpenHarmonyApplication.pem" "${SIGN_DIST}/OpenHarmonyProfileRelease.pem" \
      "${SIGN_DIST}/UnsgnedReleasedProfileTemplate.json" "$w/"
+  if [ -n "$profile" ]; then
+    cp "$profile" "$w/profile.p7b"
+  fi
   sed -e "s/com.OpenHarmony.app.test/${bundle}/g" -e "s/\"normal\"/\"${apl}\"/g" \
       "$w/UnsgnedReleasedProfileTemplate.json" > "$w/profile.json"
   # A system app (system_basic/system_core apl) must carry app-feature
@@ -192,7 +205,7 @@ sign_hap() {  # unsigned_hap  out_hap  bundle  apl
       sed -i 's/"hos_normal_app"/"hos_system_app"/' "$w/profile.json" ;;
   esac
   ( cd "$w"
-    java -jar hap-sign-tool.jar sign-profile \
+    [ -n "$profile" ] || java -jar hap-sign-tool.jar sign-profile \
       -keyAlias "openharmony application profile release" -signAlg SHA256withECDSA \
       -mode localSign -profileCertFile OpenHarmonyProfileRelease.pem -inFile profile.json \
       -keystoreFile OpenHarmony.p12 -outFile profile.p7b -keyPwd 123456 -keystorePwd 123456 >/dev/null
@@ -209,10 +222,11 @@ OK_COUNT=0
 : > "$SHASUMS.new"
 
 process_app() {
-  local idx="$1" name apl self_signed cmd
+  local idx="$1" name apl self_signed cmd profile
   name="$(jq -r ".apps[$idx].name" "$DESC")"
   want_app "$name" || { log "skip $name"; return 0; }
   apl="$(jq -r ".apps[$idx].apl // \"normal\"" "$DESC")"
+  profile="$(jq -r ".apps[$idx].profile // empty" "$DESC")"
   self_signed="$(jq -r ".apps[$idx].self_signed // false" "$DESC")"
   cmd="$(jq -r ".apps[$idx].build_cmd // empty" "$DESC")"
   [ -n "$cmd" ] || cmd="$BUILD_CMD"
@@ -220,6 +234,10 @@ process_app() {
   prepare_clone "$idx"
   log "=== $name ($(jq -r ".apps[$idx].git" "$DESC") @ $(git -C "$SRCDIR" rev-parse --short HEAD)) ==="
   build_hvigor_app "$SRCDIR" "$self_signed" "$cmd"
+  if [ -n "$profile" ]; then
+    profile="${SRCDIR}/${profile}"
+    [ -f "$profile" ] || die "$name: provision profile missing: $profile"
+  fi
 
   local nmod m; nmod="$(jq -r ".apps[$idx].modules | length" "$DESC")"
   for (( m=0; m<nmod; m++ )); do
@@ -238,8 +256,12 @@ process_app() {
       unsigned="${SRCDIR}/${srcPath}/build/default/outputs/default/${unsigned_name}"
       [ -f "$unsigned" ] || die "$name: expected build output missing: $unsigned"
       bundle="${install_dir##*/}"
-      sign_hap "$unsigned" "${OUT_DIR}/${dest}" "$bundle" "$apl"
-      log "  + ${dest}  <- ${unsigned_name} (signed apl=${apl})"
+      sign_hap "$unsigned" "${OUT_DIR}/${dest}" "$bundle" "$apl" "$profile"
+      if [ -n "$profile" ]; then
+        log "  + ${dest}  <- ${unsigned_name} (signed with ${profile#"$SRCDIR"/})"
+      else
+        log "  + ${dest}  <- ${unsigned_name} (signed apl=${apl})"
+      fi
     fi
     ( cd "$OUT_DIR" && sha256sum "$dest" >> "$SHASUMS.new" )
     OK_COUNT=$((OK_COUNT+1))

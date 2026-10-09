@@ -31,9 +31,10 @@
     "",
     "WIRING: BUILD.gn's group('oniro_custom_haps') is listed in the product's",
     "bundle.json sub_component (vendor/oniro/hybris_generic). No",
-    "applications/standard/hap patch is needed for the ADD-ON apps. The camera is",
-    "the exception: it replaces a stock hap installing the same path, so a",
-    "one-line product-scoped patch there drops camera_hap under the same gn arg.",
+    "applications/standard/hap patch is needed for the ADD-ON apps. The camera",
+    "and settingsdata are the exception: each replaces a stock hap installing the",
+    "same path, so a product-scoped patch there drops camera_hap and",
+    "settingsData_hap under the same gn arg.",
     "The set is OPT-IN: BUILD.gn",
     "generates no targets unless oniro_install_custom_haps=true (oniro_haps.gni),",
     "and preinstall-config only adds the matching BMS entries in that case.",
@@ -85,6 +86,20 @@
       "_note": "Replaces the STOCK com.ohos.camera instead of adding an app, so applications/standard/hap drops camera_hap under the same gn arg -- both install app/com.ohos.camera/Camera.hap. 'self_signed': true keeps the app's own signingConfig instead of the null-and-resign path: it commits working signing material (signature/OpenHarmony.p12 + camera.p7b) whose profile is an 'os_integration' one carrying a Camera distribution certificate that the generic UnsgnedReleasedProfileTemplate cannot reproduce, and com.ohos.camera has an app_signature entry in install_list_capability.json granting allowAppUsePrivilegeExtension, so the chain must stay byte-identical to the stock hap's (leaf 'OpenHarmony Application Release', SHA256 0716E4E8C9B8CEEF6A974CD2289D5C4C668A5B41FA5DF8C0542DCB72602371F5). The per-app 'build_cmd' targets the one module that ships (phone) and forces release mode; a debug build carries ets/sourceMaps.map and an unoptimised modules.abc and comes out ~9 MB larger.",
       "modules": [
         { "srcPath": "./product/phone", "output": "phone-default-signed.hap", "dest": "Camera.hap", "install_dir": "app/com.ohos.camera" }
+      ]
+    },
+    {
+      "name": "settingsdata",
+      "git": "https://github.com/frankplus/applications_settings_data.git",
+      "branch": "OpenHarmony-6.1-LTS",
+      "sha": "8c53887f09b950524040be3ba002325e9941e7d4",
+      "license": "Apache-2.0",
+      "license_evidence": "Fork of applications/standard/settings_data (eclipse-oniro-mirrors/applications_settings_data); LICENSE at the pinned sha is Apache-2.0, and the fork adds only a build-system port and one default setting on top of upstream.",
+      "profile": "signature/settingsdata.p7b",
+      "build_cmd": "hvigorw assembleHap --mode module -p module=entry@default -p product=default -p buildMode=release --no-daemon",
+      "_note": "Replaces the STOCK com.ohos.settingsdata instead of adding an app, so applications/standard/hap drops settingsData_hap under the same gn arg -- both install app/com.ohos.settingsdata/SettingsData.hap. The fork ports the project to the current hvigor project model and seeds lockscreen_sounds_enabled=0 in default_settings.json (SceneBoard's lock/unlock sounds, routed as a ring tone). 'profile' signs with the app's own committed provision profile instead of one generated from the template: it is an os_integration profile carrying ACLs (MANAGE_SECURE_SETTINGS, INSTALL_BUNDLE, MANAGE_BLUETOOTH) and AllowAppUsePrivilegeExtension that the template cannot reproduce, and its distribution certificate is what install_list_capability.json pins as com.ohos.settingsdata's app_signature (8E93863F...). The signing key is the public OpenHarmony test key, as for the stock hap's profile. 'apl' is unused when 'profile' is set (the profile carries it).",
+      "modules": [
+        { "srcPath": "./entry", "output": "entry-default-signed.hap", "dest": "SettingsData.hap", "install_dir": "app/com.ohos.settingsdata" }
       ]
     }
   ]
