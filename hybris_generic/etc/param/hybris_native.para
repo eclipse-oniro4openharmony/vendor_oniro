@@ -108,3 +108,16 @@ ohos.camera.hdi_impl = ""
 # vendor lib" — riladapter_host starts, loads nothing, and there is no
 # cellular. Leave it undeclared so the per-device setparam is the first
 # writer. See docs/hybris_generic/cellular_enablement_plan.md §D1.
+
+# AGNSS for the location framework. GnssAbility reads these to pick the SUPL
+# server it hands the GNSS HDI (SetAgnssServer) and the positioning mode it
+# asks for (SetPositionMode: 1 standalone, 2 MS-based, 3 MS-assisted). Unset,
+# it logs "get agnss server address failed!" / "unknow mode" and never calls
+# either. supl.google.com:7275 is also the default profile of MediaTek's own
+# mtk_agpsd (/vendor/etc/gnss/agps_profiles_conf2.xml), and MS-based is
+# Android's default mode; the engine falls back to standalone by itself
+# when SUPL is unreachable (no SIM, no data). Both boards are MediaTek, so
+# this is device-independent.
+const.location.agnss_server_addr = "supl.google.com"
+const.location.agnss_server_port = 7275
+const.location.supl_mode = 2
