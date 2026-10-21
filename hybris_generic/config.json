@@ -163,7 +163,7 @@
           "features": []
         },
         {
-          "component": "drivers_adapter",
+          "component": "drivers_devhost",
           "features": []
         }
       ]
@@ -311,12 +311,6 @@
           "features": []
         },
         {
-          "component": "qrcodegen",
-          "features": [
-            "qrcodegen_feature_ace_engine_qrcode_able = true"
-          ]
-        },
-        {
           "component": "alsa-lib",
           "features": [
             "alsa_lib_feature_config_enable = true"
@@ -332,6 +326,14 @@
         },
         {
           "component": "libusb",
+          "features": []
+        },
+        {
+          "component": "expat",
+          "features": []
+        },
+        {
+          "component": "vma",
           "features": []
         },
         {
