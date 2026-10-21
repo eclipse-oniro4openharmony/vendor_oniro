@@ -94,7 +94,8 @@
           "component": "drivers_peripheral_display",
           "features": [
             "drivers_peripheral_display_community = true",
-            "drivers_peripheral_display_vdi_default = false"
+            "drivers_peripheral_display_vdi_default = false",
+            "drivers_peripheral_display_bootstrap_hotplug = true"
           ]
         },
         {
