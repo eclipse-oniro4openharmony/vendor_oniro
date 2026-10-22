@@ -92,6 +92,23 @@ build never depends on local working-tree state. This needs network (git clone +
 `ohpm install` on a fresh clone). Flags: `--app <name>`, `--skip <name>`
 (both repeatable), `--force-deps`, `--skip-deps`, `--sdk PATH`.
 
+**SDK.** `--sdk` (default `$OHOS_SDK_HOME`, else `~/setup-ohos-sdk/linux`) is a
+base dir holding one sub-dir per API level. The camera builds against **API 26**
+and calls `@systemapi` camera members, so that level must be a *full* SDK: the
+public 7.0 download strips the system APIs and fails in `CompileArkTS`. The tree
+already carries one at `prebuilts/ohos-sdk/linux/26.0.0`. Command-line tools
+6.1.1 (hvigor 6.24) only load SDK components with `metaVersion` 3.0.0–3.0.1, and
+the 7.0 SDK declares 3.0.2, so hvigor reports "Unable to find the following
+components: toolchains:26 ...". Until newer tools are available, use a copy with
+the field relabelled:
+
+```bash
+cp -a prebuilts/ohos-sdk/linux/26.0.0 ~/setup-ohos-sdk/linux/26
+ln -s . ~/setup-ohos-sdk/linux/26/openharmony
+sed -i 's/"metaVersion": "3.0.2"/"metaVersion": "3.0.1"/' \
+    ~/setup-ohos-sdk/linux/26/*/oh-uni-package.json
+```
+
 Skipping step 1 while passing the gn arg fails the image build: ninja cannot
 find a HAP `source` under `haps/` (an `ohos_prebuilt_etc` missing-input error)
 — re-run step 1 to fix it. Step 1 *without* the arg is a no-op for the image.

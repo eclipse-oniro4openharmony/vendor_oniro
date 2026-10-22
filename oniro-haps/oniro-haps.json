@@ -77,10 +77,10 @@
     {
       "name": "camera",
       "git": "https://github.com/frankplus/applications_camera.git",
-      "branch": "OpenHarmony-6.1-LTS",
-      "sha": "3c783dd11a5bac7981518a73135e5070ef296531",
+      "branch": "OpenHarmony-7.0-Release",
+      "sha": "3c1fbbca5152d9b812f2f47148c7e7be0ca2402f",
       "license": "Apache-2.0",
-      "license_evidence": "Fork of applications/standard/camera (eclipse-oniro-mirrors/applications_camera); LICENSE at the pinned sha is Apache-2.0, and the fork adds only the rotation fix on top of upstream.",
+      "license_evidence": "Fork of applications/standard/camera (eclipse-oniro-mirrors/applications_camera); LICENSE at the pinned sha is Apache-2.0, and the fork adds only the rotation fix and a compileSdkVersion build fix on top of upstream.",
       "self_signed": true,
       "build_cmd": "hvigorw assembleHap --mode module -p module=phone@default -p product=default -p buildMode=release --no-daemon",
       "_note": "Replaces the STOCK com.ohos.camera instead of adding an app, so applications/standard/hap drops camera_hap under the same gn arg -- both install app/com.ohos.camera/Camera.hap. 'self_signed': true keeps the app's own signingConfig instead of the null-and-resign path: it commits working signing material (signature/OpenHarmony.p12 + camera.p7b) whose profile is an 'os_integration' one carrying a Camera distribution certificate that the generic UnsgnedReleasedProfileTemplate cannot reproduce, and com.ohos.camera has an app_signature entry in install_list_capability.json granting allowAppUsePrivilegeExtension, so the chain must stay byte-identical to the stock hap's (leaf 'OpenHarmony Application Release', SHA256 0716E4E8C9B8CEEF6A974CD2289D5C4C668A5B41FA5DF8C0542DCB72602371F5). The per-app 'build_cmd' targets the one module that ships (phone) and forces release mode; a debug build carries ets/sourceMaps.map and an unoptimised modules.abc and comes out ~9 MB larger.",
