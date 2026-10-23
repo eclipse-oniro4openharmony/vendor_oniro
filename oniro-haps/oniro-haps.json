@@ -82,16 +82,17 @@
       "license": "Apache-2.0",
       "license_evidence": "Fork of applications/standard/camera (eclipse-oniro-mirrors/applications_camera); LICENSE at the pinned sha is Apache-2.0, and the fork adds only the rotation fix and a compileSdkVersion build fix on top of upstream.",
       "self_signed": true,
-      "build_cmd": "hvigorw assembleHap --mode module -p module=phone@default -p product=default -p buildMode=release --no-daemon",
-      "_note": "Replaces the STOCK com.ohos.camera instead of adding an app, so applications/standard/hap drops camera_hap under the same gn arg -- both install app/com.ohos.camera/Camera.hap. 'self_signed': true keeps the app's own signingConfig instead of the null-and-resign path: it commits working signing material (signature/OpenHarmony.p12 + camera.p7b) whose profile is an 'os_integration' one carrying a Camera distribution certificate that the generic UnsgnedReleasedProfileTemplate cannot reproduce, and com.ohos.camera has an app_signature entry in install_list_capability.json granting allowAppUsePrivilegeExtension, so the chain must stay byte-identical to the stock hap's (leaf 'OpenHarmony Application Release', SHA256 0716E4E8C9B8CEEF6A974CD2289D5C4C668A5B41FA5DF8C0542DCB72602371F5). The per-app 'build_cmd' targets the one module that ships (phone) and forces release mode; a debug build carries ets/sourceMaps.map and an unoptimised modules.abc and comes out ~9 MB larger.",
+      "build_cmd": "hvigorw assembleHap --mode module -p module=phone@default,picker@default -p product=default -p buildMode=release --no-daemon",
+      "_note": "Replaces the STOCK com.ohos.camera instead of adding an app, so applications/standard/hap drops camera_hap and cameraPicker_hap under the same gn arg -- both pairs install app/com.ohos.camera/{Camera,cameraPicker}.hap. The picker is built from the same fork because bms installs a bundle dir as one unit and rejects modules whose apiReleaseType differs: the stock sceneboard picker is 'Beta' (SDK 26.0.0.37), a rebuild against the in-tree SDK is 'Release', and mixing them fails preinstall with 9568258 'releaseType not same'. 'self_signed': true keeps the app's own signingConfig instead of the null-and-resign path: it commits working signing material (signature/OpenHarmony.p12 + camera.p7b) whose profile is an 'os_integration' one carrying a Camera distribution certificate that the generic UnsgnedReleasedProfileTemplate cannot reproduce, and com.ohos.camera has an app_signature entry in install_list_capability.json granting allowAppUsePrivilegeExtension, so the chain must stay byte-identical to the stock hap's (leaf 'OpenHarmony Application Release', SHA256 0716E4E8C9B8CEEF6A974CD2289D5C4C668A5B41FA5DF8C0542DCB72602371F5). The per-app 'build_cmd' targets the two modules that ship (phone, picker) and forces release mode; a debug build carries ets/sourceMaps.map and an unoptimised modules.abc and comes out ~9 MB larger.",
       "modules": [
-        { "srcPath": "./product/phone", "output": "phone-default-signed.hap", "dest": "Camera.hap", "install_dir": "app/com.ohos.camera" }
+        { "srcPath": "./product/phone", "output": "phone-default-signed.hap", "dest": "Camera.hap", "install_dir": "app/com.ohos.camera" },
+        { "srcPath": "./product/picker", "output": "picker-phone-default-signed.hap", "dest": "cameraPicker.hap", "install_dir": "app/com.ohos.camera" }
       ]
     },
     {
       "name": "settingsdata",
       "git": "https://github.com/frankplus/applications_settings_data.git",
-      "branch": "OpenHarmony-6.1-LTS",
+      "branch": "OpenHarmony-7.0-Release",
       "sha": "8c53887f09b950524040be3ba002325e9941e7d4",
       "license": "Apache-2.0",
       "license_evidence": "Fork of applications/standard/settings_data (eclipse-oniro-mirrors/applications_settings_data); LICENSE at the pinned sha is Apache-2.0, and the fork adds only a build-system port and one default setting on top of upstream.",

@@ -133,8 +133,8 @@ to it:
   that chain after changing anything here: get it wrong and bms refuses the hap
   at first boot, the way it does the sceneboard `CallUI.hap`.
 
-* **A per-app `build_cmd`** — the app is multi-module (only `phone` ships) and
-  must be built in **release** mode; a debug build carries `ets/sourceMaps.map`
+* **A per-app `build_cmd`** — the app is multi-module (`phone` and `picker`
+  ship) and must be built in **release** mode; a debug build carries `ets/sourceMaps.map`
   and an unoptimised `modules.abc` and comes out ~9 MB larger than the stock hap.
 
 Being a replacement rather than an addition also means it is the one app that
@@ -143,6 +143,15 @@ as the stock `camera_hap`, so exactly one of the two must be active or ninja see
 two rules writing one file. `oniro_install_custom_haps` drops the stock target in
 `applications/standard/hap/BUILD.gn` (a product-scoped one-liner). **With the arg
 off, the stock — rotation-buggy — camera ships.**
+
+The picker (`cameraPicker.hap`, the `picker` module) is replaced with it. bms
+installs a bundle directory as one unit and rejects modules whose
+`apiReleaseType` differs. The stock sceneboard prebuilts are `Beta` (SDK
+26.0.0.37), while a rebuild against the in-tree SDK is `Release`. A stock picker
+next to a rebuilt camera therefore fails preinstall with `9568258 releaseType
+not same`, and the camera never installs on a fresh `/data`. Updating an
+existing install with only `Camera.hap` (`bm install -p`) does not hit the check,
+so test this on a wiped device.
 
 ## Settings data: a replacement with Oniro defaults
 
