@@ -19,3 +19,18 @@ ohos_prebuilt_etc("power_mode_config_vendor") {
   install_images = [ chipset_base_dir ]
   part_name = "product_x86_general"
 }
+
+# The stock power_suspend.json puts the system to sleep (action 1) when the
+# screen times out or the power key is pressed.  A qemu guest has no wakeup
+# source, so it never resumes: userspace freezes ~30 s after boot, when
+# SceneBoard's lock screen lets the display time out.  Here every source only
+# turns the display off (action 0), and input wakes it again.  It sits in the
+# /chipset (-> /vendor) config_policy layer, which outranks /system, and
+# power_manager caches the parsed result in settings on first boot, so it
+# applies from a fresh userdata.
+ohos_prebuilt_etc("power_suspend_config_vendor") {
+  source = "power_suspend.json"
+  relative_install_dir = "power_config"
+  install_images = [ chipset_base_dir ]
+  part_name = "product_x86_general"
+}

@@ -17,5 +17,6 @@ group("custom_config") {
   deps = [
     "window:window_config",
     "power_config:power_mode_config_vendor",
+    "power_config:power_suspend_config_vendor",
   ]
 }
