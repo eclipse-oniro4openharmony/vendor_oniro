@@ -32,3 +32,8 @@ const.abilityms.enable_uiservice=false
 const.product.preview.enable_uiservice=false
 const.product.preview.device_config=2
 persist.systemui.live2=true
+
+# Default time zone, matching the GB region above. time.para in /system
+# defaults to Asia/Shanghai; this /chipset-layer file is loaded first and the
+# first write wins. It only seeds a fresh userdata.
+persist.time.timezone=Europe/London
