@@ -14,10 +14,16 @@
 import("//build/ohos.gni")
 import("//vendor/${product_company}/${device_name}/product.gni")
 
+# SceneSessionManager reads window_manager_config.xml from inside the
+# SceneBoard sandbox, which mounts /system and /sys_prod but not /vendor (or
+# the /chipset -> /vendor symlink).  hybris_generic installs it to /sys_prod;
+# this product has no sys_prod image, and nothing else installs the file to
+# /system, so it goes there.  display_manager_config.xml stays in /vendor: the
+# native ScreenSessionManager SA reads it outside any sandbox.
 ohos_prebuilt_etc("window_manager_config") {
     source = "window_manager_config.xml"
     install_enable = true
-    install_images = [ vendor_base_dir ]
+    install_images = [ system_base_dir ]
     part_name = "product_x86_general"
     relative_install_dir = "window/resources"
 }

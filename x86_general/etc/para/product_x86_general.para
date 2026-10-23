@@ -15,3 +15,20 @@ const.product.brand=default
 const.build.product=default
 const.security.developermode.state=true
 const.settings.screen_never_sleep=true
+
+# Default UI language / locale: English (UK), as on hybris_generic. This file
+# lands in /vendor/etc/param, reached through the /chipset -> /vendor
+# config_policy layer, which init loads before /system and first write wins,
+# so it overrides the zh-Hans default in /system/etc/param/i18n.para.
+const.global.language=en-Latn-GB
+const.global.locale=en-Latn-GB
+const.global.region=GB
+
+# SceneBoard phone form factor, as on hybris_generic (hybris_native.para):
+# without multiWindowUIType, AMS, window_manager and SceneBoard fall back to a
+# non-phone default; the enable_uiservice pair keeps the legacy UIService off.
+const.window.multiWindowUIType=HandsetSmartWindow
+const.abilityms.enable_uiservice=false
+const.product.preview.enable_uiservice=false
+const.product.preview.device_config=2
+persist.systemui.live2=true

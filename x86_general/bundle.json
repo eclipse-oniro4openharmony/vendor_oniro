@@ -17,6 +17,7 @@
     "build": {
       "sub_component": [
         "//vendor/oniro/x86_general/preinstall-config:preinstall-config",
+        "//vendor/oniro/oniro-haps:oniro_custom_haps",
         "//vendor/oniro/x86_general/resourceschedule:resourceschedule",
         "//vendor/oniro/x86_general/etc:product_etc_conf",
         "//vendor/oniro/x86_general/hals/audio:hdf_audio_config",
