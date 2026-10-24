@@ -18,5 +18,6 @@ group("custom_config") {
     "window:window_config",
     "power_config:power_mode_config_vendor",
     "power_config:power_suspend_config_vendor",
+    "power_config:power_wakeup_config_vendor",
   ]
 }

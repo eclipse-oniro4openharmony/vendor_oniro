@@ -34,3 +34,15 @@ ohos_prebuilt_etc("power_suspend_config_vendor") {
   install_images = [ chipset_base_dir ]
   part_name = "product_x86_general"
 }
+
+# A touch only wakes the screen on a double tap by default (touchscreen
+# "click": 2). On the emulator, clicks in the window are single-finger touches
+# (see emulator_touch in device/soc), and the screen is off after 30 s idle, so
+# a single click has to wake it, as the PS/2 mouse used to. Same layer and
+# first-boot caching as power_suspend.json.
+ohos_prebuilt_etc("power_wakeup_config_vendor") {
+  source = "power_wakeup.json"
+  relative_install_dir = "power_config"
+  install_images = [ chipset_base_dir ]
+  part_name = "product_x86_general"
+}

@@ -146,7 +146,9 @@
         {
           "component": "power_manager",
           "features": [
-            "power_manager_feature_disable_auto_displayoff = true"
+            "power_manager_feature_disable_auto_displayoff = true",
+            "power_manager_feature_doubleclick = false",
+            "power_manager_feature_pickup = false"
           ]
         }
       ]
