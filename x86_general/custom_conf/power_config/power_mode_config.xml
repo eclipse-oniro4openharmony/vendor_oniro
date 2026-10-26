@@ -30,9 +30,14 @@
     SystemBrightness = 115,
     VibratorsState = 120,
 -->
+<!--
+    MODE_NORMAL's DisplayOffTime is the default screen timeout: the power
+    service writes it to settings on a fresh userdata. 10 minutes on the
+    emulator, which has no battery to save.
+-->
 <switch_proxy version="1">
     <proxy id="600">
-        <switch id="101" value="-1" recover_flag="0"/>
+        <switch id="101" value="600000" recover_flag="0"/>
         <switch id="102" value="-1" recover_flag="0"/>
         <switch id="103" value="-1" recover_flag="0"/>
         <switch id="107" value="1" recover_flag="0"/>
