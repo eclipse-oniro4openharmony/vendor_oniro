@@ -16,6 +16,11 @@ const.build.product=default
 const.security.developermode.state=true
 const.settings.screen_never_sleep=true
 
+# deviceInfo.marketName: the "Model name" row in Settings > About device and
+# the default device name, which settingsdata seeds on a fresh userdata.
+# Base default is "OpenHarmony 3.2" from /system/etc/param/ohos.para.
+const.product.name="Oniro Emulator"
+
 # Default UI language / locale: English (UK), as on hybris_generic. This file
 # lands in /vendor/etc/param, reached through the /chipset -> /vendor
 # config_policy layer, which init loads before /system and first write wins,
