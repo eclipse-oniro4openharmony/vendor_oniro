@@ -44,6 +44,39 @@ ohos_prebuilt_etc("audio_policy_config") {
   part_name = "product_x86_general"
 }
 
+# 7.0's alsa-lib reads its configuration from ALSA_CONFIG_DIR,
+# /vendor/etc/audio/alsa/share, but still installs the conf files to /system.
+# Without alsa.conf the audio HDI cannot even open "hw:0", so install the
+# files QEMU's ES1370 card needs into the vendor image too.
+alsa_conf_files = [
+  "alsa.conf",
+  "cards/aliases.conf",
+  "cards/ENS1370.conf",
+  "ctl/default.conf",
+  "pcm/default.conf",
+  "pcm/dmix.conf",
+  "pcm/dsnoop.conf",
+  "pcm/front.conf",
+  "pcm/hdmi.conf",
+  "pcm/rear.conf",
+  "pcm/surround40.conf",
+]
+alsa_conf_targets = []
+foreach(conf, alsa_conf_files) {
+  conf_target = "alsa_conf_" + string_replace(conf, "/", "_")
+  conf_dir = "audio/alsa/share"
+  if (get_path_info(conf, "dir") != ".") {
+    conf_dir += "/" + get_path_info(conf, "dir")
+  }
+  ohos_prebuilt_etc(conf_target) {
+    source = "//third_party/alsa-lib/src/conf/$conf"
+    relative_install_dir = conf_dir
+    install_images = [ chipset_base_dir ]
+    part_name = "product_x86_general"
+  }
+  alsa_conf_targets += [ ":$conf_target" ]
+}
+
 group("hdf_audio_config") {
   deps = [
     ":audio_policy_config",
@@ -51,4 +84,5 @@ group("hdf_audio_config") {
     ":hdf_alsa_adapter_json",
     ":hdf_alsa_paths_json",
   ]
+  deps += alsa_conf_targets
 }
