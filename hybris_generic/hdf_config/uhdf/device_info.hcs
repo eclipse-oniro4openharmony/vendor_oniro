@@ -44,6 +44,10 @@
         bluetooth :: host {
             hostName = "blue_host";
             priority = 50;
+            /* radio: libbt_vendor in this host opens /dev/stpbt, which the
+             * Halium ueventd makes bluetooth:radio 0660 (uid 1002, gid
+             * 1001: Android's AID_BLUETOOTH owns it, the group is radio). */
+            gid = ["blue_host", "radio"];
             caps = ["NET_ADMIN"];
             bluetooth_device :: device {
                 device0 :: deviceNode {
@@ -61,7 +65,13 @@
                 device0 :: deviceNode {
                     policy = 2;
                     priority = 100;
-                    preload = 2;
+                    /* 0, not upstream's on-demand 2: on connect the A2DP
+                     * stack notifies audio_server (which opens the sink at
+                     * once) before it LoadDevice()s this host, so the first
+                     * connection after boot / BT on finds no service and the
+                     * headset stays silent.  Load/UnloadDevice are no-ops on
+                     * a preloaded device. */
+                    preload = 0;
                     moduleName = "libaudio_bluetooth_hdi_adapter_server.z.so";
                     serviceName = "audio_bluetooth_hdi_service";
                 }
