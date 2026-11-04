@@ -20,3 +20,8 @@
 # and the default device name (Bluetooth / distributed). Base default is
 # "OpenHarmony 3.2" from /system/etc/param/ohos.para.
 const.product.name="Volla X23"
+
+# deviceInfo.manufacture / productModel: what MTP hosts and Settings show
+# as manufacturer and model (base defaults "default" / "ohos").
+const.product.manufacturer=Volla
+const.product.model="X23"
