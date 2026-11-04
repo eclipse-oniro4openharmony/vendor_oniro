@@ -119,8 +119,19 @@ ohos_prebuilt_etc("device_para_x23") {
   part_name = "product_hybris_generic"
 }
 
+# Auto-brightness curve (lux -> brightness level 0..255) for display_manager's
+# BrightnessService. It reads /sys_prod/etc/display/brightness_config/; with
+# no curve, auto mode pins the backlight at a constant level.
+ohos_prebuilt_etc("brightness_curve_config") {
+  source = "./display/brightness_curve_config.json"
+  install_images = [ sys_prod_base_dir ]
+  relative_install_dir = "display/brightness_config"
+  part_name = "product_hybris_generic"
+}
+
 group("product_etc_conf") {
   deps = [
+    ":brightness_curve_config",
     ":para_for_chip_prod",
     ":para_for_sys_prod",
     ":ueventd_config_vendor",
