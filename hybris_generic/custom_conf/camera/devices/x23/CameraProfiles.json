@@ -65,9 +65,7 @@
                 "profileWidth": 1920,
                 "profileHeight": 1080,
                 "format": [
-                  "YUV_420_SP",
-                  "YCBCR_P010",
-                  "YCRCB_P010"
+                  "YUV_420_SP"
                 ],
                 "frameRateArray": [
                   30
@@ -78,9 +76,7 @@
                 "profileWidth": 1560,
                 "profileHeight": 720,
                 "format": [
-                  "YUV_420_SP",
-                  "YCBCR_P010",
-                  "YCRCB_P010"
+                  "YUV_420_SP"
                 ],
                 "frameRateArray": [
                   30
@@ -91,9 +87,7 @@
                 "profileWidth": 1920,
                 "profileHeight": 1080,
                 "format": [
-                  "YUV_420_SP",
-                  "YCBCR_P010",
-                  "YCRCB_P010"
+                  "YUV_420_SP"
                 ],
                 "frameRateArray": [
                   30
@@ -104,9 +98,7 @@
                 "profileWidth": 1280,
                 "profileHeight": 720,
                 "format": [
-                  "YUV_420_SP",
-                  "YCBCR_P010",
-                  "YCRCB_P010"
+                  "YUV_420_SP"
                 ],
                 "frameRateArray": [
                   30
@@ -119,9 +111,7 @@
                 "profileWidth": 1920,
                 "profileHeight": 1080,
                 "format": [
-                  "YUV_420_SP",
-                  "YCBCR_P010",
-                  "YCRCB_P010"
+                  "YUV_420_SP"
                 ]
               },
               {
@@ -129,9 +119,7 @@
                 "profileWidth": 1560,
                 "profileHeight": 720,
                 "format": [
-                  "YUV_420_SP",
-                  "YCBCR_P010",
-                  "YCRCB_P010"
+                  "YUV_420_SP"
                 ]
               },
               {
@@ -139,9 +127,7 @@
                 "profileWidth": 1920,
                 "profileHeight": 1080,
                 "format": [
-                  "YUV_420_SP",
-                  "YCBCR_P010",
-                  "YCRCB_P010"
+                  "YUV_420_SP"
                 ]
               },
               {
@@ -149,9 +135,7 @@
                 "profileWidth": 1280,
                 "profileHeight": 720,
                 "format": [
-                  "YUV_420_SP",
-                  "YCBCR_P010",
-                  "YCRCB_P010"
+                  "YUV_420_SP"
                 ]
               }
             ]
@@ -264,9 +248,7 @@
                 "profileWidth": 1920,
                 "profileHeight": 1080,
                 "format": [
-                  "YUV_420_SP",
-                  "YCBCR_P010",
-                  "YCRCB_P010"
+                  "YUV_420_SP"
                 ],
                 "frameRateArray": [
                   30
@@ -277,9 +259,7 @@
                 "profileWidth": 1560,
                 "profileHeight": 720,
                 "format": [
-                  "YUV_420_SP",
-                  "YCBCR_P010",
-                  "YCRCB_P010"
+                  "YUV_420_SP"
                 ],
                 "frameRateArray": [
                   30
@@ -290,9 +270,7 @@
                 "profileWidth": 1920,
                 "profileHeight": 1080,
                 "format": [
-                  "YUV_420_SP",
-                  "YCBCR_P010",
-                  "YCRCB_P010"
+                  "YUV_420_SP"
                 ],
                 "frameRateArray": [
                   30
@@ -303,9 +281,7 @@
                 "profileWidth": 1280,
                 "profileHeight": 720,
                 "format": [
-                  "YUV_420_SP",
-                  "YCBCR_P010",
-                  "YCRCB_P010"
+                  "YUV_420_SP"
                 ],
                 "frameRateArray": [
                   30
@@ -318,9 +294,7 @@
                 "profileWidth": 1920,
                 "profileHeight": 1080,
                 "format": [
-                  "YUV_420_SP",
-                  "YCBCR_P010",
-                  "YCRCB_P010"
+                  "YUV_420_SP"
                 ]
               },
               {
@@ -328,9 +302,7 @@
                 "profileWidth": 1560,
                 "profileHeight": 720,
                 "format": [
-                  "YUV_420_SP",
-                  "YCBCR_P010",
-                  "YCRCB_P010"
+                  "YUV_420_SP"
                 ]
               },
               {
@@ -338,9 +310,7 @@
                 "profileWidth": 1920,
                 "profileHeight": 1080,
                 "format": [
-                  "YUV_420_SP",
-                  "YCBCR_P010",
-                  "YCRCB_P010"
+                  "YUV_420_SP"
                 ]
               },
               {
@@ -348,9 +318,7 @@
                 "profileWidth": 1280,
                 "profileHeight": 720,
                 "format": [
-                  "YUV_420_SP",
-                  "YCBCR_P010",
-                  "YCRCB_P010"
+                  "YUV_420_SP"
                 ]
               }
             ]

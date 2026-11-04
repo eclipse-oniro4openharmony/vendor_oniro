@@ -29,6 +29,17 @@ ohos_prebuilt_etc("camera_profiles_x23") {
   module_install_dir = "devices/x23/etc/camera"
 }
 
+ohos_prebuilt_etc("camera_profiles_ansuz") {
+  source = "devices/ansuz/CameraProfiles.json"
+  install_enable = true
+  install_images = [ sys_prod_base_dir ]
+  part_name = "product_hybris_generic"
+  module_install_dir = "devices/ansuz/etc/camera"
+}
+
 group("camera_config") {
-  deps = [ ":camera_profiles_x23" ]
+  deps = [
+    ":camera_profiles_ansuz",
+    ":camera_profiles_x23",
+  ]
 }
