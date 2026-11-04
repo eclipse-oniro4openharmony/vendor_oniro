@@ -3,8 +3,9 @@
 This directory is the self-contained home of the **Oniro-customized** apps that
 ship on top of the stock OpenHarmony HAP set — the Oniro app store, the
 FlorisBoard IME, a rebuild of the platform **camera** carrying a rotation
-fix, and a rebuild of the platform **settings data** provider with Oniro
-defaults (lock screen sounds off). They are **opt-in** and **all or nothing**: one gn arg,
+fix, a rebuild of the platform **settings data** provider with Oniro
+defaults (lock screen sounds off), and a small **Flashlight** app written for
+Oniro (its source is in this directory, `apps/flashlight`). They are **opt-in** and **all or nothing**: one gn arg,
 `oniro_install_custom_haps`, takes the whole set or none of it. The default
 product build installs none of them.
 
@@ -19,7 +20,9 @@ product build installs none of them.
 ```
 oniro-haps/
   oniro-haps.json        SINGLE SOURCE OF TRUTH: descriptor + Bucket-4a provenance
-  build-oniro-haps.sh    clones each app from its pinned remote and builds it
+  build-oniro-haps.sh    clones each app from its pinned remote (or copies an
+                         in-tree one) and builds it
+  apps/flashlight/       source of the in-tree Flashlight app
   BUILD.gn               generates one prebuilt_etc per descriptor module
                          (read_file of oniro-haps.json) + group("oniro_custom_haps")
   haps/                  built HAPs + SHA256SUMS (gitignored — not committed)
@@ -89,7 +92,10 @@ bash vendor/oniro/oniro-haps/build-oniro-haps.sh
 The driver clones each app's pinned `git`+`branch`+`sha` into
 `out/oniro-haps/src/<app>` (cached, reused when already at the pinned sha), so the
 build never depends on local working-tree state. This needs network (git clone +
-`ohpm install` on a fresh clone). Flags: `--app <name>`, `--skip <name>`
+`ohpm install` on a fresh clone). An app with `path` instead of
+`git`/`branch`/`sha` lives in this tree (the Flashlight, `apps/flashlight`), so
+the vendor repo's commit is its pin. The driver copies it into the same cache
+first, so hvigor's outputs never land in the tree. Flags: `--app <name>`, `--skip <name>`
 (both repeatable), `--force-deps`, `--skip-deps`, `--sdk PATH`.
 
 **SDK.** `--sdk` (default `$OHOS_SDK_HOME`, else `~/setup-ohos-sdk/linux`) is a
@@ -223,3 +229,15 @@ reproducible invariant is *pinned source sha + build-cmd*. `haps/SHA256SUMS`
 > `oniro_install_custom_haps=true` makes *you* the distributor of the resulting
 > image, including the app store's GPL-3.0-or-later obligations. Since the set is
 > all-or-nothing, that applies even if the camera is the only part you wanted.
+
+## Flashlight: a torch toggle
+
+`org.oniroproject.flashlight` (`apps/flashlight`, Apache-2.0, API 20, apl
+normal) is one button over the public `CameraManager.setTorchMode`, which
+needs no permission. The prebuilt 7.0 SceneBoard's Control Center flashlight
+tile is UI-only: its tap flips the icon but never calls `setTorchMode`, and it
+only mirrors torch status events. So on devices with a torch (the Plinius:
+camera VDI + camera_framework system_patch 0002) this app is how the user
+switches it. The torch stays on after the app is closed, and the button
+follows `torchStatusChange`. While the camera that owns the LED is open, the
+torch is unavailable.

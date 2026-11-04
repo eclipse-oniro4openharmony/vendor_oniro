@@ -94,7 +94,7 @@ warn() { echo "${c_yel}[oniro-haps] WARN:${c_rst} $*" >&2; }
 die()  { echo "${c_red}[oniro-haps] ERROR:${c_rst} $*" >&2; exit 1; }
 
 need() { command -v "$1" >/dev/null 2>&1 || die "missing required tool: $1"; }
-need jq; need git; need hvigorw; need node; need sha256sum; need java
+need jq; need git; need rsync; need hvigorw; need node; need sha256sum; need java
 
 HVIGORW="$(command -v hvigorw)"          # global wrapper; ignore broken project ./hvigorw
 NODE_DIR="$(dirname "$(dirname "$(command -v node)")")"
@@ -115,9 +115,25 @@ want_app() {
 }
 
 # Clone (or reuse) the pinned source for app $idx -> sets SRCDIR.
+#
+# An app with "path" instead of git/branch/sha lives in this tree (pinned by
+# the vendor repo's own commit). It is copied into the same cache first, so
+# hvigor's build/, oh_modules and local.properties never land in the tree.
 prepare_clone() {  # idx
-  local idx="$1" name git_url branch sha dir
+  local idx="$1" name git_url branch sha dir path
   name="$(jq -r ".apps[$idx].name" "$DESC")"
+  path="$(jq -r ".apps[$idx].path // empty" "$DESC")"
+  if [ -n "$path" ]; then
+    dir="${SRC_CACHE}/${name}"
+    [ -d "${ROOT}/${path}" ] || die "$name: in-tree source missing: ${path}"
+    mkdir -p "$dir"
+    rsync -a --delete --exclude /build --exclude /entry/build --exclude /.hvigor \
+      --exclude /oh_modules --exclude /local.properties "${ROOT}/${path}/" "$dir/" \
+      || die "$name: copying ${path} failed"
+    log "copy in-tree $name from ${path}"
+    SRCDIR="$dir"
+    return 0
+  fi
   git_url="$(jq -r ".apps[$idx].git" "$DESC")"
   branch="$(jq -r ".apps[$idx].branch // \"\"" "$DESC")"
   sha="$(jq -r ".apps[$idx].sha // \"\"" "$DESC")"
@@ -232,7 +248,11 @@ process_app() {
   [ -n "$cmd" ] || cmd="$BUILD_CMD"
 
   prepare_clone "$idx"
-  log "=== $name ($(jq -r ".apps[$idx].git" "$DESC") @ $(git -C "$SRCDIR" rev-parse --short HEAD)) ==="
+  if [ -n "$(jq -r ".apps[$idx].path // empty" "$DESC")" ]; then
+    log "=== $name (in-tree $(jq -r ".apps[$idx].path" "$DESC")) ==="
+  else
+    log "=== $name ($(jq -r ".apps[$idx].git" "$DESC") @ $(git -C "$SRCDIR" rev-parse --short HEAD)) ==="
+  fi
   build_hvigor_app "$SRCDIR" "$self_signed" "$cmd"
   if [ -n "$profile" ]; then
     profile="${SRCDIR}/${profile}"

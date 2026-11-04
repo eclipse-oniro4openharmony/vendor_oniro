@@ -1,0 +1,10 @@
+/local.properties
+/.hvigor
+/.idea
+/.vscode
+/oh_modules
+/oh-package-lock.json5
+/build
+/entry/build
+/entry/oh_modules
+/entry/.preview

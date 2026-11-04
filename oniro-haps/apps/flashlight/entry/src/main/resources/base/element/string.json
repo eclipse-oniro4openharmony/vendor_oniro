@@ -1,0 +1,32 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "Torch toggle"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "Switches the flashlight on and off"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "Flashlight"
+    },
+    {
+      "name": "status_on",
+      "value": "On"
+    },
+    {
+      "name": "status_off",
+      "value": "Off"
+    },
+    {
+      "name": "status_busy",
+      "value": "Unavailable while the camera is in use"
+    },
+    {
+      "name": "status_unsupported",
+      "value": "This device has no flashlight"
+    }
+  ]
+}
