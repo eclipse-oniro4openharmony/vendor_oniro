@@ -87,6 +87,8 @@
                     priority = 70;
                     moduleName = "libusb_pnp_manager.z.so";
                     serviceName = "usb_pnp_manager";
+                    /* gadget paths: usb_pnp_manager_config in usb_ecm_acm.hcs */
+                    deviceMatchAttr = "usb_pnp_manager_driver";
                 }
             }
             usbfn_device :: device {
@@ -135,6 +137,20 @@
                     priority = 100;
                     moduleName = "libusb_driver.z.so";
                     serviceName = "usb_interface_service";
+                    deviceMatchAttr = "usb_device_interface_driver";
+                }
+                device1 :: deviceNode {
+                    policy = 2;
+                    priority = 100;
+                    moduleName = "libusb_device_driver.z.so";
+                    serviceName = "usb_device_interface_service";
+                    deviceMatchAttr = "usb_device_interface_driver";
+                }
+                device2 :: deviceNode {
+                    policy = 2;
+                    priority = 100;
+                    moduleName = "libusb_port_driver.z.so";
+                    serviceName = "usb_port_interface_service";
                     deviceMatchAttr = "usb_device_interface_driver";
                 }
             }

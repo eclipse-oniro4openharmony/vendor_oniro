@@ -2,15 +2,25 @@ root {
     module = "usbfn";
     acm_device_config {
         match_attr = "usbfn_cdcacm_driver";
-        udc_name = "fcc00000.dwc3";
+        udc_name = "11201000.usb0";
     }
     ecm_device_config {
         match_attr = "usbfn_cdcecm_driver";
-        udc_name = "fcc00000.dwc3";
+        udc_name = "11201000.usb0";
     }
     mtp_device_config {
         match_attr = "usbfn_mtp_interface_driver";
-        udc_name = "fcc00000.dwc3";
+        udc_name = "11201000.usb0";
+    }
+    /* The Android GKI kernel has no HDF USB PnP node; with
+     * drivers_peripheral_usb_feature_linux_native_model the DDK scans sysfs
+     * and takes the gadget state from the android_usb class device and its
+     * USB_STATE uevents.  Without these, DdkDevMgrInit leaves the device list
+     * uninitialised and usb_host crashes in DdkDevMgrForEachDeviceSafe. */
+    usb_pnp_manager_config {
+        match_attr = "usb_pnp_manager_driver";
+        gadget_state_path = "/sys/devices/virtual/android_usb/android0/state";
+        gadget_uevent_path = "/devices/virtual/android_usb/android0";
     }
     usb_device_config {
         match_attr = "usb_device_interface_driver";
@@ -19,7 +29,7 @@ root {
     usbfn_config {
         match_attr = "usbfn_driver";
         use_hcs = 1;
-        udc_name = "fcc00000.dwc3";
+        udc_name = "11201000.usb0";
         usb_dev_desc = "UsbDeviceDescriptor";
         usb_dev_string = "UsbDeviceStrings";
         usb_configuration = "UsbConfigs";
@@ -31,8 +41,8 @@ root {
             bDeviceSubClass = 0;
             bDeviceProtocol = 0;
             bMaxPacketSize0 = 0x40;
-            idVendor = 0x2207;
-            idProduct = 0x0018;
+            idVendor = 0x12D1;
+            idProduct = 0x5000;
             bcdDevice = 0x0223;
             manufacturer = 0;
             product = 1;
@@ -46,11 +56,11 @@ root {
                 stringList = ["str_1", "str_2","str_3", "str_4"];
                 str_1 {
                     id = 0;
-                    str =  "HISILICON";
+                    str =  "Volla";
                 }
                 str_2 {
                     id = 1;
-                    str = "HDC Device";
+                    str = "Volla Phone";
                 }
                 str_3 {
                     id = 2;

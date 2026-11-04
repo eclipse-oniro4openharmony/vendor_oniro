@@ -143,6 +143,12 @@
           ]
         },
         {
+          "component": "drivers_peripheral_usb",
+          "features": [
+            "drivers_peripheral_usb_feature_linux_native_model = true"
+          ]
+        },
+        {
           "component": "drivers_peripheral_wlan",
           "features": [
             "drivers_peripheral_wlan_feature_enable_HDF_NL80211 = true",
