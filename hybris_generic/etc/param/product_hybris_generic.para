@@ -42,3 +42,10 @@ const.global.region=GB
 # The Plinius RIL bridge serves slot1/slot2 (MAX_SLOTS in
 # device/soc/oniro/hybris_generic/hardware/ril).
 const.telephony.slotCount=2
+
+# The camera app records from an encoded camera stream (SURFACE_ES) on
+# 'default' device types, which the hybris camera HAL cannot produce; this
+# makes it hand YUV to the recorder, whose H.264 encoder is the MediaTek
+# hardware one behind device/soc/oniro hardware/avcenc.  Read by the Oniro
+# camera fork (RecorderConfigOperation.getVideoSourceType).
+const.oniro.camera.video_source=yuv
