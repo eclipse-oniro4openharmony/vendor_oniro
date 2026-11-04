@@ -49,3 +49,11 @@ const.telephony.slotCount=2
 # hardware one behind device/soc/oniro hardware/avcenc.  Read by the Oniro
 # camera fork (RecorderConfigOperation.getVideoSourceType).
 const.oniro.camera.video_source=yuv
+
+# Software video decoding (FCodec) writes NV21 instead of NV12 into display
+# surfaces when the player leaves the format to it: NV12 surfaces map to the
+# flexible YCbCr_420_888, which MediaTek's gralloc lays out Cr-first, so the
+# GPU showed every played video with U and V swapped.  NV21 maps to
+# YCrCb_420_SP and displays correctly (as the camera preview does).  Read by
+# the av_codec system_patch.
+const.media.fcodec.surface_pixel_format=nv21
