@@ -24,7 +24,8 @@
         {
             "bundleName": "com.ohos.callui",
             "app_signature": [
-                "E64B13B84E6D2167F73B46530C6E02E323DA43C9C2DA251D7C64D20E091B936F"
+                "E64B13B84E6D2167F73B46530C6E02E323DA43C9C2DA251D7C64D20E091B936F",
+                "DE99136A8BD141179B51EA3D8CF8402BBA4D6646063D7E35CA8E90E117D3F2CD"
             ],
             "singleton": true,
             "keepAlive": false,
