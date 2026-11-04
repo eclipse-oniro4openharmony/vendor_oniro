@@ -78,7 +78,7 @@
       "name": "camera",
       "git": "https://github.com/frankplus/applications_camera.git",
       "branch": "OpenHarmony-7.0-Release",
-      "sha": "5b763dcc7f364e99a5f50f2c335115bf71b5a762",
+      "sha": "8d78d05872be59b612057b7d162f29081d46c368",
       "license": "Apache-2.0",
       "license_evidence": "Fork of applications/standard/camera (eclipse-oniro-mirrors/applications_camera); LICENSE at the pinned sha is Apache-2.0, and the fork adds only the rotation fix, a compileSdkVersion build fix and a product override of the recorder's video source type (const.oniro.camera.video_source) and video orientation from the lens's sensor orientation on top of upstream.",
       "self_signed": true,

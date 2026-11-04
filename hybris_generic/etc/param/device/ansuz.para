@@ -25,3 +25,11 @@ const.product.name="Volla Plinius"
 # as manufacturer and model (base defaults "default" / "ohos").
 const.product.manufacturer=Volla
 const.product.model="Plinius"
+
+# Rear lenses behind the one OHOS back camera (camera VDI): the main sensor is
+# Android camera 0; 2 is the 8 MP ultra-wide, reached by zooming below 1x
+# (scale = its field of view as a zoom ratio of the main lens), and 3 is the
+# 2 MP macro, used while the session enables macro.
+const.oniro.camera.back_ultrawide=2
+const.oniro.camera.back_ultrawide_scale=0.7
+const.oniro.camera.back_macro=3
