@@ -36,3 +36,9 @@ const.settings.screen_never_sleep=true
 const.global.language=en-Latn-GB
 const.global.locale=en-Latn-GB
 const.global.region=GB
+
+# Both phones are dual-SIM. sys_prod params load before /system's
+# telephony.para (first-write-wins for const.*), so this overrides its 1.
+# The Plinius RIL bridge serves slot1/slot2 (MAX_SLOTS in
+# device/soc/oniro/hybris_generic/hardware/ril).
+const.telephony.slotCount=2
