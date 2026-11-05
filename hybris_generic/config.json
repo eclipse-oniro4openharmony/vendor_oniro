@@ -9,7 +9,7 @@
   "api_version": 8,
   "enable_ramdisk": true,
   "enable_absystem": false,
-  "build_selinux": false,
+  "build_selinux": true,
   "build_seccomp": false,
   "inherit": [ "productdefine/common/inherit/rich.json", "productdefine/common/inherit/chipset_common.json" ],
   "subsystems": [
@@ -18,7 +18,11 @@
       "components": [
         {
           "component": "selinux_adapter",
-          "features": []
+          "features": [
+            "selinux_adapter_build_path = \"base/security/selinux_adapter/sepolicy/ohos_product:device/board/oniro/hybris_generic/sepolicy\"",
+            "selinux_adapter_extra_args = \"--handle-unknown=allow\"",
+            "selinux_adapter_enforce = false"
+          ]
         }
       ]
     },
