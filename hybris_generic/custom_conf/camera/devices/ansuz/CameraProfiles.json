@@ -367,5 +367,8 @@
         }
       ]
     }
-  ]
+  ],
+  "metadata": {
+    "photoBrowserDisabled": true
+  }
 }
