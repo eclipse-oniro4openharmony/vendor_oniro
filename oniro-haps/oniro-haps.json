@@ -105,11 +105,13 @@
     },
     {
       "name": "flashlight",
-      "path": "vendor/oniro/oniro-haps/apps/flashlight",
+      "git": "https://github.com/frankplus/oniro-flashlight.git",
+      "branch": "main",
+      "sha": "009ae395e4652e736edfff379e4f5cf89a2d9895",
       "apl": "normal",
       "license": "Apache-2.0",
-      "license_evidence": "Written for Oniro; the source lives in this repository (apps/flashlight), which is Apache-2.0, and each source file carries the Apache-2.0 header.",
-      "_note": "A one-button torch toggle over the public CameraManager.setTorchMode API (no permission needed). The SceneBoard Control Center's flashlight tile is UI-only in the prebuilt 7.0 SceneBoard (its tap never calls setTorchMode), so this is how the user switches the torch. 'path' instead of git/branch/sha: the source is in this tree, pinned by the vendor repo's commit.",
+      "license_evidence": "LICENSE at the pinned sha is the Apache-2.0 text; each source file carries the Apache-2.0 header. Written for Oniro.",
+      "_note": "A one-button torch toggle over the public CameraManager.setTorchMode API (no permission needed). The SceneBoard Control Center's flashlight tile is UI-only in the prebuilt 7.0 SceneBoard (its tap never calls setTorchMode), so this is how the user switches the torch.",
       "modules": [
         { "srcPath": "./entry", "output": "entry-default-signed.hap", "dest": "Flashlight.hap", "install_dir": "app/org.oniroproject.flashlight" }
       ]
