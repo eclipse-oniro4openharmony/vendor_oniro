@@ -70,4 +70,9 @@
     <!-- 1: Orientation::VERTICAL         2: Orientation::HORIZONTAL-->
     <!-- 3: Orientation::REVERSE_VERTICAL 4: Orientation::REVERSE_HORIZONTAL -->
     <buildInDefaultOrientation>0</buildInDefaultOrientation>
+
+    <!-- Rotate the screen from the accelerometer (DMS GravitySensorSubscriber). The sensor
+         reports the Android frame, so hybris_native.para also sets
+         const.window.gravity_sensor_frame. -->
+    <supportRotateWithSensor enable="true"></supportRotateWithSensor>
  </Configs>

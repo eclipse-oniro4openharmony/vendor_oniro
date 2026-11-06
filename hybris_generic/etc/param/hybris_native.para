@@ -54,6 +54,12 @@ const.product.preview.enable_uiservice = "false"
 const.product.preview.device_config = "2"
 persist.systemui.live2 = "true"
 
+# Auto-rotation (supportRotateWithSensor in display_manager_config.xml): DMS's degree mapping assumes
+# the reference board's accelerometer frame; the Halium sensors report the Android one (upright =
+# (0, +g, 0)), which comes out rotated and mirrored. "android" selects the matching formula
+# (window_manager system_patch 0001).
+const.window.gravity_sensor_frame = "android"
+
 # Disable RS "uifirst" parallel rendering (P6, ansuz bring-up). The uifirst
 # sub-threads create shared EGL contexts off the main render thread; under
 # libhybris + the Mali G615 Android-14 EGL that share-context never becomes
