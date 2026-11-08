@@ -105,15 +105,15 @@
     },
     {
       "name": "flashlight",
-      "git": "https://github.com/frankplus/oniro-flashlight.git",
+      "git": "https://github.com/eclipse-oniro4openharmony/app-SuperBrightFlashlight.git",
       "branch": "main",
-      "sha": "009ae395e4652e736edfff379e4f5cf89a2d9895",
+      "sha": "36a68fbd602d5040baac3d0d998eb9fc1934176b",
       "apl": "normal",
       "license": "Apache-2.0",
-      "license_evidence": "LICENSE at the pinned sha is the Apache-2.0 text; each source file carries the Apache-2.0 header. Written for Oniro.",
-      "_note": "A one-button torch toggle over the public CameraManager.setTorchMode API (no permission needed). The SceneBoard Control Center's flashlight tile is UI-only in the prebuilt 7.0 SceneBoard (its tap never calls setTorchMode), so this is how the user switches the torch.",
+      "license_evidence": "LICENSE at the pinned sha is the Apache-2.0 text; the source files written for Oniro carry the Apache-2.0 header.",
+      "_note": "Super Bright Flashlight 1.1.0, the same app the Oniro App Store distributes (bundle com.huawei.ohos.superbrightflashlight, kept so store updates reach the preinstalled copy). It has two lights: the flash LED through the public CameraManager.setTorchMode (no permission needed; a level slider only where torch level control is supported) and the screen at a chosen brightness and colour. The SceneBoard Control Center's flashlight tile is UI-only in the prebuilt 7.0 SceneBoard (its tap never calls setTorchMode), so this app is how the user switches the torch. It replaces org.oniroproject.flashlight (github.com/frankplus/oniro-flashlight), whose history was merged into this repository.",
       "modules": [
-        { "srcPath": "./entry", "output": "entry-default-signed.hap", "dest": "Flashlight.hap", "install_dir": "app/org.oniroproject.flashlight" }
+        { "srcPath": "./entry", "output": "entry-default-signed.hap", "dest": "SuperBrightFlashlight.hap", "install_dir": "app/com.huawei.ohos.superbrightflashlight" }
       ]
     }
   ]

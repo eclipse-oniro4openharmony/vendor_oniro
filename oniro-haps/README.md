@@ -4,8 +4,7 @@ This directory is the self-contained home of the **Oniro-customized** apps that
 ship on top of the stock OpenHarmony HAP set — the Oniro app store, the
 FlorisBoard IME, a rebuild of the platform **camera** carrying a rotation
 fix, a rebuild of the platform **settings data** provider with Oniro
-defaults (lock screen sounds off), and a small **Flashlight** app written for
-Oniro. They are **opt-in** and **all or nothing**: one gn arg,
+defaults (lock screen sounds off), and the **Super Bright Flashlight** app. They are **opt-in** and **all or nothing**: one gn arg,
 `oniro_install_custom_haps`, takes the whole set or none of it. The default
 product build installs none of them.
 
@@ -229,15 +228,26 @@ reproducible invariant is *pinned source sha + build-cmd*. `haps/SHA256SUMS`
 > image, including the app store's GPL-3.0-or-later obligations. Since the set is
 > all-or-nothing, that applies even if the camera is the only part you wanted.
 
-## Flashlight: a torch toggle
+## Super Bright Flashlight: torch and screen light
 
-`org.oniroproject.flashlight`
-([frankplus/oniro-flashlight](https://github.com/frankplus/oniro-flashlight),
-Apache-2.0, API 20, apl normal) is one button over the public `CameraManager.setTorchMode`, which
-needs no permission. The prebuilt 7.0 SceneBoard's Control Center flashlight
-tile is UI-only: its tap flips the icon but never calls `setTorchMode`, and it
-only mirrors torch status events. So on devices with a torch (the Plinius:
-camera VDI + camera_framework system_patch 0002) this app is how the user
-switches it. The torch stays on after the app is closed, and the button
-follows `torchStatusChange`. While the camera that owns the LED is open, the
-torch is unavailable.
+`com.huawei.ohos.superbrightflashlight`
+([eclipse-oniro4openharmony/app-SuperBrightFlashlight](https://github.com/eclipse-oniro4openharmony/app-SuperBrightFlashlight),
+Apache-2.0, API 26 / runs on API 12+, apl normal) is the same app the Oniro App
+Store distributes. The bundle name is kept so that store updates reach the
+preinstalled copy. It has two lights:
+* **Torch**: one button over the public `CameraManager.setTorchMode`, which
+  needs no permission. The prebuilt 7.0 SceneBoard's Control Center flashlight
+  tile is UI-only: its tap flips the icon but never calls `setTorchMode`, and
+  it only mirrors torch status events. So on devices with a torch (the
+  Plinius: camera VDI + camera_framework system_patch 0002) this app is how
+  the user switches it. The torch stays on after the app is closed, and the
+  button follows `torchStatusChange`. While the camera that owns the LED is
+  open, the torch is unavailable. A level slider appears only where
+  `isTorchLevelControlSupported()` is true. The Plinius host is V1_0, so there
+  it is on/off.
+* **Screen**: the window at a chosen brightness and colour. It keeps the
+  screen awake, and only the window's brightness changes.
+
+It replaces `org.oniroproject.flashlight` (formerly
+github.com/frankplus/oniro-flashlight, whose history was merged into the app's
+repository).
