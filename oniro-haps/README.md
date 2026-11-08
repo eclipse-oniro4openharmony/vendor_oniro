@@ -232,7 +232,7 @@ reproducible invariant is *pinned source sha + build-cmd*. `haps/SHA256SUMS`
 
 `com.huawei.ohos.superbrightflashlight`
 ([eclipse-oniro4openharmony/app-SuperBrightFlashlight](https://github.com/eclipse-oniro4openharmony/app-SuperBrightFlashlight),
-Apache-2.0, API 26 / runs on API 12+, apl normal) is the same app the Oniro App
+Apache-2.0, API 23 / runs on API 12+, apl normal) is the same app the Oniro App
 Store distributes. The bundle name is kept so that store updates reach the
 preinstalled copy. It has two lights:
 * **Torch**: one button over the public `CameraManager.setTorchMode`, which
@@ -242,9 +242,9 @@ preinstalled copy. It has two lights:
   Plinius: camera VDI + camera_framework system_patch 0002) this app is how
   the user switches it. The torch stays on after the app is closed, and the
   button follows `torchStatusChange`. While the camera that owns the LED is
-  open, the torch is unavailable. A level slider appears only where
-  `isTorchLevelControlSupported()` is true. The Plinius host is V1_0, so there
-  it is on/off.
+  open, the torch is unavailable. It is on/off only: the level API is public
+  only from API 26, whose SDK the store's build toolchain cannot load yet, and
+  the Plinius camera host (V1_0) has no levels anyway.
 * **Screen**: the window at a chosen brightness and colour. It keeps the
   screen awake, and only the window's brightness changes.
 
