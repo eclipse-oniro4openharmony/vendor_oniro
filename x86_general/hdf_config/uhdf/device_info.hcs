@@ -625,6 +625,28 @@
                 }
             }
         }
+        ril :: host {
+            /*
+             * Cellular, through the stock AT vendor library
+             * (const.sys.radio.vendorlib.path = libril_vendor.z.so) and
+             * the simulated modem behind /dev/ttyUSB0 (emulator_modem in
+             * device/soc/oniro/x86_general/hardware/modem). serviceName
+             * must stay "ril_service" (TelRilManager asks for it).
+             */
+            hostName = "riladapter_host";
+            priority = 100;
+            uid = "riladapter_host";
+            gid = ["riladapter_host", "radio", "system", "log"];
+            caps = ["NET_ADMIN"];
+            ril_device :: device {
+                device0 :: deviceNode {
+                    policy = 2;
+                    priority = 100;
+                    moduleName = "libril_driver.z.so";
+                    serviceName = "ril_service";
+                }
+            }
+        }
         partitionslot :: host {
             hostName = "partitionslot_host";
             priority = 100;
