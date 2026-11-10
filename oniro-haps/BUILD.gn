@@ -2,8 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Oniro distribution HAP set (the Oniro app store, the FlorisBoard IME, a
-# rotation-fixed rebuild of the platform camera, and a rebuild of the settings
-# data provider with Oniro defaults).
+# rotation-fixed rebuild of the platform camera, a rebuild of the settings
+# data provider with Oniro defaults, and a rebuild of the platform Settings with the Oniro logo
+# on its About card).
 #
 # oniro-haps.json is the single source of truth for the HAP set: one
 # ohos_prebuilt_etc target is generated below for every module of every app in
@@ -18,10 +19,10 @@
 # part_name must match the part of the component that gathers it.
 #
 # Most of these apps only ADD bundles, so applications/standard/hap stays a
-# pristine mirror for them. The camera and settings data are the exception:
-# they replace the stock com.ohos.camera / com.ohos.settingsdata at the same
-# install paths, so the same gn arg drops camera_hap / settingsData_hap
-# over there.
+# pristine mirror for them. The camera, settings data and Settings are the
+# exception: they replace the stock com.ohos.camera / com.ohos.settingsdata /
+# com.ohos.settings at the same install paths, so the same gn arg drops
+# camera_hap / settingsData_hap / settings_hap over there.
 #
 # The set is OPT-IN and all-or-nothing: unless oniro_install_custom_haps is true
 # (see oniro_haps.gni) this generates no targets and the group is empty, so the

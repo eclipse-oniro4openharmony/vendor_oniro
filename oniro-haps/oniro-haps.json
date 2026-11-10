@@ -31,10 +31,15 @@
     "",
     "WIRING: BUILD.gn's group('oniro_custom_haps') is listed in the product's",
     "bundle.json sub_component (vendor/oniro/hybris_generic). No",
-    "applications/standard/hap patch is needed for the ADD-ON apps. The camera",
-    "and settingsdata are the exception: each replaces a stock hap installing the",
-    "same path, so a product-scoped patch there drops camera_hap and",
-    "settingsData_hap under the same gn arg.",
+    "applications/standard/hap patch is needed for the ADD-ON apps. The camera,",
+    "settingsdata and settings are the exception: each replaces a stock hap",
+    "installing the same path, so a product-scoped patch there drops camera_hap,",
+    "settingsData_hap and settings_hap under the same gn arg.",
+    "",
+    "'cert' (optional, tree-relative) is a PEM chain for the public test key to",
+    "sign with instead of hapsigner's own certificate. Keep keys of this file",
+    "plain identifiers: gn's read_file turns JSON object keys into identifiers,",
+    "so a key that is, say, a path fails gn gen.",
     "The set is OPT-IN: BUILD.gn",
     "generates no targets unless oniro_install_custom_haps=true (oniro_haps.gni),",
     "and preinstall-config only adds the matching BMS entries in that case.",
@@ -101,6 +106,21 @@
       "_note": "Replaces the STOCK com.ohos.settingsdata instead of adding an app, so applications/standard/hap drops settingsData_hap under the same gn arg -- both install app/com.ohos.settingsdata/SettingsData.hap. The fork ports the project to the current hvigor project model and seeds lockscreen_sounds_enabled=0 in default_settings.json (SceneBoard's lock/unlock sounds, in the per-user table; upstream 7.0's DataExtAbility table-from-URI fix 9fd7922 makes the boot-time non-silent fallback read that table too). It also fixes upstream seeding: the first-startup flag key (isFirstStartup vs isFirstStartUp) and the un-awaited per-key inserts made every provider start re-insert all defaults, an existing key is never seeded again, and a table without a section is skipped. On top of upstream OpenHarmony-7.0-Release ab30e84, which no longer seeds device_provisioned / user_setup_complete (the startup guide sets them). 'profile' signs with the app's own committed provision profile instead of one generated from the template: it is an os_integration profile carrying ACLs (MANAGE_SECURE_SETTINGS, INSTALL_BUNDLE, MANAGE_BLUETOOTH) and AllowAppUsePrivilegeExtension that the template cannot reproduce, and its distribution certificate is what install_list_capability.json pins as com.ohos.settingsdata's app_signature (8E93863F...). The signing key is the public OpenHarmony test key, as for the stock hap's profile. 'apl' is unused when 'profile' is set (the profile carries it).",
       "modules": [
         { "srcPath": "./entry", "output": "entry-default-signed.hap", "dest": "SettingsData.hap", "install_dir": "app/com.ohos.settingsdata" }
+      ]
+    },
+    {
+      "name": "settings",
+      "git": "https://github.com/frankplus/applications_settings.git",
+      "branch": "OpenHarmony-7.0-Release",
+      "sha": "e833b68a56b690146b051a29b6a30fa7a3933c3a",
+      "license": "Apache-2.0",
+      "license_evidence": "Fork of applications/standard/settings (eclipse-oniro-mirrors/applications_settings); LICENSE at the pinned sha is Apache-2.0, and the fork adds only a compileSdkVersion build fix and the About card image on top of upstream. That image shows the Oniro logo, a trademark of the Eclipse Foundation (branding/LOGO-NOTICE.txt), scaled only, as the trademark policy requires.",
+      "profile": "signature/settings.p7b",
+      "cert": "applications/standard/camera/signature/OpenHarmony.cer",
+      "build_cmd": "hvigorw assembleHap --mode module -p module=phone@default -p product=default -p buildMode=debug --no-daemon",
+      "_note": "Replaces the STOCK com.ohos.settings instead of adding an app, so applications/standard/hap drops settings_hap under the same gn arg -- both install app/com.ohos.settings/Settings.hap. The fork's only functional change is feature/aboutdevice video_bg.png, the background of the Settings > About card (ScreenItemComponent), which carried the OpenHarmony logo; branding/make_about_card.py composes the Oniro one. Upstream's source is the one the sceneboard prebuilt was built from (same versionCode 601001600; a rebuild has the same entries and module.json, apart from SDK patch level and apiReleaseType). The prebuilt is a DEBUG build (buildMode debug, ets/sourceMaps.map, no obfuscation), so the per-app build_cmd builds debug too: a release build applies obfuscation-rules.txt, which the prebuilt never ran with. 'profile' signs with upstream's committed provision profile, byte-identical to the one embedded in the stock hap (system_basic, hos_system_app, its ACLs, and the distribution certificate install_list_capability.json pins as app_signature EB5DBE52...). 'cert' (tree-relative) is the stock certificate chain, the 2022 re-issue of the public test key (leaf 0716E4E8...) that the in-tree camera source carries, so the hap carries the stock chain and profile. 'apl' is unused when 'profile' is set.",
+      "modules": [
+        { "srcPath": "./product/phone", "output": "phone-default-signed.hap", "dest": "Settings.hap", "install_dir": "app/com.ohos.settings" }
       ]
     },
     {

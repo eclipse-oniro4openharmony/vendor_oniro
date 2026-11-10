@@ -6,8 +6,9 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # The Oniro-customized HAPs (the Oniro app store, the FlorisBoard IME, a
-# rotation-fixed build of the platform camera, and the settings data provider
-# with Oniro defaults) are NOT committed as binaries. This script CLONES each app from its pinned remote git
+# rotation-fixed build of the platform camera, the settings data provider
+# with Oniro defaults, and a build of the platform Settings with the Oniro logo on its About
+# card) are NOT committed as binaries. This script CLONES each app from its pinned remote git
 # repo (git+branch+sha in oniro-haps.json) into out/oniro-haps/src/<app> (cached,
 # reused at the pinned sha) and builds it, so the release is reproducible from
 # upstream. The committed oniro-haps.json IS the Bucket-4a provenance (source-repo
@@ -27,9 +28,10 @@
 # vendor/oniro/hybris_generic/bundle.json.
 #
 # Most of these apps only add bundles, leaving applications/standard/hap a
-# pristine mirror. The camera and settings data are the exception: they replace
-# the stock Camera.hap / SettingsData.hap at the same install paths, so the same
-# gn arg drops camera_hap / settingsData_hap over there.
+# pristine mirror. The camera, settings data and Settings are the exception:
+# they replace the stock Camera.hap / SettingsData.hap / Settings.hap at the
+# same install paths, so the same gn arg drops camera_hap / settingsData_hap /
+# settings_hap over there.
 # See README.md.
 #
 # Signing is deterministic and host-independent: the driver nulls each app's
@@ -42,6 +44,9 @@
 # Apps with a "profile" are signed with the public test key under that committed
 # provision profile instead of a template-generated one (settings data: its
 # profile carries ACLs and the app_signature the template cannot reproduce).
+# An app may also give a "cert" (tree-relative PEM chain for the same public
+# test key) to sign with instead of hapsigner's own certificate (Settings: the
+# stock hap's chain, so the rebuild carries the same chain and profile).
 # Needs network (git clone + ohpm install on a fresh clone).
 
 set -euo pipefail
@@ -200,14 +205,21 @@ build_hvigor_app() {  # src_abs  self_signed  build_cmd
 # profile is used as-is instead of one generated from the template: its ACLs,
 # distribution type and privilege capabilities survive, and so does the
 # fingerprint bms checks against install_list_capability.json's app_signature.
-sign_hap() {  # unsigned_hap  out_hap  bundle  apl  [profile]
-  local unsigned="$1" out="$2" bundle="$3" apl="$4" profile="${5:-}" w rc=0
+#
+# With a `cert` (a PEM chain for the same public test key) the signature carries
+# that chain instead of hapsigner's own OpenHarmonyApplication.pem; a rebuilt
+# platform app uses it to keep the stock leaf.
+sign_hap() {  # unsigned_hap  out_hap  bundle  apl  [profile]  [cert]
+  local unsigned="$1" out="$2" bundle="$3" apl="$4" profile="${5:-}" cert="${6:-}" w rc=0
   w="$(mktemp -d)"
   cp "${SIGN_DIST}/hap-sign-tool.jar" "${SIGN_DIST}/OpenHarmony.p12" \
      "${SIGN_DIST}/OpenHarmonyApplication.pem" "${SIGN_DIST}/OpenHarmonyProfileRelease.pem" \
      "${SIGN_DIST}/UnsgnedReleasedProfileTemplate.json" "$w/"
   if [ -n "$profile" ]; then
     cp "$profile" "$w/profile.p7b"
+  fi
+  if [ -n "$cert" ]; then
+    cp "$cert" "$w/OpenHarmonyApplication.pem"
   fi
   sed -e "s/com.OpenHarmony.app.test/${bundle}/g" -e "s/\"normal\"/\"${apl}\"/g" \
       "$w/UnsgnedReleasedProfileTemplate.json" > "$w/profile.json"
@@ -238,11 +250,12 @@ OK_COUNT=0
 : > "$SHASUMS.new"
 
 process_app() {
-  local idx="$1" name apl self_signed cmd profile
+  local idx="$1" name apl self_signed cmd profile cert
   name="$(jq -r ".apps[$idx].name" "$DESC")"
   want_app "$name" || { log "skip $name"; return 0; }
   apl="$(jq -r ".apps[$idx].apl // \"normal\"" "$DESC")"
   profile="$(jq -r ".apps[$idx].profile // empty" "$DESC")"
+  cert="$(jq -r ".apps[$idx].cert // empty" "$DESC")"
   self_signed="$(jq -r ".apps[$idx].self_signed // false" "$DESC")"
   cmd="$(jq -r ".apps[$idx].build_cmd // empty" "$DESC")"
   [ -n "$cmd" ] || cmd="$BUILD_CMD"
@@ -257,6 +270,10 @@ process_app() {
   if [ -n "$profile" ]; then
     profile="${SRCDIR}/${profile}"
     [ -f "$profile" ] || die "$name: provision profile missing: $profile"
+  fi
+  if [ -n "$cert" ]; then
+    cert="${ROOT}/${cert}"
+    [ -f "$cert" ] || die "$name: certificate missing: $cert"
   fi
 
   local nmod m; nmod="$(jq -r ".apps[$idx].modules | length" "$DESC")"
@@ -276,7 +293,7 @@ process_app() {
       unsigned="${SRCDIR}/${srcPath}/build/default/outputs/default/${unsigned_name}"
       [ -f "$unsigned" ] || die "$name: expected build output missing: $unsigned"
       bundle="${install_dir##*/}"
-      sign_hap "$unsigned" "${OUT_DIR}/${dest}" "$bundle" "$apl" "$profile"
+      sign_hap "$unsigned" "${OUT_DIR}/${dest}" "$bundle" "$apl" "$profile" "$cert"
       if [ -n "$profile" ]; then
         log "  + ${dest}  <- ${unsigned_name} (signed with ${profile#"$SRCDIR"/})"
       else

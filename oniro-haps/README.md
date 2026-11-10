@@ -4,14 +4,15 @@ This directory is the self-contained home of the **Oniro-customized** apps that
 ship on top of the stock OpenHarmony HAP set — the Oniro app store, the
 FlorisBoard IME, a rebuild of the platform **camera** carrying a rotation
 fix, a rebuild of the platform **settings data** provider with Oniro
-defaults (lock screen sounds off), and the **Super Bright Flashlight** app. They are **opt-in** and **all or nothing**: one gn arg,
+defaults (lock screen sounds off), a rebuild of the platform **Settings** with the Oniro
+logo on its About card, and the **Super Bright Flashlight** app. They are **opt-in** and **all or nothing**: one gn arg,
 `oniro_install_custom_haps`, takes the whole set or none of it. The default
 product build installs none of them.
 
 > The system shell (SystemUI / Launcher / Settings) is provided by **SceneBoard**
 > (`window_manager_use_sceneboard`), so the app store and FlorisBoard only *add*
-> bundles — nothing stock is swapped out for those. (The camera and settings
-> data are the exception and replace a stock hap.) Earlier revisions carried
+> bundles — nothing stock is swapped out for those. (The camera, settings
+> data and Settings are the exception and replace a stock hap.) Earlier revisions carried
 > Oniro-customized SystemUI / Launcher / Settings HAPs and reached into
 > `applications/standard/hap` via a gn `oniro_ui_flavor` switch; both were dropped
 > once the tree moved to SceneBoard.
@@ -21,6 +22,7 @@ oniro-haps/
   oniro-haps.json        SINGLE SOURCE OF TRUTH: descriptor + Bucket-4a provenance
   build-oniro-haps.sh    clones each app from its pinned remote (or copies an
                          in-tree one) and builds it
+  branding/              generator of the Settings About card image + logo notice
   BUILD.gn               generates one prebuilt_etc per descriptor module
                          (read_file of oniro-haps.json) + group("oniro_custom_haps")
   haps/                  built HAPs + SHA256SUMS (gitignored — not committed)
@@ -55,8 +57,9 @@ one-line `sub_component` addition.
 with the default `false` the group is empty and the image gets no Oniro-built
 HAP. The same arg drives `preinstall-config`, which regenerates
 `install_list.json` from `oniro-haps.json` so BMS actually preinstalls the added
-bundles (see `gen_preinstall_list.py`). The camera and settings data get no new
-entry there: they take over bundles the committed list already carries.
+bundles (see `gen_preinstall_list.py`). The camera, settings data and Settings
+get no new entry there: they take over bundles the committed list already
+carries.
 
 Why off by default: these apps are built from sources outside this repository
 under licences that differ from the product's own — the app store is
@@ -191,6 +194,57 @@ also drops the stock `settingsData_hap` in `applications/standard/hap/BUILD.gn`.
 **With the arg off, the stock settings data ships and the lock screen sounds
 stay on.**
 
+## Settings: the Oniro logo on the About card
+
+Settings > About opens with a card showing the OpenHarmony logo above the
+version and a "Check for updates" button. The card is Settings' own
+`ScreenItemComponent` (`feature/aboutdevice`), and the logo is part of its
+background image, `feature/aboutdevice/src/main/resources/base/media/video_bg.png`.
+Nothing else uses that image.
+
+`com.ohos.settings` is therefore rebuilt from `applications/standard/settings`,
+pinned to a fork that
+
+* builds in OpenHarmony mode: upstream sets `compileSdkVersion` to the string
+  `"26.0.0"`, which hvigor rejects there (00306042), so the fork uses `26`, as
+  the camera fork does. Like the camera, it needs the full API-26 SDK (see
+  above), and
+* replaces `video_bg.png` with the Oniro card.
+
+Upstream's source is what the sceneboard prebuilt was built from: the same
+`versionCode` (601001600), and a rebuild has the same entries and
+`module.json`, apart from the SDK patch level and `apiReleaseType`. The
+prebuilt is a **debug** build (`buildMode` debug, `ets/sourceMaps.map`, no
+obfuscation), so the entry's `build_cmd` builds debug too. A release build
+would apply `obfuscation-rules.txt`, which the prebuilt never ran with.
+
+It is signed with **`"profile": "signature/settings.p7b"`** (upstream's own,
+byte-identical to the profile embedded in the stock hap: `system_basic`,
+`hos_system_app`, its ACLs, and `app_signature` `EB5DBE52…`) and
+**`"cert"`**: a tree-relative certificate chain used instead of hapsigner's
+own. It is the stock chain, a 2022 re-issue of the same public test key (leaf
+`0716E4E8…`), which the camera source carries at
+`applications/standard/camera/signature/OpenHarmony.cer`. The rebuilt hap
+therefore carries the stock hap's exact chain and profile.
+
+The card image (2412x1608, like the stock one) is cropped with
+`ImageSize.Cover`, so a phone card (about square) keeps only the central
+~1600 px, and the version and button cover the bottom ~30 %. It is the
+official Reversed vertical lockup (colour mark on the brand dark `#0F0026`),
+scaled only, as the Eclipse Foundation trademark policy requires
+(`branding/LOGO-NOTICE.txt`). To make it again:
+
+```bash
+python3 vendor/oniro/oniro-haps/branding/make_about_card.py \
+    ONIRO-Masterbrand-vertical-Reversed_color..png about_card.png
+```
+
+`oniro_install_custom_haps` drops the stock `settings_hap` in
+`applications/standard/hap/BUILD.gn`, because both install
+`app/com.ohos.settings/Settings.hap`. **With the arg off, the stock Settings
+ships with the OpenHarmony logo.** When upstream Settings moves on, rebase the
+fork and re-pin it, as for the camera.
+
 ## Signing note
 
 The app store requests privileged permissions (`INSTALL_BUNDLE`, etc.) and calls
@@ -204,7 +258,9 @@ Apps with `"self_signed": true` bypass all of this and keep their own
 `signingConfig` — see [The camera is different](#the-camera-is-different).
 Apps with a `"profile"` are signed with the public test key under that committed
 profile instead of a generated one — see
-[Settings data](#settings-data-a-replacement-with-oniro-defaults).
+[Settings data](#settings-data-a-replacement-with-oniro-defaults). A `"cert"`
+also replaces the certificate chain — see
+[Settings](#settings-the-oniro-logo-on-the-about-card).
 
 ## Provenance (Eclipse Bucket 4a)
 

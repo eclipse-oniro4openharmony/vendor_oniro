@@ -1,0 +1,7 @@
+We are providing copies of this logo so our community can use it to show their support of Eclipse and link back to our community.
+
+Please note these logo(s) are the intellectual property of the Eclipse Foundation and cannot be altered without the Eclipse Foundation’s permission. They are provided for use under the Eclipse Foundation Trademark Usage Policy [1].
+
+These logo(s) are copyright (c) Eclipse Foundation. All Rights Reserved.
+
+[1] http://www.eclipse.org/logotm/
