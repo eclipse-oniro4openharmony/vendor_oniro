@@ -1,0 +1,20 @@
+# Copyright (c) 2026 Eclipse Oniro for OpenHarmony contributors.
+# SPDX-License-Identifier: Apache-2.0
+
+import("//build/ohos.gni")
+
+# The camera app (com.ohos.camera) takes its sizes from a built-in table
+# made for phone sensors (4096x3072 photos and the like) and merges this
+# diff, found by config policy at etc/camera/CameraProfiles.json. The
+# emulator's camera is the kernel's vivid driver, whose webcam input offers
+# 640x480, 1280x720 and 1920x1080 (among others), so every profile is mapped
+# onto those; an unsupported size fails the capture session. It also sends
+# the thumbnail to Photos (the app's own photo browser is an empty stub).
+# /system, not /vendor: the app's sandbox cannot read /vendor.
+ohos_prebuilt_etc("camera_profiles") {
+  source = "CameraProfiles.json"
+  install_enable = true
+  install_images = [ system_base_dir ]
+  part_name = "product_x86_general"
+  relative_install_dir = "camera"
+}

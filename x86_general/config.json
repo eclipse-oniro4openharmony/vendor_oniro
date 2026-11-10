@@ -56,6 +56,15 @@
           "features": []
         },
         {
+          "component": "drivers_peripheral_camera",
+          "features": [
+            "drivers_peripheral_camera_feature_usb = true",
+            "drivers_peripheral_camera_use_commom_usb_camera_host_config = true",
+            "drivers_peripheral_camera_qemu_vivid_capture = true",
+            "drivers_peripheral_camera_v4l2_emulator = false"
+          ]
+        },
+        {
           "component": "drivers_interface_lpplayer",
           "features":[]
         },

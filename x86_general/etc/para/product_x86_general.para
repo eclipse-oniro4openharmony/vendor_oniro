@@ -42,3 +42,8 @@ persist.systemui.live2=true
 # defaults to Asia/Shanghai; this /chipset-layer file is loaded first and the
 # first write wins. It only seeds a fresh userdata.
 persist.time.timezone=Europe/London
+
+# Mesa's software EGL cannot import NV12/NV21 buffers, so RenderService draws
+# camera and video layers through its CPU YUV-to-RGBA path (graphic_2d
+# system_patch; other products leave this unset and use the GPU).
+const.rs.yuv_cpu_composition=true

@@ -15,6 +15,7 @@ import("//build/ohos.gni")
 
 group("custom_config") {
   deps = [
+    "camera:camera_profiles",
     "window:window_config",
     "power_config:power_mode_config_vendor",
     "power_config:power_suspend_config_vendor",
