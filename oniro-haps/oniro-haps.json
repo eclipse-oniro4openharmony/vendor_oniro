@@ -59,7 +59,7 @@
       "name": "appstore",
       "git": "https://github.com/eclipse-oniro4openharmony/f-oh.git",
       "branch": "oniro",
-      "sha": "a517e29a55abfff19f9f6d2356b62472160f360d",
+      "sha": "444dd5b1e1cf9572db029bb1c9893726d6a4c547",
       "apl": "system_core",
       "license": "GPL-3.0-or-later",
       "license_evidence": "LICENSE at the pinned sha is the GPLv3 text; source headers carry the FSF 'either version 3 of the License, or (at your option) any later version' grant. Upstream copyright: westinyang (https://gitee.com/ohos-dev).",
