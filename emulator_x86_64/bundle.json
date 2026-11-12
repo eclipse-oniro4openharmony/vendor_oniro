@@ -1,0 +1,33 @@
+{
+  "name": "@ohos/product_emulator_x86_64",
+  "version": "3.1",
+  "license": "Apache License 2.0",
+  "private": false,
+  "scripts": {},
+  "dirs": [
+    ""
+  ],
+  "component": {
+    "name": "product_emulator_x86_64",
+    "subsystem": "product_emulator_x86_64",
+    "syscap": [],
+    "features": [],
+    "deps": {
+      "components": [],
+      "third_party": []
+    },
+    "build": {
+      "sub_component": [
+        "//vendor/oniro/emulator/preinstall-config:preinstall-config",
+        "//vendor/oniro/oniro-haps:oniro_custom_haps",
+        "//vendor/oniro/emulator/resourceschedule:resourceschedule",
+        "//vendor/oniro/emulator/etc:product_etc_conf",
+        "//vendor/oniro/emulator/hals/audio:hdf_audio_config",
+        "//vendor/oniro/emulator/hdf_config/uhdf:hdf_config",
+        "//vendor/oniro/emulator/custom_conf:custom_config",
+        "//vendor/oniro/emulator/image_conf:custom_image_conf",
+        "//vendor/oniro/wallpaper:oniro_wallpaper"
+      ]
+    }
+  }
+}

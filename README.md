@@ -15,10 +15,13 @@ Product configuration for running **OpenHarmony natively** on Volla hardware
 **libhybris**. Includes `product.gni`, init/boot configuration, fstab, HDF
 config, the boot animation, and preinstall configuration.
 
-### `x86_general` — QEMU / x86 emulator
+### `emulator` — the QEMU emulator (x86_64 and arm64)
 
-Product configuration for the Oniro emulator target, including the source-patch
-series (`device/board/oniro/system_patch/`) applied before building. See the board repository's
+Product configuration for the Oniro emulator. `emulator/` holds what the two
+products share (init and boot parameters, HDF config, preinstall, the parts
+list in `emulator_parts.json`); `emulator_x86_64/` and `emulator_arm64/` hold
+each product's `config.json`, which inherits it. The source-patch series
+(`device/board/oniro/system_patch/`) is applied before building. See the board repository's
 README for the emulator build flow.
 
 ## `oniro-haps` — reproducible Oniro distribution flavor

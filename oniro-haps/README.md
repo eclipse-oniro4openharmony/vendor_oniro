@@ -47,7 +47,7 @@ lists it in its `bundle.json` `sub_component` — exactly like `preinstall-confi
 ```
 
 Each generated `ohos_prebuilt_etc` therefore carries the product's `part_name`
-(`product_${device_name}` — `product_hybris_generic`, `product_x86_general`),
+(`product_${device_name}` — `product_hybris_generic`, `product_emulator_x86_64`, `product_emulator_arm64`),
 so it is gathered by that component. For the app store and FlorisBoard
 `applications/standard/hap` stays a pristine OpenHarmony mirror — they only add
 bundles, so nothing there needs patching. Adding the set to another product is a

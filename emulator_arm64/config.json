@@ -1,0 +1,31 @@
+{
+  "product_name": "emulator_arm64",
+  "device_company": "oniro",
+  "device_build_path": "device/board/oniro/emulator_arm64",
+  "target_cpu": "arm64",
+  "type": "standard",
+  "version": "3.0",
+  "board": "emulator_arm64",
+  "api_version": 8,
+  "enable_ramdisk": true,
+  "enable_absystem": false,
+  "build_selinux": false,
+  "build_seccomp": false,
+  "device_stack_size": 8388608,
+  "inherit": [
+    "productdefine/common/inherit/rich.json",
+    "productdefine/common/inherit/chipset_common.json",
+    "vendor/oniro/emulator/emulator_parts.json"
+  ],
+  "subsystems": [
+    {
+      "subsystem": "oniro_soc_products",
+      "components": [
+        {
+          "component": "emulator",
+          "features": []
+        }
+      ]
+    }
+  ]
+}

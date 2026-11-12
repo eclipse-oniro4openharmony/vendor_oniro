@@ -51,7 +51,7 @@ if (oniro_install_custom_haps) {
         source = "haps/" + mod.dest
         module_install_dir = mod.install_dir
 
-        # product_hybris_generic / product_x86_general — the component names in
+        # product_hybris_generic / product_emulator_<arch> — the component names in
         # the products' bundle.json, the same way vendor/oniro/wallpaper does it.
         part_name = "product_${device_name}"
       }

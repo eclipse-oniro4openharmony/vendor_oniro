@@ -1,0 +1,80 @@
+# Copyright (c) 2022 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/ohos.gni")
+import("//vendor/oniro/oniro-haps/oniro_haps.gni")
+
+# The committed install_list.json describes the default (stock) image.  BMS
+# needs a preinstall entry per added bundle, or a HAP lands in /system/app but
+# is never installed, so when the Oniro distribution HAP set is opted in
+# (oniro_install_custom_haps) regenerate the list from oniro-haps.json, as
+# hybris_generic does.
+_install_list = "./install_list.json"
+_install_list_deps = []
+if (oniro_install_custom_haps) {
+  _generated_install_list = "$target_gen_dir/install_list.json"
+
+  action("gen_install_list_with_oniro_haps") {
+    script = "//vendor/oniro/oniro-haps/gen_preinstall_list.py"
+    inputs = [
+      "./install_list.json",
+      "//vendor/oniro/oniro-haps/oniro-haps.json",
+    ]
+    outputs = [ _generated_install_list ]
+    args = [
+      "--install-list",
+      rebase_path("./install_list.json", root_build_dir),
+      "--output",
+      rebase_path(_generated_install_list, root_build_dir),
+      "--descriptor",
+      rebase_path("//vendor/oniro/oniro-haps/oniro-haps.json", root_build_dir),
+    ]
+  }
+
+  _install_list = _generated_install_list
+  _install_list_deps = [ ":gen_install_list_with_oniro_haps" ]
+}
+
+ohos_prebuilt_etc("install_list_config") {
+  source = _install_list
+  deps = _install_list_deps
+  relative_install_dir = "app"
+  part_name = "product_${product_name}"
+}
+
+ohos_prebuilt_etc("uninstall_list_config") {
+  source = "./uninstall_list.json"
+  relative_install_dir = "app"
+  part_name = "product_${product_name}"
+}
+
+ohos_prebuilt_etc("install_list_capability_config") {
+  source = "./install_list_capability.json"
+  relative_install_dir = "app"
+  part_name = "product_${product_name}"
+}
+
+ohos_prebuilt_etc("install_list_permissions_config") {
+  source = "./install_list_permissions.json"
+  relative_install_dir = "app"
+  part_name = "product_${product_name}"
+}
+
+group("preinstall-config") {
+  deps = [
+    ":install_list_capability_config",
+    ":install_list_config",
+    ":install_list_permissions_config",
+    ":uninstall_list_config",
+  ]
+}

@@ -40,8 +40,9 @@
 # group("oniro_wallpaper") in its bundle.json `sub_component`, like
 # preinstall-config and oniro-haps do. Every leaf ohos_prebuilt_etc must carry
 # the part_name of the component that gathers it, hence product_${device_name}
-# — which resolves to product_hybris_generic / product_x86_general, matching
-# the component names in the two products' bundle.json.
+# — which resolves to product_hybris_generic / product_emulator_x86_64 /
+# product_emulator_arm64, matching the component names in the products'
+# bundle.json.
 
 import("//build/ohos.gni")
 

@@ -1,0 +1,48 @@
+# Copyright (C) 2021 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+import("//base/powermgr/power_manager/powermgr.gni")
+import("//build/ohos.gni")
+
+ohos_prebuilt_etc("power_mode_config_vendor") {
+  source = "power_mode_config.xml"
+  relative_install_dir = "power_config"
+  install_images = [ chipset_base_dir ]
+  part_name = "product_${product_name}"
+}
+
+# The stock power_suspend.json puts the system to sleep (action 1) when the
+# screen times out or the power key is pressed.  A qemu guest has no wakeup
+# source, so it never resumes: userspace freezes ~30 s after boot, when
+# SceneBoard's lock screen lets the display time out.  Here every source only
+# turns the display off (action 0), and input wakes it again.  It sits in the
+# /chipset (-> /vendor) config_policy layer, which outranks /system, and
+# power_manager caches the parsed result in settings on first boot, so it
+# applies from a fresh userdata.
+ohos_prebuilt_etc("power_suspend_config_vendor") {
+  source = "power_suspend.json"
+  relative_install_dir = "power_config"
+  install_images = [ chipset_base_dir ]
+  part_name = "product_${product_name}"
+}
+
+# A touch only wakes the screen on a double tap by default (touchscreen
+# "click": 2). On the emulator, clicks in the window are single-finger touches
+# (see emulator_touch in device/soc), and the screen is off after 30 s idle, so
+# a single click has to wake it, as the PS/2 mouse used to. Same layer and
+# first-boot caching as power_suspend.json.
+ohos_prebuilt_etc("power_wakeup_config_vendor") {
+  source = "power_wakeup.json"
+  relative_install_dir = "power_config"
+  install_images = [ chipset_base_dir ]
+  part_name = "product_${product_name}"
+}
