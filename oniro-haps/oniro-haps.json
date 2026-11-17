@@ -71,10 +71,10 @@
       "name": "florisboard",
       "git": "https://github.com/frankplus/Floris-OH.git",
       "branch": "main",
-      "sha": "12a084b2ad302b3251e64313fd369f36a1540895",
+      "sha": "e2ef78e1e68e8f76b4003ed458bd2ef999772eff",
       "apl": "normal",
       "license": "Apache-2.0",
-      "license_evidence": "UNCONFIRMED. The pinned tree carries NO LICENSE file; its README states only that upstream FlorisBoard is Apache-2.0 and that the port 'keeps the same license for the reused data'. A LICENSE file must be added to the source repository before this app can be treated as Apache-2.0 licensed.",
+      "license_evidence": "LICENSE at the pinned sha is the Apache-2.0 text (added 2026-11-17); upstream FlorisBoard (https://github.com/florisboard/florisboard), whose layouts and settings the port reuses, is Apache-2.0.",
       "modules": [
         { "srcPath": "./entry", "output": "entry-default-signed.hap", "dest": "FlorisBoard.hap", "install_dir": "app/dev.patrickgold.florisboard" }
       ]
